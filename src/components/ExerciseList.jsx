@@ -59,10 +59,15 @@ function ExerciseList({ exercises, onExerciseClick, onExerciseHover, emptyMessag
                 ))}
               </div>
             )}
-            {exercise.equipment && exercise.equipment.length > 0 && (
+            {((exercise.equipment && exercise.equipment.length > 0) || (exercise.optionalEquipment && exercise.optionalEquipment.length > 0)) && (
               <div className="exercise-equipment">
-                {exercise.equipment.map((item, equipIndex) => (
-                  <span key={equipIndex} className="equipment-badge">
+                {exercise.equipment && exercise.equipment.map((item, equipIndex) => (
+                  <span key={`req-${equipIndex}`} className="equipment-badge">
+                    {item}
+                  </span>
+                ))}
+                {exercise.optionalEquipment && exercise.optionalEquipment.map((item, equipIndex) => (
+                  <span key={`opt-${equipIndex}`} className="equipment-badge equipment-badge-optional">
                     {item}
                   </span>
                 ))}

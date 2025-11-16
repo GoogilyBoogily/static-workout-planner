@@ -117,6 +117,16 @@
   font-weight: 600;
 }
 
+.equipment-tag-optional {
+  background: transparent;
+  border: 1px dashed #888;
+  color: #aaa;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 .description-text {
   color: #ccc;
   line-height: 1.6;

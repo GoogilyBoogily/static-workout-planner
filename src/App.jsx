@@ -102,7 +102,8 @@ function App() {
               name: row.Exercise,
               tags: row['Muscle Group'].split(',').map(tag => tag.trim()).filter(tag => tag),
               description: row.Description || '',
-              equipment: row.Equipment ? row.Equipment.split(',').map(e => e.trim()).filter(e => e && e !== 'None') : [],
+              equipment: row.Equipment ? row.Equipment.split(',').map(e => e.trim()).filter(e => e) : [],
+              optionalEquipment: row['Optional Equipment'] ? row['Optional Equipment'].split(',').map(e => e.trim()).filter(e => e) : [],
               youtubeUrl: row['YouTube URL'] || null
             }))
 
@@ -134,7 +135,8 @@ function App() {
                   name: row.Exercise,
                   tags: row['Muscle Group'].split(',').map(tag => tag.trim()).filter(tag => tag),
                   description: row.Description || '',
-                  equipment: row.Equipment ? row.Equipment.split(',').map(e => e.trim()).filter(e => e && e !== 'None') : [],
+                  equipment: row.Equipment ? row.Equipment.split(',').map(e => e.trim()).filter(e => e) : [],
+                  optionalEquipment: row['Optional Equipment'] ? row['Optional Equipment'].split(',').map(e => e.trim()).filter(e => e) : [],
                   youtubeUrl: row['YouTube URL'] || null
                 }))
 
@@ -301,12 +303,15 @@ function App() {
     return Array.from(tagSet).sort()
   }, [exercises])
 
-  // Extract unique equipment from all exercises for EquipmentFilter
+  // Extract unique equipment from all exercises for EquipmentFilter (both required and optional)
   const availableEquipment = useMemo(() => {
     const equipmentSet = new Set()
     exercises.forEach(exercise => {
       if (exercise.equipment && exercise.equipment.length > 0) {
         exercise.equipment.forEach(item => equipmentSet.add(item))
+      }
+      if (exercise.optionalEquipment && exercise.optionalEquipment.length > 0) {
+        exercise.optionalEquipment.forEach(item => equipmentSet.add(item))
       }
     })
     return Array.from(equipmentSet).sort()
@@ -332,10 +337,14 @@ function App() {
     // Apply equipment filter (if equipment is selected)
     if (selectedEquipment.length > 0) {
       filtered = filtered.filter(exercise => {
-        // Exercise must have at least one of the selected equipment
-        return exercise.equipment && exercise.equipment.some(item =>
+        // Exercise must have at least one of the selected equipment (in either required or optional)
+        const hasRequiredEquipment = exercise.equipment && exercise.equipment.some(item =>
           selectedEquipment.includes(item)
         )
+        const hasOptionalEquipment = exercise.optionalEquipment && exercise.optionalEquipment.some(item =>
+          selectedEquipment.includes(item)
+        )
+        return hasRequiredEquipment || hasOptionalEquipment
       })
     }
 

@@ -104,6 +104,13 @@
   font-weight: 600;
 }
 
+.equipment-badge-optional {
+  background: transparent;
+  border: 1px dashed #888;
+  color: #aaa;
+  font-weight: 500;
+}
+
 .exercise-list-empty {
   color: #999;
   text-align: center;
