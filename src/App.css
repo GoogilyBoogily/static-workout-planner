@@ -1,0 +1,197 @@
+.App {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.csv-loader {
+  margin: 20px 0;
+}
+
+.file-input {
+  margin: 20px 0;
+}
+
+.data-table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  overflow-x: auto;
+  display: block;
+}
+
+.data-table table {
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: #646cff;
+  color: white;
+  font-weight: bold;
+}
+
+.data-table tr:nth-child(even) {
+  background-color: rgba(100, 108, 255, 0.1);
+}
+
+.data-table tr:hover {
+  background-color: rgba(100, 108, 255, 0.2);
+}
+
+.error {
+  color: #ff4444;
+  margin: 20px 0;
+  padding: 10px;
+  background-color: rgba(255, 68, 68, 0.1);
+  border-radius: 4px;
+}
+
+.info {
+  color: #646cff;
+  margin: 20px 0;
+}
+
+/* Muscle Diagram Styles - Professional Anatomical */
+.muscle-diagram {
+  margin: 30px 0;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+/* Dual view layout (Front and Back side-by-side) */
+.muscle-diagram-dual-view {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.muscle-view {
+  flex: 1;
+  max-width: 400px;
+  text-align: center;
+}
+
+.muscle-view h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Body type toggle buttons (Male/Female) */
+.body-type-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.body-button {
+  padding: 8px 20px;
+  border: 2px solid #8b6f47;
+  background-color: white;
+  color: #8b6f47;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.body-button:hover {
+  background-color: rgba(139, 111, 71, 0.1);
+}
+
+.body-button.active {
+  background-color: #8b6f47;
+  color: white;
+}
+
+.body-button:focus {
+  outline: 2px solid #8b6f47;
+  outline-offset: 2px;
+}
+
+/* Muscle diagram container - centered with flexbox */
+.muscle-diagram-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* Mobile responsive - stack views vertically */
+@media (max-width: 768px) {
+  .muscle-diagram-dual-view {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .muscle-view {
+    max-width: 100%;
+  }
+}
+
+/* Override @mjcdev/react-body-highlighter default styles with warm anatomical colors */
+.muscle-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Default muscle color - warm brown/beige for all body parts */
+.muscle-diagram svg path {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover state - soft peachy-beige (lighter, softer) */
+.muscle-diagram svg path:hover {
+  opacity: 0.85;
+  filter: brightness(1.15);
+}
+
+/* Note: The new library handles highlighting internally via the data prop
+   Muscles in the data array will be highlighted automatically */
+
+/* T021: Tooltip styles */
+.muscle-tooltip {
+  position: fixed;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+  transform: translate(10px, -30px);
+  animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* T022: Hide tooltips on mobile */
+@media (max-width: 767px) {
+  .muscle-tooltip {
+    display: none;
+  }
+}
