@@ -1,6 +1,6 @@
 # Feature Specification: Interactive SVG Muscle Diagram
 
-**Feature Branch**: `001-muscle-diagram`
+**Feature Branch**: `004-muscle-diagram`
 **Created**: 2025-11-15
 **Status**: Draft
 **Input**: User description: "Interactive SVG muscle diagram for front and back"

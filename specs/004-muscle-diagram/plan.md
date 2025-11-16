@@ -1,7 +1,7 @@
 # Implementation Plan: Interactive SVG Muscle Diagram
 
-**Branch**: `001-muscle-diagram` | **Date**: 2025-11-15 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-muscle-diagram/spec.md`
+**Branch**: `004-muscle-diagram` | **Date**: 2025-11-15 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/004-muscle-diagram/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
