@@ -1,0 +1,44 @@
+.storage-warning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  margin: 16px 0;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 4px;
+  color: #92400e;
+  font-size: 14px;
+}
+
+.warning-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.warning-text {
+  flex: 1;
+}
+
+.warning-dismiss {
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: #92400e;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.warning-dismiss:hover {
+  opacity: 0.7;
+}
+
+.warning-dismiss:focus {
+  outline: 2px solid #92400e;
+  outline-offset: 2px;
+}

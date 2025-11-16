@@ -1,10 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Papa from 'papaparse'
 import './App.css'
 import ExerciseDetailModal from './components/ExerciseDetailModal'
 import ExerciseList from './components/ExerciseList'
 import MuscleDiagram from './components/MuscleDiagram'
+import ErrorMessage from './components/ErrorMessage'
+import StorageWarning from './components/StorageWarning'
+import PlanForm from './components/PlanForm'
+import PlanList from './components/PlanList'
+import PlanDetail from './components/PlanDetail'
 import { filterExercisesByMuscles } from './utils/muscleFilter'
+import PlansStorage from './utils/localStorage'
 
 function App() {
   const [data, setData] = useState([])
@@ -19,6 +25,45 @@ function App() {
   // T023: Muscle selection state
   const [selectedMuscles, setSelectedMuscles] = useState([])
   const [hoveredMuscle, setHoveredMuscle] = useState(null)
+
+  // Workout Plans state (T006)
+  const [plans, setPlans] = useState([])
+  const [currentView, setCurrentView] = useState('list')
+  const [selectedPlan, setSelectedPlan] = useState(null)
+  const [showSyncWarning, setShowSyncWarning] = useState(false)
+  const [storageError, setStorageError] = useState(null)
+
+  // T007: Load plans from localStorage on mount
+  useEffect(() => {
+    const loadedPlans = PlansStorage.loadPlans()
+    setPlans(loadedPlans)
+
+    // Check if localStorage is available
+    if (!PlansStorage.isAvailable()) {
+      setStorageError('localStorage is not available. Are you in private browsing mode?')
+    }
+  }, [])
+
+  // T008: Storage event listener for cross-tab sync
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === PlansStorage.KEY && event.newValue !== null) {
+        // Another tab modified the plans
+        const updatedPlans = PlansStorage.loadPlans()
+        setPlans(updatedPlans)
+        setShowSyncWarning(true)
+
+        // Auto-hide warning after 5 seconds
+        setTimeout(() => setShowSyncWarning(false), 5000)
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+    }
+  }, [])
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0]
@@ -141,8 +186,93 @@ function App() {
     )
   }
 
+  // T027: Handle create plan
+  const handleCreatePlan = () => {
+    setCurrentView('create')
+    setSelectedPlan(null)
+  }
+
+  // T028-T029: Handle save plan (create or edit)
+  const handleSavePlan = (planData) => {
+    try {
+      if (selectedPlan) {
+        // Editing existing plan
+        const updatedPlan = {
+          ...selectedPlan,
+          name: planData.name,
+          exercises: planData.exercises,
+          updatedAt: Date.now()
+        }
+
+        const updatedPlans = plans.map(p =>
+          p.id === selectedPlan.id ? updatedPlan : p
+        )
+
+        PlansStorage.savePlans(updatedPlans)
+        setPlans(updatedPlans)
+      } else {
+        // Creating new plan
+        const newPlan = {
+          id: crypto.randomUUID(),
+          name: planData.name,
+          exercises: planData.exercises,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        }
+
+        const updatedPlans = [...plans, newPlan]
+        PlansStorage.savePlans(updatedPlans)
+        setPlans(updatedPlans)
+      }
+
+      setCurrentView('list')
+      setSelectedPlan(null)
+      setStorageError(null)
+    } catch (error) {
+      setStorageError(error.message)
+    }
+  }
+
+  // Handle cancel plan form
+  const handleCancelPlan = () => {
+    setCurrentView('list')
+    setSelectedPlan(null)
+  }
+
+  // T044: Handle edit plan
+  const handleEditPlan = (plan) => {
+    setSelectedPlan(plan)
+    setCurrentView('edit')
+  }
+
+  // T056-T060: Handle delete plan
+  const handleDeletePlan = (plan) => {
+    const confirmed = window.confirm(`Delete "${plan.name}"?`)
+
+    if (confirmed) {
+      const updatedPlans = plans.filter(p => p.id !== plan.id)
+      PlansStorage.savePlans(updatedPlans)
+      setPlans(updatedPlans)
+    }
+  }
+
+  // T043: Handle view plan details
+  const handleViewPlan = (plan) => {
+    setSelectedPlan(plan)
+    setCurrentView('detail')
+  }
+
+  // Handle close plan detail
+  const handleClosePlanDetail = () => {
+    setCurrentView('list')
+    setSelectedPlan(null)
+  }
+
   // T029-T030: Apply muscle filter to exercises
   const filteredExercises = filterExercisesByMuscles(exercises, selectedMuscles)
+
+  // T042: Sort plans by updatedAt descending (newest first)
+  const sortedPlans = [...plans].sort((a, b) => b.updatedAt - a.updatedAt)
 
   return (
     <div className="App">
@@ -165,6 +295,52 @@ function App() {
       </div>
 
       {error && <div className="error">{error}</div>}
+
+      {/* T009-T012: Error and warning banners */}
+      <ErrorMessage
+        message={storageError}
+        onDismiss={() => setStorageError(null)}
+      />
+      <StorageWarning
+        show={showSyncWarning}
+        message="Your workout plans were updated in another tab. The list has been refreshed."
+        onDismiss={() => setShowSyncWarning(false)}
+      />
+
+      {/* T032-T043: Plan List */}
+      {currentView === 'list' && (
+        <PlanList
+          plans={sortedPlans}
+          onCreate={handleCreatePlan}
+          onEdit={handleEditPlan}
+          onDelete={handleDeletePlan}
+          onView={handleViewPlan}
+        />
+      )}
+
+      {currentView === 'create' && (
+        <PlanForm
+          plan={null}
+          onSave={handleSavePlan}
+          onCancel={handleCancelPlan}
+        />
+      )}
+
+      {currentView === 'edit' && selectedPlan && (
+        <PlanForm
+          plan={selectedPlan}
+          onSave={handleSavePlan}
+          onCancel={handleCancelPlan}
+        />
+      )}
+
+      {/* T072: Plan Detail Modal */}
+      {currentView === 'detail' && selectedPlan && (
+        <PlanDetail
+          plan={selectedPlan}
+          onClose={handleClosePlanDetail}
+        />
+      )}
 
       {/* T015: Muscle Diagram Component */}
       <MuscleDiagram

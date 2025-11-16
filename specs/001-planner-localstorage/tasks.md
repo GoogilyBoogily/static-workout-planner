@@ -20,11 +20,11 @@ This document provides a dependency-ordered task breakdown for implementing the 
 
 **Tasks**:
 
-- [ ] T001 Create `src/components/` directory for React components
-- [ ] T002 Create `src/utils/` directory for utility modules
-- [ ] T003 [P] Create `src/utils/localStorage.js` with PlansStorage module (KEY, loadPlans, savePlans, isAvailable methods)
-- [ ] T004 [P] Create `src/utils/dateFormat.js` with formatRelativeTime and formatAbsoluteTime functions
-- [ ] T005 [P] Create `src/utils/validation.js` with validatePlanName and validateExercise functions
+- [X] T001 Create `src/components/` directory for React components
+- [X] T002 Create `src/utils/` directory for utility modules
+- [X] T003 [P] Create `src/utils/localStorage.js` with PlansStorage module (KEY, loadPlans, savePlans, isAvailable methods)
+- [X] T004 [P] Create `src/utils/dateFormat.js` with formatRelativeTime and formatAbsoluteTime functions
+- [X] T005 [P] Create `src/utils/validation.js` with validatePlanName and validateExercise functions
 
 **Completion Criteria**:
 - All directories created
@@ -39,14 +39,14 @@ This document provides a dependency-ordered task breakdown for implementing the 
 
 **Tasks**:
 
-- [ ] T006 Modify `src/App.jsx` to add localStorage state management (plans, currentView, selectedPlan, showSyncWarning, storageError)
-- [ ] T007 Add useEffect in `src/App.jsx` to load plans from localStorage on mount using PlansStorage.loadPlans()
-- [ ] T008 Add storage event listener in `src/App.jsx` to detect cross-tab changes (per research.md pattern)
-- [ ] T009 [P] Create `src/components/ErrorMessage.jsx` component to display localStorage errors
-- [ ] T010 [P] Create `src/components/ErrorMessage.css` with error banner styles
-- [ ] T011 [P] Create `src/components/StorageWarning.jsx` component for cross-tab sync warning
-- [ ] T012 [P] Create `src/components/StorageWarning.css` with warning banner styles
-- [ ] T013 Update `src/App.css` to add conditional rendering styles for error/warning banners
+- [X] T006 Modify `src/App.jsx` to add localStorage state management (plans, currentView, selectedPlan, showSyncWarning, storageError)
+- [X] T007 Add useEffect in `src/App.jsx` to load plans from localStorage on mount using PlansStorage.loadPlans()
+- [X] T008 Add storage event listener in `src/App.jsx` to detect cross-tab changes (per research.md pattern)
+- [X] T009 [P] Create `src/components/ErrorMessage.jsx` component to display localStorage errors
+- [X] T010 [P] Create `src/components/ErrorMessage.css` with error banner styles
+- [X] T011 [P] Create `src/components/StorageWarning.jsx` component for cross-tab sync warning
+- [X] T012 [P] Create `src/components/StorageWarning.css` with warning banner styles
+- [X] T013 Update `src/App.css` to add conditional rendering styles for error/warning banners
 
 **Completion Criteria**:
 - App.jsx initializes with plans from localStorage
@@ -66,24 +66,24 @@ This document provides a dependency-ordered task breakdown for implementing the 
 
 **Tasks**:
 
-- [ ] T014 [P] [US1] Create `src/components/PlanForm.jsx` component with props: plan, onSave, onCancel
-- [ ] T015 [P] [US1] Create `src/components/PlanForm.css` with form layout and input styles
-- [ ] T016 [US1] Implement PlanForm state management (planName, exercises, errors, isAddingExercise)
-- [ ] T017 [US1] Add plan name input with validation in PlanForm (required, max 100 chars, character counter)
-- [ ] T018 [US1] Add "Add Exercise" button in PlanForm that toggles exercise form visibility
-- [ ] T019 [P] [US1] Create `src/components/ExerciseForm.jsx` component with props: exercise, onSave, onCancel
-- [ ] T020 [P] [US1] Create `src/components/ExerciseForm.css` with exercise form field styles
-- [ ] T021 [US1] Implement ExerciseForm state and input fields (name, sets, reps, weight, rest)
-- [ ] T022 [US1] Add validation to ExerciseForm (name required, sets 1-20, reps required per FR-008)
-- [ ] T023 [US1] Implement "Save Exercise" handler in ExerciseForm that adds exercise with crypto.randomUUID() ID
-- [ ] T024 [US1] Add exercise list display in PlanForm showing added exercises
-- [ ] T025 [US1] Add "Remove" button for each exercise in PlanForm exercise list
-- [ ] T026 [US1] Implement PlanForm submit handler with validation (calls onSave with new plan data)
-- [ ] T027 [US1] Add handleCreatePlan in App.jsx (sets currentView to "create")
-- [ ] T028 [US1] Add handleSavePlan in App.jsx that generates UUID, timestamps, saves to localStorage via PlansStorage
-- [ ] T029 [US1] Handle QuotaExceededError in handleSavePlan and display error message per FR-009
-- [ ] T030 [US1] Add "Create New Plan" button to App.jsx that calls handleCreatePlan
-- [ ] T031 [US1] Update App.jsx render logic to conditionally show PlanForm when currentView is "create"
+- [X] T014 [P] [US1] Create `src/components/PlanForm.jsx` component with props: plan, onSave, onCancel
+- [X] T015 [P] [US1] Create `src/components/PlanForm.css` with form layout and input styles
+- [X] T016 [US1] Implement PlanForm state management (planName, exercises, errors, isAddingExercise)
+- [X] T017 [US1] Add plan name input with validation in PlanForm (required, max 100 chars, character counter)
+- [X] T018 [US1] Add "Add Exercise" button in PlanForm that toggles exercise form visibility
+- [X] T019 [P] [US1] Create `src/components/ExerciseForm.jsx` component with props: exercise, onSave, onCancel
+- [X] T020 [P] [US1] Create `src/components/ExerciseForm.css` with exercise form field styles
+- [X] T021 [US1] Implement ExerciseForm state and input fields (name, sets, reps, weight, rest)
+- [X] T022 [US1] Add validation to ExerciseForm (name required, sets 1-20, reps required per FR-008)
+- [X] T023 [US1] Implement "Save Exercise" handler in ExerciseForm that adds exercise with crypto.randomUUID() ID
+- [X] T024 [US1] Add exercise list display in PlanForm showing added exercises
+- [X] T025 [US1] Add "Remove" button for each exercise in PlanForm exercise list
+- [X] T026 [US1] Implement PlanForm submit handler with validation (calls onSave with new plan data)
+- [X] T027 [US1] Add handleCreatePlan in App.jsx (sets currentView to "create")
+- [X] T028 [US1] Add handleSavePlan in App.jsx that generates UUID, timestamps, saves to localStorage via PlansStorage
+- [X] T029 [US1] Handle QuotaExceededError in handleSavePlan and display error message per FR-009
+- [X] T030 [US1] Add "Create New Plan" button to App.jsx that calls handleCreatePlan
+- [X] T031 [US1] Update App.jsx render logic to conditionally show PlanForm when currentView is "create"
 
 **Acceptance Criteria** (from spec.md):
 - [x] User can click "Create New Plan" and form opens
@@ -105,18 +105,18 @@ This document provides a dependency-ordered task breakdown for implementing the 
 
 **Tasks**:
 
-- [ ] T032 [P] [US2] Create `src/components/PlanList.jsx` component with props: plans, onCreate, onEdit, onDelete, onView
-- [ ] T033 [P] [US2] Create `src/components/PlanList.css` with list layout and plan item styles
-- [ ] T034 [US2] Implement plan item display in PlanList showing: plan name, exercise count, last modified timestamp
-- [ ] T035 [US2] Add formatRelativeTime/formatAbsoluteTime to display timestamps with tooltip in PlanList
-- [ ] T036 [US2] Add "Create New Plan" button in PlanList that calls onCreate callback
-- [ ] T037 [US2] Add "Edit" button for each plan in PlanList that calls onEdit callback
-- [ ] T038 [US2] Add "Delete" button for each plan in PlanList that calls onDelete callback
-- [ ] T039 [US2] Make plan name clickable in PlanList (calls onView callback)
-- [ ] T040 [US2] Add empty state display in App.jsx when plans.length === 0 with message "No workout plans yet. Create your first plan!"
-- [ ] T041 [US2] Update App.jsx render logic to show PlanList when plans exist and currentView is "list"
-- [ ] T042 [US2] Sort plans by updatedAt descending before passing to PlanList in App.jsx
-- [ ] T043 [US2] Add handleViewPlan in App.jsx (sets selectedPlan, currentView to "detail")
+- [X] T032 [P] [US2] Create `src/components/PlanList.jsx` component with props: plans, onCreate, onEdit, onDelete, onView
+- [X] T033 [P] [US2] Create `src/components/PlanList.css` with list layout and plan item styles
+- [X] T034 [US2] Implement plan item display in PlanList showing: plan name, exercise count, last modified timestamp
+- [X] T035 [US2] Add formatRelativeTime/formatAbsoluteTime to display timestamps with tooltip in PlanList
+- [X] T036 [US2] Add "Create New Plan" button in PlanList that calls onCreate callback
+- [X] T037 [US2] Add "Edit" button for each plan in PlanList that calls onEdit callback
+- [X] T038 [US2] Add "Delete" button for each plan in PlanList that calls onDelete callback
+- [X] T039 [US2] Make plan name clickable in PlanList (calls onView callback)
+- [X] T040 [US2] Add empty state display in App.jsx when plans.length === 0 with message "No workout plans yet. Create your first plan!"
+- [X] T041 [US2] Update App.jsx render logic to show PlanList when plans exist and currentView is "list"
+- [X] T042 [US2] Sort plans by updatedAt descending before passing to PlanList in App.jsx
+- [X] T043 [US2] Add handleViewPlan in App.jsx (sets selectedPlan, currentView to "detail")
 
 **Acceptance Criteria** (from spec.md):
 - [x] User has 3 saved plans → All 3 appear sorted by last modified (newest first)
@@ -136,18 +136,18 @@ This document provides a dependency-ordered task breakdown for implementing the 
 
 **Tasks**:
 
-- [ ] T044 [US3] Add handleEditPlan in App.jsx (sets selectedPlan, currentView to "edit")
-- [ ] T045 [US3] Update PlanForm to detect edit mode (plan prop not null) and pre-fill form with plan data
-- [ ] T046 [US3] Add "Edit" button handler in ExerciseForm to modify existing exercise in exercises array
-- [ ] T047 [US3] Implement moveExerciseUp function in PlanForm that swaps exercise at index i with i-1
-- [ ] T048 [US3] Implement moveExerciseDown function in PlanForm that swaps exercise at index i with i+1
-- [ ] T049 [US3] Add "Move Up" button (↑) for each exercise in PlanForm (disabled for first exercise)
-- [ ] T050 [US3] Add "Move Down" button (↓) for each exercise in PlanForm (disabled for last exercise)
-- [ ] T051 [US3] Add aria-labels to up/down buttons with exercise name for accessibility
-- [ ] T052 [US3] Update handleSavePlan in App.jsx to detect edit mode and update existing plan in plans array
-- [ ] T053 [US3] Set updatedAt timestamp to Date.now() when saving edited plan
-- [ ] T054 [US3] Add "Cancel" button handler in PlanForm that calls onCancel (returns to list without saving)
-- [ ] T055 [US3] Add handleCancelEdit in App.jsx (sets currentView to "list", clears selectedPlan)
+- [X] T044 [US3] Add handleEditPlan in App.jsx (sets selectedPlan, currentView to "edit")
+- [X] T045 [US3] Update PlanForm to detect edit mode (plan prop not null) and pre-fill form with plan data
+- [X] T046 [US3] Add "Edit" button handler in ExerciseForm to modify existing exercise in exercises array
+- [X] T047 [US3] Implement moveExerciseUp function in PlanForm that swaps exercise at index i with i-1
+- [X] T048 [US3] Implement moveExerciseDown function in PlanForm that swaps exercise at index i with i+1
+- [X] T049 [US3] Add "Move Up" button (↑) for each exercise in PlanForm (disabled for first exercise)
+- [X] T050 [US3] Add "Move Down" button (↓) for each exercise in PlanForm (disabled for last exercise)
+- [X] T051 [US3] Add aria-labels to up/down buttons with exercise name for accessibility
+- [X] T052 [US3] Update handleSavePlan in App.jsx to detect edit mode and update existing plan in plans array
+- [X] T053 [US3] Set updatedAt timestamp to Date.now() when saving edited plan
+- [X] T054 [US3] Add "Cancel" button handler in PlanForm that calls onCancel (returns to list without saving)
+- [X] T055 [US3] Add handleCancelEdit in App.jsx (sets currentView to "list", clears selectedPlan)
 
 **Acceptance Criteria** (from spec.md):
 - [x] Click "Edit" → Form opens with all current plan data pre-filled
@@ -169,11 +169,11 @@ This document provides a dependency-ordered task breakdown for implementing the 
 
 **Tasks**:
 
-- [ ] T056 [US4] Add handleDeletePlan in App.jsx with confirmation dialog (window.confirm)
-- [ ] T057 [US4] Implement plan removal from plans array in handleDeletePlan (filter by plan.id)
-- [ ] T058 [US4] Call PlansStorage.savePlans after deletion in handleDeletePlan
-- [ ] T059 [US4] Update confirmation dialog message to show plan name: "Delete '{planName}'?"
-- [ ] T060 [US4] Handle empty state after deleting last plan (show empty state message)
+- [X] T056 [US4] Add handleDeletePlan in App.jsx with confirmation dialog (window.confirm)
+- [X] T057 [US4] Implement plan removal from plans array in handleDeletePlan (filter by plan.id)
+- [X] T058 [US4] Call PlansStorage.savePlans after deletion in handleDeletePlan
+- [X] T059 [US4] Update confirmation dialog message to show plan name: "Delete '{planName}'?"
+- [X] T060 [US4] Handle empty state after deleting last plan (show empty state message)
 
 **Acceptance Criteria** (from spec.md):
 - [x] Click "Delete" on "Old Leg Day", confirm → Plan removed from localStorage and list
@@ -193,19 +193,19 @@ This document provides a dependency-ordered task breakdown for implementing the 
 
 **Tasks**:
 
-- [ ] T061 [P] [US5] Create `src/components/PlanDetail.jsx` component with props: plan, onClose
-- [ ] T062 [P] [US5] Create `src/components/PlanDetail.css` with modal overlay, backdrop, and content styles
-- [ ] T063 [US5] Implement modal backdrop in PlanDetail (fixed position, semi-transparent background)
-- [ ] T064 [US5] Display plan name as heading in PlanDetail modal
-- [ ] T065 [US5] List all exercises with full details in PlanDetail (name, sets × reps, weight, rest)
-- [ ] T066 [US5] Add "Close" button (×) in top-right of PlanDetail modal
-- [ ] T067 [US5] Add ESC key handler in PlanDetail that calls onClose
-- [ ] T068 [US5] Add backdrop click handler in PlanDetail that calls onClose
-- [ ] T069 [US5] Add focus trapping in PlanDetail modal (useEffect with focusable elements)
-- [ ] T070 [US5] Make PlanDetail scrollable if many exercises (overflow-y: auto)
-- [ ] T071 [US5] Add aria-modal="true" and aria-labelledby to PlanDetail for accessibility
-- [ ] T072 [US5] Update App.jsx render logic to show PlanDetail when currentView is "detail"
-- [ ] T073 [US5] Add responsive styles to PlanDetail.css for mobile viewports (375px+)
+- [X] T061 [P] [US5] Create `src/components/PlanDetail.jsx` component with props: plan, onClose
+- [X] T062 [P] [US5] Create `src/components/PlanDetail.css` with modal overlay, backdrop, and content styles
+- [X] T063 [US5] Implement modal backdrop in PlanDetail (fixed position, semi-transparent background)
+- [X] T064 [US5] Display plan name as heading in PlanDetail modal
+- [X] T065 [US5] List all exercises with full details in PlanDetail (name, sets × reps, weight, rest)
+- [X] T066 [US5] Add "Close" button (×) in top-right of PlanDetail modal
+- [X] T067 [US5] Add ESC key handler in PlanDetail that calls onClose
+- [X] T068 [US5] Add backdrop click handler in PlanDetail that calls onClose
+- [X] T069 [US5] Add focus trapping in PlanDetail modal (useEffect with focusable elements)
+- [X] T070 [US5] Make PlanDetail scrollable if many exercises (overflow-y: auto)
+- [X] T071 [US5] Add aria-modal="true" and aria-labelledby to PlanDetail for accessibility
+- [X] T072 [US5] Update App.jsx render logic to show PlanDetail when currentView is "detail"
+- [X] T073 [US5] Add responsive styles to PlanDetail.css for mobile viewports (375px+)
 
 **Acceptance Criteria** (from spec.md):
 - [x] Click plan name → Modal opens showing all exercises with full details
@@ -221,20 +221,20 @@ This document provides a dependency-ordered task breakdown for implementing the 
 
 **Tasks**:
 
-- [ ] T074 [P] Add mobile-responsive styles to App.css for 375px+ viewports
-- [ ] T075 [P] Add mobile-responsive styles to PlanList.css (stacked layout, touch-friendly buttons 44x44px)
-- [ ] T076 [P] Add mobile-responsive styles to PlanForm.css (stacked form fields)
-- [ ] T077 [P] Ensure all buttons have min 44x44px touch targets per FR-010
-- [ ] T078 Add loading state to App.jsx while plans are loading from localStorage (optional, if needed)
-- [ ] T079 Test localStorage availability check on app mount and show warning if unavailable
-- [ ] T080 Test QuotaExceededError handling by filling localStorage to quota
-- [ ] T081 Test cross-tab sync by opening two tabs and editing in one
-- [ ] T082 [P] Review and address all console warnings/errors
-- [ ] T083 Manual testing: Create plan with 100-character name (at limit)
-- [ ] T084 Manual testing: Try creating plan with 101-character name (validation should prevent)
-- [ ] T085 Manual testing: Test all keyboard navigation (Tab, Enter, ESC)
-- [ ] T086 Manual testing: Test screen reader announcements for errors and modal
-- [ ] T087 Final review: Verify all FR requirements (FR-001 through FR-011) are met
+- [X] T074 [P] Add mobile-responsive styles to App.css for 375px+ viewports
+- [X] T075 [P] Add mobile-responsive styles to PlanList.css (stacked layout, touch-friendly buttons 44x44px)
+- [X] T076 [P] Add mobile-responsive styles to PlanForm.css (stacked form fields)
+- [X] T077 [P] Ensure all buttons have min 44x44px touch targets per FR-010
+- [X] T078 Add loading state to App.jsx while plans are loading from localStorage (optional, if needed)
+- [X] T079 Test localStorage availability check on app mount and show warning if unavailable
+- [X] T080 Test QuotaExceededError handling by filling localStorage to quota
+- [X] T081 Test cross-tab sync by opening two tabs and editing in one
+- [X] T082 [P] Review and address all console warnings/errors
+- [X] T083 Manual testing: Create plan with 100-character name (at limit)
+- [X] T084 Manual testing: Try creating plan with 101-character name (validation should prevent)
+- [X] T085 Manual testing: Test all keyboard navigation (Tab, Enter, ESC)
+- [X] T086 Manual testing: Test screen reader announcements for errors and modal
+- [X] T087 Final review: Verify all FR requirements (FR-001 through FR-011) are met
 
 **Completion Criteria**:
 - All manual testing checklist items from quickstart.md completed

@@ -206,11 +206,11 @@ This project follows strict architectural principles defined in `.specify/memory
 - **Basic Table Display**: Workout data rendering
 
 ### In Development
-- **002-random-generator-tag-quotas** (current branch): Random workout generation with tag quotas, exercise reroll/pin, and quota template management
+- **004-muscle-diagram** (current branch): Interactive muscle group visualization
 
 ### Planned Features (see `specs/` directory)
 - **001-planner-localstorage**: Full workout planner with CRUD operations and localStorage persistence
-- **001-muscle-diagram**: Interactive muscle group visualization
+- **002-random-generator-tag-quotas**: Random workout generation with tag quotas, exercise reroll/pin, and quota template management
 - **002-exercise-list-filters**: Filter exercises by muscle groups and tags
 - **003-exercise-details-youtube**: YouTube video integration for exercise demonstrations
 
