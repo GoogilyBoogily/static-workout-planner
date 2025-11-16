@@ -147,26 +147,22 @@
   }
 }
 
-/* Override @mjcdev/react-body-highlighter default styles with warm anatomical colors */
+/* Override @mjcdev/react-body-highlighter default styles */
 .muscle-diagram svg {
   max-width: 100%;
   height: auto;
 }
 
-/* Default muscle color - warm brown/beige for all body parts */
+/* Ensure muscle paths are clickable with smooth transitions */
 .muscle-diagram svg path {
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: fill 0.2s ease;
 }
 
-/* Hover state - soft peachy-beige (lighter, softer) */
-.muscle-diagram svg path:hover {
-  opacity: 0.85;
-  filter: brightness(1.15);
-}
-
-/* Note: The new library handles highlighting internally via the data prop
-   Muscles in the data array will be highlighted automatically */
+/* Note: Hover and selection colors are managed by the library via the data prop
+   - Hover (intensity 1): Soft peachy-beige (#e8c9a3)
+   - Selected (intensity 2): Warm red (#c44545)
+   When you hover over a muscle on either front or back view, it highlights on both simultaneously */
 
 /* T021: Tooltip styles */
 .muscle-tooltip {

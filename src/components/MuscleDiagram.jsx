@@ -23,10 +23,29 @@ function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle, on
 
   // Prepare data for Body component
   // Format: array of {slug: string, intensity: number} objects
+  // Intensity maps to colors array: 1 = hover color, 2 = selected color
   const bodyData = librarySelectedMuscles.map(muscle => ({
     slug: muscle,
-    intensity: 1 // Full intensity for selected muscles
+    intensity: 2 // Full intensity for selected muscles (uses second color)
   }))
+
+  // Add hovered muscle to data with lower intensity (if not already selected)
+  // This creates synchronized hover effect across both front and back views
+  if (hoveredMuscle) {
+    const libraryHoveredMuscle = convertToLibraryNames([hoveredMuscle])[0]
+    // Only add if not already in selected muscles
+    if (!librarySelectedMuscles.includes(libraryHoveredMuscle)) {
+      bodyData.push({
+        slug: libraryHoveredMuscle,
+        intensity: 1 // Lower intensity for hover effect (uses first color)
+      })
+    }
+  }
+
+  // Custom colors array: [hover color, selected color]
+  // Hover: Soft peachy-beige (#e8c9a3)
+  // Selected: Warm red (#c44545)
+  const customColors = ['#e8c9a3', '#c44545']
 
   // Handle muscle click from library
   const handleBodyPartClick = (bodyPart, side) => {
@@ -34,6 +53,30 @@ function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle, on
     const ourMuscleName = getOurMuscleName(bodyPart.slug)
     if (onMuscleToggle) {
       onMuscleToggle(ourMuscleName)
+    }
+  }
+
+  // Handle hover events for synchronized highlighting across both views
+  const handleMouseOver = (event) => {
+    // Check if hovering over an SVG path element (muscle part)
+    const target = event.target
+    if (target.tagName === 'path' && target.id) {
+      // The library sets id attribute to the muscle slug
+      const libraryMuscleName = target.id
+      const ourMuscleName = getOurMuscleName(libraryMuscleName)
+
+      if (ourMuscleName && onMuscleHover) {
+        onMuscleHover(ourMuscleName)
+      }
+    }
+  }
+
+  const handleMouseOut = (event) => {
+    // Clear hover when mouse leaves muscle parts
+    if (event.target.tagName === 'path') {
+      if (onMuscleHover) {
+        onMuscleHover(null)
+      }
     }
   }
 
@@ -59,23 +102,33 @@ function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle, on
 
       {/* Dual view: Front and Back side-by-side */}
       <div className="muscle-diagram-dual-view">
-        <div className="muscle-view">
+        <div
+          className="muscle-view"
+          onMouseOver={handleMouseOver}
+          onMouseOut={handleMouseOut}
+        >
           <h3>Front View</h3>
           <Body
             gender={bodyType}
             side="front"
             data={bodyData}
+            colors={customColors}
             onBodyPartClick={handleBodyPartClick}
             scale={1.5}
           />
         </div>
 
-        <div className="muscle-view">
+        <div
+          className="muscle-view"
+          onMouseOver={handleMouseOver}
+          onMouseOut={handleMouseOut}
+        >
           <h3>Back View</h3>
           <Body
             gender={bodyType}
             side="back"
             data={bodyData}
+            colors={customColors}
             onBodyPartClick={handleBodyPartClick}
             scale={1.5}
           />
