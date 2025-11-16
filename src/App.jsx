@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Papa from 'papaparse'
 import './App.css'
 import ExerciseDetailModal from './components/ExerciseDetailModal'
 import ExerciseList from './components/ExerciseList'
 import MuscleDiagram from './components/MuscleDiagram'
+import SearchInput from './components/SearchInput'
+import TagFilter from './components/TagFilter'
+import EquipmentFilter from './components/EquipmentFilter'
 import ErrorMessage from './components/ErrorMessage'
 import StorageWarning from './components/StorageWarning'
 import PlanForm from './components/PlanForm'
@@ -24,7 +27,11 @@ function App() {
 
   // T023: Muscle selection state
   const [selectedMuscles, setSelectedMuscles] = useState([])
-  const [hoveredMuscle, setHoveredMuscle] = useState(null)
+  const [hoveredMuscle, setHoveredMuscle] = useState([])
+
+  // Search and filter state (002-exercise-list-filters)
+  const [searchText, setSearchText] = useState('')
+  const [selectedEquipment, setSelectedEquipment] = useState([])
 
   // Workout Plans state (T006)
   const [plans, setPlans] = useState([])
@@ -42,6 +49,11 @@ function App() {
     if (!PlansStorage.isAvailable()) {
       setStorageError('localStorage is not available. Are you in private browsing mode?')
     }
+  }, [])
+
+  // Auto-load standardized workouts on mount
+  useEffect(() => {
+    loadSampleData()
   }, [])
 
   // T008: Storage event listener for cross-tab sync
@@ -89,11 +101,8 @@ function App() {
             .map(row => ({
               name: row.Exercise,
               tags: row['Muscle Group'].split(',').map(tag => tag.trim()).filter(tag => tag),
-              sets: row.Sets,
-              reps: row.Reps,
-              weight: row['Weight (lbs)'],
-              rest: row['Rest (sec)'],
-              day: row.Day,
+              description: row.Description || '',
+              equipment: row.Equipment ? row.Equipment.split(',').map(e => e.trim()).filter(e => e && e !== 'None') : [],
               youtubeUrl: row['YouTube URL'] || null
             }))
 
@@ -111,7 +120,7 @@ function App() {
   }
 
   const loadSampleData = () => {
-    fetch('/sample-workouts.csv')
+    fetch('/default-workouts.csv')
       .then(response => response.text())
       .then(csvText => {
         Papa.parse(csvText, {
@@ -124,11 +133,8 @@ function App() {
                 .map(row => ({
                   name: row.Exercise,
                   tags: row['Muscle Group'].split(',').map(tag => tag.trim()).filter(tag => tag),
-                  sets: row.Sets,
-                  reps: row.Reps,
-                  weight: row['Weight (lbs)'],
-                  rest: row['Rest (sec)'],
-                  day: row.Day,
+                  description: row.Description || '',
+                  equipment: row.Equipment ? row.Equipment.split(',').map(e => e.trim()).filter(e => e && e !== 'None') : [],
                   youtubeUrl: row['YouTube URL'] || null
                 }))
 
@@ -145,7 +151,7 @@ function App() {
         })
       })
       .catch(err => {
-        setError(`Error loading sample data: ${err.message}`)
+        setError(`Error loading default data: ${err.message}`)
       })
   }
 
@@ -177,13 +183,29 @@ function App() {
     }
   }
 
-  // T024: Muscle toggle handler
+  // T024: Muscle toggle handler (used by both MuscleDiagram and TagFilter)
   const handleMuscleToggle = (muscleName) => {
     setSelectedMuscles(prev =>
       prev.includes(muscleName)
         ? prev.filter(m => m !== muscleName) // deselect
         : [...prev, muscleName] // select
     )
+  }
+
+  // Equipment toggle handler
+  const handleEquipmentToggle = (equipment) => {
+    setSelectedEquipment(prev =>
+      prev.includes(equipment)
+        ? prev.filter(e => e !== equipment) // deselect
+        : [...prev, equipment] // select
+    )
+  }
+
+  // Clear all filters (search + muscle selection + equipment)
+  const handleClearAllFilters = () => {
+    setSearchText('')
+    setSelectedMuscles([])
+    setSelectedEquipment([])
   }
 
   // T027: Handle create plan
@@ -268,8 +290,57 @@ function App() {
     setSelectedPlan(null)
   }
 
-  // T029-T030: Apply muscle filter to exercises
-  const filteredExercises = filterExercisesByMuscles(exercises, selectedMuscles)
+  // Extract unique tags/muscles from all exercises for TagFilter
+  const availableTags = useMemo(() => {
+    const tagSet = new Set()
+    exercises.forEach(exercise => {
+      if (exercise.tags && exercise.tags.length > 0) {
+        exercise.tags.forEach(tag => tagSet.add(tag))
+      }
+    })
+    return Array.from(tagSet).sort()
+  }, [exercises])
+
+  // Extract unique equipment from all exercises for EquipmentFilter
+  const availableEquipment = useMemo(() => {
+    const equipmentSet = new Set()
+    exercises.forEach(exercise => {
+      if (exercise.equipment && exercise.equipment.length > 0) {
+        exercise.equipment.forEach(item => equipmentSet.add(item))
+      }
+    })
+    return Array.from(equipmentSet).sort()
+  }, [exercises])
+
+  // Combined filtering: search + muscle selection + equipment (AND relationship)
+  const filteredExercises = useMemo(() => {
+    let filtered = exercises
+
+    // Apply search filter (if searchText is not empty)
+    if (searchText.trim()) {
+      const searchLower = searchText.toLowerCase()
+      filtered = filtered.filter(exercise =>
+        exercise.name.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Apply muscle filter (if muscles are selected)
+    if (selectedMuscles.length > 0) {
+      filtered = filterExercisesByMuscles(filtered, selectedMuscles)
+    }
+
+    // Apply equipment filter (if equipment is selected)
+    if (selectedEquipment.length > 0) {
+      filtered = filtered.filter(exercise => {
+        // Exercise must have at least one of the selected equipment
+        return exercise.equipment && exercise.equipment.some(item =>
+          selectedEquipment.includes(item)
+        )
+      })
+    }
+
+    return filtered
+  }, [exercises, searchText, selectedMuscles, selectedEquipment])
 
   // T042: Sort plans by updatedAt descending (newest first)
   const sortedPlans = [...plans].sort((a, b) => b.updatedAt - a.updatedAt)
@@ -286,11 +357,11 @@ function App() {
             onChange={handleFileUpload}
             id="csv-upload"
           />
-          <label htmlFor="csv-upload"></label>
+          <label htmlFor="csv-upload">Upload Custom Workouts</label>
         </div>
 
-        <button onClick={loadSampleData}>
-          Load Sample Data
+        <button onClick={loadSampleData} className="reload-button">
+          Reload Default Workouts
         </button>
       </div>
 
@@ -307,77 +378,129 @@ function App() {
         onDismiss={() => setShowSyncWarning(false)}
       />
 
-      {/* T032-T043: Plan List */}
-      {currentView === 'list' && (
-        <PlanList
-          plans={sortedPlans}
-          onCreate={handleCreatePlan}
-          onEdit={handleEditPlan}
-          onDelete={handleDeletePlan}
-          onView={handleViewPlan}
-        />
-      )}
-
-      {currentView === 'create' && (
-        <PlanForm
-          plan={null}
-          onSave={handleSavePlan}
-          onCancel={handleCancelPlan}
-        />
-      )}
-
-      {currentView === 'edit' && selectedPlan && (
-        <PlanForm
-          plan={selectedPlan}
-          onSave={handleSavePlan}
-          onCancel={handleCancelPlan}
-        />
-      )}
-
-      {/* T072: Plan Detail Modal */}
-      {currentView === 'detail' && selectedPlan && (
-        <PlanDetail
-          plan={selectedPlan}
-          onClose={handleClosePlanDetail}
-        />
-      )}
-
-      {/* T015: Muscle Diagram Component */}
-      <MuscleDiagram
-        selectedMuscles={selectedMuscles}
-        onMuscleToggle={handleMuscleToggle}
-        hoveredMuscle={hoveredMuscle}
-        onMuscleHover={setHoveredMuscle}
-      />
-
-      {/* T032: Filter indicator */}
-      {selectedMuscles.length > 0 && (
-        <div className="filter-indicator">
-          <strong>Filtered by:</strong> {selectedMuscles.join(', ')}
-          <button
-            onClick={() => setSelectedMuscles([])}
-            className="clear-filters"
-            style={{ marginLeft: '10px', padding: '4px 8px' }}
-          >
-            Clear Filters
-          </button>
+      {/* Main Content: Two-column layout */}
+      <div className="main-content">
+        {/* Left Column: Muscle Diagram */}
+        <div className="muscle-column">
+          <MuscleDiagram
+            selectedMuscles={selectedMuscles}
+            onMuscleToggle={handleMuscleToggle}
+            hoveredMuscle={hoveredMuscle}
+            onMuscleHover={setHoveredMuscle}
+          />
         </div>
-      )}
 
-      {/* Exercise List - Clickable (T031: use filteredExercises) */}
-      {filteredExercises.length > 0 && (
-        <ExerciseList
-          exercises={filteredExercises}
-          onExerciseClick={handleExerciseClick}
-        />
-      )}
+        {/* Right Column: Search, Filters, and Exercise List */}
+        <div className="exercise-column">
+          {/* Search and Filter Section (002-exercise-list-filters) */}
+          {exercises.length > 0 && (
+            <div className="filter-section">
+              {/* Search Input */}
+              <SearchInput
+                value={searchText}
+                onChange={setSearchText}
+                placeholder="Search exercises by name..."
+              />
 
-      {/* No results message */}
-      {exercises.length > 0 && filteredExercises.length === 0 && (
-        <div className="info">
-          No exercises found for selected muscle groups. Try selecting different muscles.
+              {/* Tag Filter Pills (synced with MuscleDiagram) */}
+              <TagFilter
+                availableTags={availableTags}
+                selectedTags={selectedMuscles}
+                onTagToggle={handleMuscleToggle}
+              />
+
+              {/* Equipment Filter Pills */}
+              <EquipmentFilter
+                availableEquipment={availableEquipment}
+                selectedEquipment={selectedEquipment}
+                onEquipmentToggle={handleEquipmentToggle}
+              />
+
+              {/* Filter indicator with Clear All button */}
+              {(searchText.trim() || selectedMuscles.length > 0 || selectedEquipment.length > 0) && (
+                <div className="filter-indicator">
+                  {searchText.trim() && (
+                    <span className="filter-info">
+                      <strong>Search:</strong> "{searchText}"
+                    </span>
+                  )}
+                  {selectedMuscles.length > 0 && (
+                    <span className="filter-info">
+                      <strong>Muscles:</strong> {selectedMuscles.join(', ')}
+                    </span>
+                  )}
+                  {selectedEquipment.length > 0 && (
+                    <span className="filter-info">
+                      <strong>Equipment:</strong> {selectedEquipment.join(', ')}
+                    </span>
+                  )}
+                  <button
+                    onClick={handleClearAllFilters}
+                    className="clear-all-filters"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Exercise List - Clickable (T031: use filteredExercises) */}
+          {filteredExercises.length > 0 && (
+            <ExerciseList
+              exercises={filteredExercises}
+              onExerciseClick={handleExerciseClick}
+              onExerciseHover={setHoveredMuscle}
+              hoveredMuscle={hoveredMuscle}
+            />
+          )}
+
+          {/* No results message */}
+          {exercises.length > 0 && filteredExercises.length === 0 && (
+            <div className="info">
+              No exercises match your current filters. Try adjusting your search or muscle selection.
+            </div>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Plans Section: Full width at bottom */}
+      <div className="plans-section">
+        {/* T032-T043: Plan List */}
+        {currentView === 'list' && (
+          <PlanList
+            plans={sortedPlans}
+            onCreate={handleCreatePlan}
+            onEdit={handleEditPlan}
+            onDelete={handleDeletePlan}
+            onView={handleViewPlan}
+          />
+        )}
+
+        {currentView === 'create' && (
+          <PlanForm
+            plan={null}
+            onSave={handleSavePlan}
+            onCancel={handleCancelPlan}
+          />
+        )}
+
+        {currentView === 'edit' && selectedPlan && (
+          <PlanForm
+            plan={selectedPlan}
+            onSave={handleSavePlan}
+            onCancel={handleCancelPlan}
+          />
+        )}
+
+        {/* T072: Plan Detail Modal */}
+        {currentView === 'detail' && selectedPlan && (
+          <PlanDetail
+            plan={selectedPlan}
+            onClose={handleClosePlanDetail}
+          />
+        )}
+      </div>
 
       {/* Exercise Detail Modal (T010, T023, T024) */}
       <ExerciseDetailModal
@@ -413,7 +536,7 @@ function App() {
         </div>
       ) : exercises.length === 0 ? (
         <div className="info">
-          Upload a CSV file or load sample data to get started
+          Loading standardized workouts...
         </div>
       ) : null}
     </div>

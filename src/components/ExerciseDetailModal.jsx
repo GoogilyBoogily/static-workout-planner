@@ -126,6 +126,28 @@ function ExerciseDetailModal({ exercise, exerciseIndex, totalExercises, onClose,
             </div>
           )}
 
+          {/* Equipment */}
+          {exercise.equipment && exercise.equipment.length > 0 && (
+            <div className="detail-section">
+              <h3>Equipment</h3>
+              <div className="tag-list">
+                {exercise.equipment.map((item, index) => (
+                  <span key={index} className="equipment-tag">
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Description */}
+          {exercise.description && (
+            <div className="detail-section">
+              <h3>Description</h3>
+              <p className="description-text">{exercise.description}</p>
+            </div>
+          )}
+
           {/* Exercise Parameters */}
           <div className="detail-section">
             <h3>Exercise Parameters</h3>

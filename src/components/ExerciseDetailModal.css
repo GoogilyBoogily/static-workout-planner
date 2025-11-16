@@ -107,6 +107,23 @@
   font-weight: 500;
 }
 
+.equipment-tag {
+  background: #3a3a2a;
+  border: 1px solid #666;
+  color: #ffd700;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.description-text {
+  color: #ccc;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 15px;
+}
+
 /* Exercise Parameters */
 .parameters {
   display: grid;

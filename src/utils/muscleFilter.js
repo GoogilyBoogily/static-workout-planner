@@ -39,24 +39,20 @@ export function filterExercisesByMuscles(exercises, selectedMuscles) {
 
   return exercises.filter(exercise => {
     // Skip exercises without muscle data (FR-013: handle missing data)
-    if (!exercise['Muscle Group'] && !exercise.Muscles) {
-      console.warn(`Exercise "${exercise.Exercise}" has no muscle group data`)
+    if (!exercise.tags || !Array.isArray(exercise.tags) || exercise.tags.length === 0) {
+      console.warn(`Exercise "${exercise.name || exercise.Exercise}" has no muscle group data`)
       return false
     }
 
-    // Support both "Muscle Group" and "Muscles" column names
-    const muscleData = exercise['Muscle Group'] || exercise.Muscles || ''
-
-    // Parse comma-separated muscle groups
-    const targetedMuscles = muscleData
-      .split(',')
+    // Normalize exercise tags for case-insensitive comparison
+    const targetedMuscles = exercise.tags
       .map(m => m.trim().toLowerCase())
       .filter(m => m.length > 0)
 
     // T035: Warn for unknown muscle names
     targetedMuscles.forEach(muscle => {
       if (!KNOWN_MUSCLES.includes(muscle)) {
-        console.warn(`Unknown muscle "${muscle}" in exercise "${exercise.Exercise || exercise.name}"`)
+        console.warn(`Unknown muscle "${muscle}" in exercise "${exercise.name || exercise.Exercise}"`)
       }
     })
 

@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A React-based workout planner web application that started as a CSV viewer and is evolving into a comprehensive workout planning tool with localStorage persistence, random workout generation, and exercise library features. Built with Vite and uses Bun as the package manager.
 
-**Current State**: Basic CSV viewer with file upload and sample data loading
-**Planned Features**: Interactive workout planner, random workout generator with tag quotas, exercise library with muscle group filters and YouTube integration
+**Current State**: Interactive workout planner with localStorage persistence, muscle diagram visualization, exercise filtering, and YouTube integration
+**Active Development**: Iterating on user experience and adding advanced features per specs in `specs/` directory
 
 ## Development Commands
 
@@ -61,53 +61,60 @@ This project uses a custom workflow system for feature development via Claude Co
 
 ### Application Structure
 
-**Current Implementation**:
-- **Single-page React application** with minimal component structure
-- **Main component**: `src/App.jsx` - handles CSV loading, parsing, and display
-- **Styling**: Component-scoped CSS (`App.css`) and global styles (`index.css`) with dark mode support
+**Component Architecture**:
+- **Root**: `src/App.jsx` - Main orchestrator managing global state, CSV loading, and view routing
+- **Exercise Library Components**:
+  - `ExerciseList.jsx` - Displays filterable exercise list with muscle highlighting
+  - `ExerciseDetailModal.jsx` - Modal with YouTube embed and navigation
+  - `MuscleDiagram.jsx` - Interactive dual-view (front/back) muscle selector using `@mjcdev/react-body-highlighter`
+  - `SearchInput.jsx` - Exercise name search with debouncing
+  - `TagFilter.jsx` - Muscle group filter pills synchronized with diagram
+- **Workout Plan Components**:
+  - `PlanList.jsx` - Displays all saved plans sorted by last updated
+  - `PlanForm.jsx` - Create/edit plan with embedded exercise form
+  - `PlanDetail.jsx` - View-only plan details modal
+  - `ExerciseForm.jsx` - Add/edit individual exercises within a plan
+- **Utility Components**:
+  - `ErrorMessage.jsx` - Dismissible error banner
+  - `StorageWarning.jsx` - Cross-tab sync notification
 
-**Planned Evolution** (see `specs/` directory for detailed specifications):
-1. **Workout Planner with localStorage** (`001-planner-localstorage`)
-   - Full CRUD operations for workout plans and exercises
-   - UUID-based entity identification using `crypto.randomUUID()`
-   - Client-side persistence with localStorage (JSON format)
-   - Reorderable exercises within plans
+**State Management Patterns**:
+- **Local component state**: Simple UI state (`useState`)
+- **Lifted state in App.jsx**: Shared state between major sections (exercises, plans, filters)
+- **localStorage sync**: `window.storage` event listener for cross-tab updates
+- **Derived state**: Uses `useMemo` for expensive filtering operations
 
-2. **Random Workout Generator** (`002-random-generator-tag-quotas`)
-   - Tag-based quota system (e.g., "3 chest, 2 legs, 2 back")
-   - Exercise reroll (replace individual exercises)
-   - Pin functionality (lock exercises during regeneration)
-   - Quota template management (save/reuse configurations)
-
-3. **Exercise Library Features** (multiple specs)
-   - Interactive muscle diagram visualization
-   - Muscle group and tag-based filtering
-   - YouTube video integration for exercise demonstrations
-   - Expandable exercise details
+**Key Architectural Decisions**:
+1. **No routing library** - Single-page app with view state managed in App.jsx (`currentView`)
+2. **No global state library** - React hooks sufficient for current complexity
+3. **Component-scoped CSS** - Each component has co-located `.css` file
+4. **Muscle filtering logic** - Centralized in `src/utils/muscleFilter.js` with OR-based matching
 
 ### Data Flow
-1. User uploads CSV file or loads sample data from `/public/sample-workouts.csv`
+1. User uploads CSV file or loads default exercise library from `/public/default-workouts.csv`
 2. PapaParse library parses CSV into array format
 3. First row extracted as headers, remaining rows as data
 4. State managed via React hooks (`useState`) for data, headers, and errors
-5. Data rendered in HTML table format
+5. Data rendered in exercise list format
 
 ### CSV Processing
 - Uses PapaParse for client-side CSV parsing
 - Expected format: First row contains headers, subsequent rows contain data
-- Sample data demonstrates workout tracking: Exercise, Sets, Reps, Weight, Rest, Day
+- CSV contains exercise library data: Exercise, Muscle Group, Description, Equipment, YouTube URL
+- Planning data (sets, reps, weight, rest) is stored in localStorage, not in CSV
 - Empty rows automatically filtered out during parsing
 
 ### Key Dependencies
-- **React 18**: UI framework
-- **PapaParse**: CSV parsing library
-- **Vite**: Build tool and dev server
-- **Bun**: Package manager (not npm/yarn)
+- **React 18**: UI framework with hooks-based state management
+- **PapaParse**: CSV parsing library for exercise data import
+- **@mjcdev/react-body-highlighter**: Interactive muscle diagram component
+- **Vite**: Build tool and dev server with HMR
+- **Bun**: Package manager and runtime (not npm/yarn)
 
 ## Important Notes
 
 - This project uses **Bun**, not npm or yarn - always use `bun` commands
-- Sample data file located in `public/` directory is served statically by Vite
+- Default exercise library (`default-workouts.csv`) located in `public/` directory is served statically by Vite
 - No backend - purely client-side application
 - No routing - single view application
 - No state management library - uses React built-in hooks only
@@ -123,14 +130,27 @@ This project uses a custom workflow system for feature development via Claude Co
 
 ### Data Structures
 
-**Workout Plans** (from `001-planner-localstorage`):
+**Exercise Library (from CSV)**:
+```javascript
+{
+  name: "Bench Press",
+  tags: ["Chest", "Shoulders", "Triceps"],  // Parsed from "Muscle Group" column
+  description: "Compound pushing exercise...",
+  equipment: "Barbell, Bench",               // Required equipment
+  youtubeUrl: "https://www.youtube.com/watch?v=..."
+}
+```
+
+**Workout Plans (localStorage)**:
 ```javascript
 {
   id: "uuid-v4",              // crypto.randomUUID()
   name: "Chest Day",
+  createdAt: 1700000000000,   // Unix timestamp
+  updatedAt: 1700000000000,   // Unix timestamp
   exercises: [
     {
-      id: "uuid-v4",
+      id: "uuid-v4",          // Note: exercises in plans don't have IDs in current implementation
       name: "Bench Press",
       sets: 3,
       reps: 10,
@@ -142,7 +162,7 @@ This project uses a custom workflow system for feature development via Claude Co
 }
 ```
 
-**Quota Templates** (from `002-random-generator-tag-quotas`):
+**Quota Templates** (planned, from `002-random-generator-tag-quotas`):
 ```javascript
 {
   id: "uuid-v4",
@@ -156,9 +176,16 @@ This project uses a custom workflow system for feature development via Claude Co
 ```
 
 ### localStorage Keys
-- `workout-plans` - Array of workout plan objects
-- `quota-templates` - Array of quota template objects
+- `workout-plans` - Array of workout plan objects (implemented)
+- `quota-templates` - Array of quota template objects (planned)
 - Future: `exercise-library` - Custom user exercises
+
+### Utility Modules
+- **`src/utils/localStorage.js`**: Centralized localStorage operations with error handling and quota detection
+- **`src/utils/muscleFilter.js`**: Exercise filtering by muscle groups with OR-based matching logic
+- **`src/utils/youtube.js`**: YouTube URL parsing and privacy-enhanced embed URL generation
+- **`src/utils/validation.js`**: Form validation utilities (plan names, exercise inputs)
+- **`src/utils/dateFormat.js`**: Timestamp formatting for plan display
 
 ### Identity & Uniqueness
 - **Entity IDs**: Use `crypto.randomUUID()` for all entities (plans, exercises, templates)
@@ -202,20 +229,48 @@ This project follows strict architectural principles defined in `.specify/memory
 
 ### Implemented Features
 - **CSV Import/Export**: File upload and PapaParse integration
-- **Sample Data Loading**: Static CSV from `/public/sample-workouts.csv`
-- **Basic Table Display**: Workout data rendering
-
-### In Development
-- **004-muscle-diagram** (current branch): Interactive muscle group visualization
+- **Default Exercise Library**: Static CSV from `/public/default-workouts.csv` with Exercise, Muscle Group, Description, Equipment, and YouTube URL
+- **Exercise List Display**: Filterable exercise library rendering with muscle highlighting
+- **001-planner-localstorage**: Full workout planner with CRUD operations and localStorage persistence
+- **002-exercise-list-filters**: Search and tag-based exercise filtering with synchronized UI (SearchInput + TagFilter + MuscleDiagram)
+- **003-exercise-details-youtube**: YouTube video integration in ExerciseDetailModal with privacy-enhanced embeds
+- **004-muscle-diagram**: Interactive muscle group visualization with dual-view (front/back) and male/female toggle
 
 ### Planned Features (see `specs/` directory)
-- **001-planner-localstorage**: Full workout planner with CRUD operations and localStorage persistence
 - **002-random-generator-tag-quotas**: Random workout generation with tag quotas, exercise reroll/pin, and quota template management
-- **002-exercise-list-filters**: Filter exercises by muscle groups and tags
-- **003-exercise-details-youtube**: YouTube video integration for exercise demonstrations
+- **Exercise reordering**: Drag-and-drop within workout plans
+- **Export plans**: Generate printable/shareable workout plans
 
 ### Technology Additions by Feature
-- **localStorage features**: Uses browser localStorage API, `crypto.randomUUID()`, JSON serialization
-- **Random generation**: Uses `Math.random()`, Fisher-Yates shuffle algorithm
-- **YouTube integration**: Uses YouTube iframe embed API (no package needed)
-- **No new npm packages required**: All features use browser APIs and existing dependencies
+- **localStorage features**: Browser localStorage API, `crypto.randomUUID()`, JSON serialization, cross-tab sync via `storage` event
+- **Muscle diagram**: `@mjcdev/react-body-highlighter` package (only external component library)
+- **YouTube integration**: YouTube iframe embed API with privacy-enhanced domain (no package needed)
+- **CSV parsing**: PapaParse for robust CSV handling with headers
+- **Random generation** (planned): `Math.random()`, Fisher-Yates shuffle algorithm
+
+## Code Patterns & Conventions
+
+### Component Patterns
+- **Props destructuring**: All components destructure props with default values where applicable
+- **Event handlers**: Prefix with `handle` (e.g., `handleSavePlan`, `handleExerciseClick`)
+- **State setters**: Use descriptive names matching state (e.g., `[plans, setPlans]`)
+- **Conditional rendering**: Use `&&` for simple conditionals, ternary for if/else
+- **Modal pattern**: Controlled by parent state, receives `onClose` callback
+
+### State Management Rules
+- **Lift state minimally**: Only lift state when multiple components need to share it
+- **Derived state**: Use `useMemo` for expensive computations (filtering, sorting)
+- **Form state**: Local state in form components, bubble up on save/submit
+- **Error state**: Local to component when component-specific, global in App.jsx when affecting multiple areas
+
+### localStorage Patterns
+- **Always use utility module**: Never call `localStorage` directly; use `src/utils/localStorage.js`
+- **Error handling**: Wrap all storage operations in try/catch with user-friendly error messages
+- **Validation**: Validate data structure on load; return empty array/object if corrupted
+- **Cross-tab sync**: Listen to `storage` event in App.jsx for multi-tab scenarios
+
+### CSS Conventions
+- **Component-scoped**: Each `.jsx` file has matching `.css` file
+- **Class naming**: Use descriptive kebab-case (e.g., `.exercise-list-item`, `.muscle-diagram-container`)
+- **Dark mode**: Use CSS custom properties defined in `index.css` and `prefers-color-scheme` media query
+- **Layout**: Flexbox for one-dimensional layouts, CSS Grid for two-dimensional layouts

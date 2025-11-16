@@ -11,12 +11,12 @@ import { convertToLibraryNames, getOurMuscleName } from '../assets/muscle-groups
  * @param {Object} props
  * @param {string[]} props.selectedMuscles - Array of selected muscle names (our naming)
  * @param {Function} props.onMuscleToggle - Callback when muscle is clicked
- * @param {string|null} props.hoveredMuscle - Currently hovered muscle name
- * @param {Function} props.onMuscleHover - Callback when muscle is hovered
+ * @param {string[]} props.hoveredMuscle - Array of currently hovered muscle names
+ * @param {Function} props.onMuscleHover - Callback when muscle is hovered (receives array or single string)
  */
-function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle, onMuscleHover }) {
+function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle = [], onMuscleHover }) {
   // Body type toggle state (male/female)
-  const [bodyType, setBodyType] = useState('male')
+  const [bodyType, setBodyType] = useState('female')
 
   // Convert our muscle names to library format
   const librarySelectedMuscles = convertToLibraryNames(selectedMuscles)
@@ -29,17 +29,19 @@ function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle, on
     intensity: 2 // Full intensity for selected muscles (uses second color)
   }))
 
-  // Add hovered muscle to data with lower intensity (if not already selected)
+  // Add hovered muscles to data with lower intensity (if not already selected)
   // This creates synchronized hover effect across both front and back views
-  if (hoveredMuscle) {
-    const libraryHoveredMuscle = convertToLibraryNames([hoveredMuscle])[0]
-    // Only add if not already in selected muscles
-    if (!librarySelectedMuscles.includes(libraryHoveredMuscle)) {
-      bodyData.push({
-        slug: libraryHoveredMuscle,
-        intensity: 1 // Lower intensity for hover effect (uses first color)
-      })
-    }
+  if (hoveredMuscle && Array.isArray(hoveredMuscle) && hoveredMuscle.length > 0) {
+    const libraryHoveredMuscles = convertToLibraryNames(hoveredMuscle)
+    libraryHoveredMuscles.forEach(muscle => {
+      // Only add if not already in selected muscles
+      if (!librarySelectedMuscles.includes(muscle)) {
+        bodyData.push({
+          slug: muscle,
+          intensity: 1 // Lower intensity for hover effect (uses first color)
+        })
+      }
+    })
   }
 
   // Custom colors array: [hover color, selected color]
@@ -66,7 +68,8 @@ function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle, on
       const ourMuscleName = getOurMuscleName(libraryMuscleName)
 
       if (ourMuscleName && onMuscleHover) {
-        onMuscleHover(ourMuscleName)
+        // Pass as array for consistency with exercise hover
+        onMuscleHover([ourMuscleName])
       }
     }
   }
@@ -75,7 +78,7 @@ function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle, on
     // Clear hover when mouse leaves muscle parts
     if (event.target.tagName === 'path') {
       if (onMuscleHover) {
-        onMuscleHover(null)
+        onMuscleHover([])
       }
     }
   }

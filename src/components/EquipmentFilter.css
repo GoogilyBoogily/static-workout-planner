@@ -1,0 +1,76 @@
+.equipment-filter {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 1.5rem;
+}
+
+.equipment-filter-label {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.equipment-filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.equipment-pill {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 2px solid #666;
+  border-radius: 20px;
+  background-color: #3a3a2a;
+  color: #d4af37;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.equipment-pill:hover {
+  border-color: #ffd700;
+  background-color: #444;
+  transform: translateY(-1px);
+}
+
+.equipment-pill:active {
+  transform: translateY(0);
+}
+
+.equipment-pill:focus {
+  outline: 2px solid #ffd700;
+  outline-offset: 2px;
+}
+
+/* Active (selected) state */
+.equipment-pill-active {
+  background-color: #ffd700;
+  border-color: #ffd700;
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.equipment-pill-active:hover {
+  background-color: #ffed4e;
+  border-color: #ffed4e;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 600px) {
+  .equipment-filter {
+    max-width: 100%;
+  }
+
+  .equipment-filter-pills {
+    gap: 0.4rem;
+  }
+
+  .equipment-pill {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+}

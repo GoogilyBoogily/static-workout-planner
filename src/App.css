@@ -1,7 +1,8 @@
 .App {
-  max-width: 1200px;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 20px;
+  width: 95%;
 }
 
 .csv-loader {
@@ -59,9 +60,137 @@
   margin: 20px 0;
 }
 
+/* Filter Section Styles (002-exercise-list-filters) */
+.filter-section {
+  margin: 0 0 20px 0;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: rgba(100, 108, 255, 0.05);
+}
+
+.filter-indicator {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 15px;
+  padding: 12px;
+  background-color: rgba(100, 108, 255, 0.1);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.filter-info {
+  color: #e0e0e0;
+}
+
+.filter-info strong {
+  color: #646cff;
+  margin-right: 5px;
+}
+
+.clear-all-filters {
+  padding: 6px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background-color: #646cff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-all-filters:hover {
+  background-color: #535bf2;
+  transform: translateY(-1px);
+}
+
+.clear-all-filters:active {
+  transform: translateY(0);
+}
+
+.clear-all-filters:focus {
+  outline: 2px solid #646cff;
+  outline-offset: 2px;
+}
+
+/* Responsive adjustments for filter section */
+@media (max-width: 600px) {
+  .filter-section {
+    padding: 15px;
+  }
+
+  .filter-indicator {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .filter-info {
+    font-size: 0.85rem;
+  }
+
+  .clear-all-filters {
+    width: 100%;
+  }
+}
+
+/* Main Content Layout: Two-column grid */
+.main-content {
+  display: grid;
+  grid-template-columns: minmax(400px, 600px) 1fr;
+  gap: 30px;
+  margin: 20px 0;
+  align-items: start;
+}
+
+.muscle-column {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.exercise-column {
+  min-height: 400px;
+}
+
+/* Plans Section: Full width at bottom */
+.plans-section {
+  width: 100%;
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 2px solid #444;
+}
+
+/* Responsive: Adjust layout based on screen width */
+@media (min-width: 1600px) {
+  .main-content {
+    grid-template-columns: 600px 1fr;
+  }
+
+  .muscle-view {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .muscle-column {
+    position: static;
+    max-height: none;
+  }
+}
+
 /* Muscle Diagram Styles - Professional Anatomical */
 .muscle-diagram {
-  margin: 30px 0;
+  margin: 0;
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -79,7 +208,7 @@
 
 .muscle-view {
   flex: 1;
-  max-width: 400px;
+  max-width: 280px;
   text-align: center;
 }
 
@@ -181,8 +310,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* T022: Hide tooltips on mobile */
