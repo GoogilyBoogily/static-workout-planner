@@ -1,6 +1,6 @@
 # Workout Planner
 
-A basic React frontend application that loads and displays data from CSV files.
+A completely vibe coded (for now) React application that loads and displays exercise data from CSV files and allows users to filter on muscle groups and equipment. Workout planning Coming Soon (tm)
 
 ## Features
 
