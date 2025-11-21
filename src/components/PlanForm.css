@@ -1,16 +1,17 @@
 .plan-form {
   max-width: 800px;
   margin: 20px auto;
-  background: white;
+  background: var(--color-bg-primary);
   border-radius: 8px;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-border-secondary);
 }
 
 .plan-form h2 {
   margin: 0 0 24px 0;
   font-size: 24px;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .plan-form .form-field {
@@ -22,31 +23,33 @@
   margin-bottom: 4px;
   font-weight: 500;
   font-size: 14px;
-  color: #555;
+  color: var(--color-text-secondary);
 }
 
 .plan-form .required {
-  color: #c33;
+  color: var(--color-error);
 }
 
 .plan-form .form-field input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border-primary);
   border-radius: 4px;
   font-size: 16px;
   box-sizing: border-box;
   transition: border-color 0.2s;
+  background-color: var(--color-input-bg);
+  color: var(--color-text-primary);
 }
 
 .plan-form .form-field input:focus {
   outline: none;
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
 }
 
 .plan-form .form-field input.error {
-  border-color: #c33;
+  border-color: var(--color-error);
 }
 
 .field-info {
@@ -57,21 +60,22 @@
 
 .character-count {
   font-size: 12px;
-  color: #888;
+  color: var(--color-text-tertiary);
 }
 
 .plan-form .error-text {
   display: block;
   margin-top: 4px;
   font-size: 12px;
-  color: #c33;
+  color: var(--color-error);
 }
 
 .exercises-section {
   margin: 24px 0;
   padding: 20px;
-  background: #f5f5f5;
+  background: var(--color-bg-tertiary);
   border-radius: 8px;
+  border: 1px solid var(--color-border-secondary);
 }
 
 .exercises-header {
@@ -84,7 +88,19 @@
 .exercises-header h3 {
   margin: 0;
   font-size: 18px;
-  color: #333;
+  color: var(--color-text-primary);
+}
+
+/* FIXED L5: Header actions for regenerate + add buttons */
+.exercises-header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.button-regenerate-compact {
+  padding: 8px 16px;
+  font-size: 14px;
 }
 
 .exercises-list {
@@ -99,14 +115,14 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: white;
-  border: 1px solid #ddd;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-primary);
   border-radius: 6px;
   transition: box-shadow 0.2s;
 }
 
 .exercise-item:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .exercise-reorder {
@@ -141,13 +157,13 @@
 .exercise-name {
   font-weight: 500;
   font-size: 16px;
-  color: #333;
+  color: var(--color-text-primary);
   margin-bottom: 4px;
 }
 
 .exercise-details {
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .exercise-actions {
@@ -171,23 +187,103 @@
 }
 
 .button-icon:hover {
-  background-color: #f0f0f0;
+  background-color: var(--color-bg-hover);
 }
 
 .button-icon:focus {
-  outline: 2px solid #4a90e2;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
 .button-icon.button-danger:hover {
-  background-color: #fee;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* T041: Pin button styles (Feature 005) */
+.button-icon.button-pin {
+  transition: transform 0.1s ease, background-color 0.2s;
+}
+
+.button-icon.button-pin:hover {
+  background-color: var(--color-bg-hover);
+  transform: scale(1.1);
+}
+
+.button-icon.button-pin.pinned {
+  color: var(--color-warning);
+}
+
+/* T033: Reroll button styles (Feature 005) */
+.button-icon.button-reroll {
+  color: var(--color-primary);
+}
+
+.button-icon.button-reroll:hover:not(:disabled) {
+  background-color: var(--color-bg-hover);
+}
+
+.button-icon.button-reroll:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.button-icon.button-reroll:disabled:hover {
+  background-color: transparent;
 }
 
 .empty-exercises {
   padding: 32px;
   text-align: center;
-  color: #888;
+  color: var(--color-text-tertiary);
   font-size: 14px;
+  font-style: italic;
+}
+
+/* T047: Regenerate Workout button styles (Feature 005) */
+.regenerate-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.button-regenerate {
+  background-color: var(--color-primary);
+  color: var(--color-text-primary);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.button-regenerate:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.button-regenerate:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.button-regenerate:disabled {
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.regenerate-info {
+  font-size: 13px;
+  color: var(--color-text-secondary);
   font-style: italic;
 }
 
@@ -197,7 +293,7 @@
   justify-content: flex-end;
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--color-border-secondary);
 }
 
 /* Mobile responsive */

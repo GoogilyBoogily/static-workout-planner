@@ -1,6 +1,6 @@
 .exercise-form {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-primary);
   border-radius: 8px;
   padding: 20px;
   margin: 16px 0;
@@ -9,7 +9,7 @@
 .exercise-form h3 {
   margin: 0 0 16px 0;
   font-size: 18px;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .form-field {
@@ -21,38 +21,42 @@
   margin-bottom: 4px;
   font-weight: 500;
   font-size: 14px;
-  color: #555;
+  color: var(--color-text-secondary);
 }
 
 .form-field .required {
-  color: #c33;
+  color: var(--color-error);
 }
 
-.form-field input {
+.form-field input,
+.form-field select {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border-primary);
   border-radius: 4px;
   font-size: 14px;
   box-sizing: border-box;
   transition: border-color 0.2s;
+  background-color: var(--color-input-bg);
+  color: var(--color-text-primary);
 }
 
-.form-field input:focus {
+.form-field input:focus,
+.form-field select:focus {
   outline: none;
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
 }
 
 .form-field input.error {
-  border-color: #c33;
+  border-color: var(--color-error);
 }
 
 .form-field .error-text {
   display: block;
   margin-top: 4px;
   font-size: 12px;
-  color: #c33;
+  color: var(--color-error);
 }
 
 .form-row {
@@ -67,7 +71,7 @@
   justify-content: flex-end;
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--color-border-primary);
 }
 
 .button-primary,
@@ -83,34 +87,35 @@
 }
 
 .button-primary {
-  background-color: #4a90e2;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-primary);
 }
 
 .button-primary:hover {
-  background-color: #357abd;
+  background-color: var(--color-primary-hover);
 }
 
 .button-primary:active {
-  background-color: #2c6ba8;
+  background-color: var(--color-primary-active);
 }
 
 .button-secondary {
-  background-color: #e0e0e0;
-  color: #555;
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-primary);
 }
 
 .button-secondary:hover {
-  background-color: #ccc;
+  background-color: var(--color-bg-hover);
 }
 
 .button-secondary:active {
-  background-color: #bbb;
+  background-color: var(--color-bg-tertiary);
 }
 
 .button-primary:focus,
 .button-secondary:focus {
-  outline: 2px solid #4a90e2;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 

@@ -1,0 +1,302 @@
+/* QuotaForm Modal Styles */
+
+.quota-form-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.quota-form-modal {
+  background-color: var(--bg-primary, white);
+  color: var(--text-primary, #333);
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.quota-form-modal h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.quota-form-modal h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+
+/* Sections */
+
+.quota-form-section {
+  margin-bottom: 24px;
+}
+
+.quota-form-section label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.quota-form-section select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background-color: var(--bg-secondary, #f9f9f9);
+  color: var(--text-primary, #333);
+}
+
+.quota-form-hint {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+  margin-bottom: 12px;
+}
+
+/* Quota rows */
+
+.quota-form-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.quota-tag-select {
+  flex: 2;
+  padding: 8px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background-color: var(--bg-secondary, #f9f9f9);
+  color: var(--text-primary, #333);
+}
+
+.quota-count-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background-color: var(--bg-secondary, #f9f9f9);
+  color: var(--text-primary, #333);
+}
+
+.quota-remove-button {
+  padding: 8px 12px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.quota-remove-button:hover {
+  background-color: #c82333;
+}
+
+.quota-add-button {
+  padding: 8px 16px;
+  background-color: var(--accent-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.quota-add-button:hover {
+  background-color: var(--accent-hover, #0056b3);
+}
+
+.quota-add-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Validation errors */
+
+.quota-form-errors {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.quota-form-error {
+  color: #721c24;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.quota-form-error:last-child {
+  margin-bottom: 0;
+}
+
+.quota-form-warning {
+  color: #856404;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+/* Template save UI */
+
+.quota-template-name-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background-color: var(--bg-secondary, #f9f9f9);
+  color: var(--text-primary, #333);
+  margin-bottom: 8px;
+}
+
+.quota-save-template-button {
+  padding: 8px 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.quota-save-template-button:hover {
+  background-color: #218838;
+}
+
+/* Action buttons */
+
+.quota-form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.quota-generate-button {
+  padding: 10px 20px;
+  background-color: var(--accent-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.quota-generate-button:hover {
+  background-color: var(--accent-hover, #0056b3);
+}
+
+.quota-generate-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.quota-show-save-button {
+  padding: 10px 20px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.quota-show-save-button:hover {
+  background-color: #5a6268;
+}
+
+.quota-cancel-button {
+  padding: 10px 20px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.quota-cancel-button:hover {
+  background-color: #5a6268;
+}
+
+/* Mobile responsiveness */
+
+@media (max-width: 600px) {
+  .quota-form-modal {
+    width: 95%;
+    padding: 16px;
+    max-height: 90vh;
+  }
+
+  .quota-form-row {
+    flex-wrap: wrap;
+  }
+
+  .quota-tag-select,
+  .quota-count-input {
+    flex: 1 1 45%;
+  }
+
+  .quota-remove-button {
+    flex: 1 1 100%;
+  }
+
+  .quota-form-actions {
+    flex-direction: column;
+  }
+
+  .quota-form-actions button {
+    width: 100%;
+  }
+}
+
+/* Dark mode support */
+
+@media (prefers-color-scheme: dark) {
+  .quota-form-modal {
+    background-color: var(--bg-primary, #1e1e1e);
+    color: var(--text-primary, #e0e0e0);
+  }
+
+  .quota-tag-select,
+  .quota-count-input,
+  .quota-template-name-input,
+  .quota-form-section select {
+    background-color: var(--bg-secondary, #2d2d2d);
+    color: var(--text-primary, #e0e0e0);
+    border-color: var(--border-color, #444);
+  }
+
+  .quota-form-errors {
+    background-color: #4a1f1f;
+    border-color: #7a3a3a;
+  }
+
+  .quota-form-error {
+    color: #ff9999;
+  }
+
+  .quota-form-warning {
+    background-color: #4a421f;
+    border-color: #7a6a3a;
+    color: #ffd699;
+  }
+}

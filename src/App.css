@@ -5,6 +5,21 @@
   width: 95%;
 }
 
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.app-header h1 {
+  margin: 0;
+  flex: 1;
+  min-width: fit-content;
+}
+
 .csv-loader {
   margin: 20px 0;
 }
@@ -23,40 +38,42 @@
 
 .data-table table {
   width: 100%;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border-primary);
 }
 
 .data-table th,
 .data-table td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border-primary);
   padding: 12px;
   text-align: left;
+  color: var(--color-text-primary);
 }
 
 .data-table th {
-  background-color: #646cff;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-primary);
   font-weight: bold;
 }
 
 .data-table tr:nth-child(even) {
-  background-color: rgba(100, 108, 255, 0.1);
+  background-color: var(--color-bg-tertiary);
 }
 
 .data-table tr:hover {
-  background-color: rgba(100, 108, 255, 0.2);
+  background-color: var(--color-bg-hover);
 }
 
 .error {
-  color: #ff4444;
+  color: var(--color-error);
   margin: 20px 0;
   padding: 10px;
-  background-color: rgba(255, 68, 68, 0.1);
+  background-color: var(--color-bg-tertiary);
   border-radius: 4px;
+  border: 1px solid var(--color-error);
 }
 
 .info {
-  color: #646cff;
+  color: var(--color-primary);
   margin: 20px 0;
 }
 
@@ -65,7 +82,8 @@
   margin: 0 0 20px 0;
   padding: 20px;
   border-radius: 8px;
-  background-color: rgba(100, 108, 255, 0.05);
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-secondary);
 }
 
 .filter-indicator {
@@ -76,17 +94,17 @@
   justify-content: center;
   margin-top: 15px;
   padding: 12px;
-  background-color: rgba(100, 108, 255, 0.1);
+  background-color: var(--color-bg-elevated);
   border-radius: 6px;
   font-size: 0.9rem;
 }
 
 .filter-info {
-  color: #e0e0e0;
+  color: var(--color-text-secondary);
 }
 
 .filter-info strong {
-  color: #646cff;
+  color: var(--color-primary);
   margin-right: 5px;
 }
 
@@ -94,8 +112,8 @@
   padding: 6px 16px;
   font-size: 0.9rem;
   font-weight: 500;
-  background-color: #646cff;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-primary);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -103,7 +121,7 @@
 }
 
 .clear-all-filters:hover {
-  background-color: #535bf2;
+  background-color: var(--color-primary-hover);
   transform: translateY(-1px);
 }
 
@@ -112,7 +130,7 @@
 }
 
 .clear-all-filters:focus {
-  outline: 2px solid #646cff;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -157,12 +175,12 @@
   min-height: 400px;
 }
 
-/* Plans Section: Full width at bottom */
+/* Plans Section: Full width at top */
 .plans-section {
   width: 100%;
-  margin-top: 40px;
-  padding-top: 30px;
-  border-top: 2px solid #444;
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 2px solid var(--color-border-primary);
 }
 
 /* Responsive: Adjust layout based on screen width */
@@ -192,9 +210,9 @@
 .muscle-diagram {
   margin: 0;
   padding: 20px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border-primary);
   border-radius: 8px;
-  background-color: #f9f9f9;
+  background-color: var(--color-bg-tertiary);
 }
 
 /* Dual view layout (Front and Back side-by-side) */
@@ -214,7 +232,7 @@
 
 .muscle-view h3 {
   margin: 0 0 15px 0;
-  color: #333;
+  color: var(--color-text-primary);
   font-size: 18px;
   font-weight: 600;
 }
@@ -229,9 +247,9 @@
 
 .body-button {
   padding: 8px 20px;
-  border: 2px solid #8b6f47;
-  background-color: white;
-  color: #8b6f47;
+  border: 2px solid var(--color-primary);
+  background-color: var(--color-bg-primary);
+  color: var(--color-primary);
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
@@ -240,16 +258,16 @@
 }
 
 .body-button:hover {
-  background-color: rgba(139, 111, 71, 0.1);
+  background-color: var(--color-bg-hover);
 }
 
 .body-button.active {
-  background-color: #8b6f47;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-primary);
 }
 
 .body-button:focus {
-  outline: 2px solid #8b6f47;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -259,7 +277,7 @@
   justify-content: center;
   align-items: center;
   margin: 0 auto;
-  background-color: white;
+  background-color: var(--color-bg-elevated);
   border-radius: 8px;
   padding: 10px;
 }

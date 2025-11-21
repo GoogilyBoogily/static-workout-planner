@@ -3,14 +3,92 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark Theme (Default) */
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Background colors */
+  --color-bg-primary: #1a1a1a;
+  --color-bg-secondary: #242424;
+  --color-bg-tertiary: #2a2a2a;
+  --color-bg-elevated: #333333;
+  --color-bg-hover: #3a3a3a;
+
+  /* Text colors */
+  --color-text-primary: rgba(255, 255, 255, 0.87);
+  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-tertiary: rgba(255, 255, 255, 0.38);
+
+  /* Accent colors */
+  --color-primary: #646cff;
+  --color-primary-hover: #535bf2;
+  --color-primary-active: #4249d8;
+
+  /* Semantic colors */
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
+
+  /* Border colors */
+  --color-border-primary: #444;
+  --color-border-secondary: #333;
+  --color-border-tertiary: #555;
+
+  /* Component-specific */
+  --color-button-bg: #1a1a1a;
+  --color-input-bg: #2a2a2a;
+  --color-modal-overlay: rgba(0, 0, 0, 0.75);
+
+  /* Apply global colors */
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-secondary);
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Background colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9f9f9;
+  --color-bg-tertiary: #f0f0f0;
+  --color-bg-elevated: #ffffff;
+  --color-bg-hover: #e8e8e8;
+
+  /* Text colors */
+  --color-text-primary: #213547;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+
+  /* Accent colors */
+  --color-primary: #4a90e2;
+  --color-primary-hover: #357abd;
+  --color-primary-active: #2868a8;
+
+  /* Semantic colors */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  /* Border colors */
+  --color-border-primary: #ddd;
+  --color-border-secondary: #e5e5e5;
+  --color-border-tertiary: #ccc;
+
+  /* Component-specific */
+  --color-button-bg: #f9f9f9;
+  --color-input-bg: #ffffff;
+  --color-modal-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Apply global colors */
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-secondary);
 }
 
 body {
@@ -33,13 +111,15 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--color-button-bg);
+  color: var(--color-text-primary);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: border-color 0.25s, background-color 0.25s;
 }
 
 button:hover {
-  border-color: #646cff;
+  border-color: var(--color-primary);
+  background-color: var(--color-bg-hover);
 }
 
 button:focus,
@@ -52,14 +132,4 @@ button:focus-visible {
   margin: 0;
   padding: 0;
   text-align: center;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }

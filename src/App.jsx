@@ -12,8 +12,12 @@ import StorageWarning from './components/StorageWarning'
 import PlanForm from './components/PlanForm'
 import PlanList from './components/PlanList'
 import PlanDetail from './components/PlanDetail'
+import QuotaForm from './components/QuotaForm'
+import ThemeToggle from './components/ThemeToggle'
 import { filterExercisesByMuscles } from './utils/muscleFilter'
 import PlansStorage from './utils/localStorage'
+import { QuotaTemplateStorage } from './utils/quotaTemplates'
+import { buildExercisePool, getAvailableTags, generateWorkoutPlan, generatePlanName } from './utils/randomGenerator'
 
 function App() {
   const [data, setData] = useState([])
@@ -40,6 +44,27 @@ function App() {
   const [showSyncWarning, setShowSyncWarning] = useState(false)
   const [storageError, setStorageError] = useState(null)
 
+  // Random workout generation state (Feature 005)
+  const [quotaFormOpen, setQuotaFormOpen] = useState(false)
+  const [exercisePool, setExercisePool] = useState({})
+  const [quotaTemplates, setQuotaTemplates] = useState([])
+
+  // Theme state with localStorage persistence
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('workout-planner-theme')
+    return savedTheme || 'dark' // Default to dark mode
+  })
+
+  // Apply theme to document element
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('workout-planner-theme', theme)
+  }, [theme])
+
+  const handleThemeToggle = () => {
+    setTheme(prevTheme => prevTheme === 'dark' ? 'light' : 'dark')
+  }
+
   // T007: Load plans from localStorage on mount
   useEffect(() => {
     const loadedPlans = PlansStorage.loadPlans()
@@ -50,6 +75,28 @@ function App() {
       setStorageError('localStorage is not available. Are you in private browsing mode?')
     }
   }, [])
+
+  // T019: Load exercise pool and quota templates on mount (Feature 005)
+  // FIXED H3: Added error handling to prevent app crashes
+  useEffect(() => {
+    try {
+      const pool = buildExercisePool(plans)
+      setExercisePool(pool)
+
+      const templates = QuotaTemplateStorage.loadTemplates()
+      setQuotaTemplates(templates)
+
+      // Clear any previous errors if successful
+      if (storageError && storageError.includes('exercise data')) {
+        setStorageError(null)
+      }
+    } catch (error) {
+      console.error('Failed to build exercise pool:', error)
+      setStorageError('Failed to load exercise data. Some features may not work.')
+      setExercisePool({})
+      setQuotaTemplates([])
+    }
+  }, [plans]) // Rebuild when plans change
 
   // Auto-load standardized workouts on mount
   useEffect(() => {
@@ -253,7 +300,12 @@ function App() {
       setSelectedPlan(null)
       setStorageError(null)
     } catch (error) {
-      setStorageError(error.message)
+      // T068: Enhanced error handling for localStorage quota exceeded
+      if (error.name === 'QuotaExceededError') {
+        setStorageError('Storage limit reached. Delete old plans or templates to free space.')
+      } else {
+        setStorageError(error.message)
+      }
     }
   }
 
@@ -290,6 +342,81 @@ function App() {
   const handleClosePlanDetail = () => {
     setCurrentView('list')
     setSelectedPlan(null)
+  }
+
+  // T020: Handle "Generate Random Workout" button click (Feature 005)
+  const handleGenerateRandom = () => {
+    setQuotaFormOpen(true)
+  }
+
+  // T021: Handle quota generation (Feature 005)
+  const handleQuotaGenerate = (quotas) => {
+    const { exercises: generatedExercises, errors } = generateWorkoutPlan(quotas, exercisePool)
+
+    if (errors.length > 0) {
+      // Show errors to user
+      alert('Generation errors:\n' + errors.join('\n'))
+    }
+
+    if (generatedExercises.length === 0) {
+      alert('No exercises could be generated. Please adjust your quotas.')
+      return
+    }
+
+    // Create new plan with generated exercises
+    const newPlan = {
+      id: crypto.randomUUID(),
+      name: generatePlanName(),
+      exercises: generatedExercises,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      isGenerated: true,
+      generationTimestamp: Date.now(),
+      pinStatus: {}
+    }
+
+    // Set as selected plan and open in edit mode
+    setSelectedPlan(newPlan)
+    setCurrentView('edit')
+    setQuotaFormOpen(false)
+  }
+
+  // Handle quota form cancel
+  const handleQuotaFormCancel = () => {
+    setQuotaFormOpen(false)
+  }
+
+  // T068: Handle save quota template with error handling (Feature 005)
+  const handleSaveQuotaTemplate = (name, quotas) => {
+    const result = QuotaTemplateStorage.addTemplate(name, quotas)
+
+    if (result.success) {
+      // Reload templates
+      const templates = QuotaTemplateStorage.loadTemplates()
+      setQuotaTemplates(templates)
+      alert('Template saved successfully!')
+      setStorageError(null) // Clear any previous errors
+    } else {
+      // T068: Show storage error banner for quota exceeded
+      if (result.error === 'quota') {
+        setStorageError(result.message || 'Storage limit reached. Delete old templates or plans to free space.')
+      } else {
+        setStorageError(result.message || 'Failed to save template')
+      }
+    }
+  }
+
+  // T062: Handle delete quota template (Feature 005)
+  const handleDeleteQuotaTemplate = (templateId) => {
+    const result = QuotaTemplateStorage.deleteTemplate(templateId)
+
+    if (result.success) {
+      // Reload templates
+      const templates = QuotaTemplateStorage.loadTemplates()
+      setQuotaTemplates(templates)
+    } else {
+      alert(result.message || 'Failed to delete template')
+    }
   }
 
   // Extract unique tags/muscles from all exercises for TagFilter
@@ -356,7 +483,10 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Workout Planner</h1>
+      <div className="app-header">
+        <h1>Workout Planner</h1>
+        <ThemeToggle theme={theme} onToggle={handleThemeToggle} />
+      </div>
 
       <div className="csv-loader">
         <div className="file-input">
@@ -386,6 +516,50 @@ function App() {
         message="Your workout plans were updated in another tab. The list has been refreshed."
         onDismiss={() => setShowSyncWarning(false)}
       />
+
+      {/* Plans Section: Full width at top */}
+      <div className="plans-section">
+        {/* T032-T043: Plan List */}
+        {currentView === 'list' && (
+          <PlanList
+            plans={sortedPlans}
+            onCreate={handleCreatePlan}
+            onEdit={handleEditPlan}
+            onDelete={handleDeletePlan}
+            onView={handleViewPlan}
+            onGenerateRandom={handleGenerateRandom}
+            exercisePoolEmpty={Object.keys(exercisePool).length === 0}
+          />
+        )}
+
+        {currentView === 'create' && (
+          <PlanForm
+            plan={null}
+            onSave={handleSavePlan}
+            onCancel={handleCancelPlan}
+            exercisePool={exercisePool}
+            isGenerated={false}
+          />
+        )}
+
+        {currentView === 'edit' && selectedPlan && (
+          <PlanForm
+            plan={selectedPlan}
+            onSave={handleSavePlan}
+            onCancel={handleCancelPlan}
+            exercisePool={exercisePool}
+            isGenerated={selectedPlan.isGenerated || false}
+          />
+        )}
+
+        {/* T072: Plan Detail Modal */}
+        {currentView === 'detail' && selectedPlan && (
+          <PlanDetail
+            plan={selectedPlan}
+            onClose={handleClosePlanDetail}
+          />
+        )}
+      </div>
 
       {/* Main Content: Two-column layout */}
       <div className="main-content">
@@ -473,44 +647,6 @@ function App() {
         </div>
       </div>
 
-      {/* Plans Section: Full width at bottom */}
-      <div className="plans-section">
-        {/* T032-T043: Plan List */}
-        {currentView === 'list' && (
-          <PlanList
-            plans={sortedPlans}
-            onCreate={handleCreatePlan}
-            onEdit={handleEditPlan}
-            onDelete={handleDeletePlan}
-            onView={handleViewPlan}
-          />
-        )}
-
-        {currentView === 'create' && (
-          <PlanForm
-            plan={null}
-            onSave={handleSavePlan}
-            onCancel={handleCancelPlan}
-          />
-        )}
-
-        {currentView === 'edit' && selectedPlan && (
-          <PlanForm
-            plan={selectedPlan}
-            onSave={handleSavePlan}
-            onCancel={handleCancelPlan}
-          />
-        )}
-
-        {/* T072: Plan Detail Modal */}
-        {currentView === 'detail' && selectedPlan && (
-          <PlanDetail
-            plan={selectedPlan}
-            onClose={handleClosePlanDetail}
-          />
-        )}
-      </div>
-
       {/* Exercise Detail Modal (T010, T023, T024) */}
       <ExerciseDetailModal
         exercise={selectedExercise}
@@ -520,6 +656,19 @@ function App() {
         onNext={handleNext}
         onPrevious={handlePrevious}
       />
+
+      {/* T022: Quota Form Modal (Feature 005) */}
+      {quotaFormOpen && (
+        <QuotaForm
+          availableTags={getAvailableTags(exercisePool)}
+          exercisePool={exercisePool}
+          quotaTemplates={quotaTemplates}
+          onGenerate={handleQuotaGenerate}
+          onCancel={handleQuotaFormCancel}
+          onSaveTemplate={handleSaveQuotaTemplate}
+          onDeleteTemplate={handleDeleteQuotaTemplate}
+        />
+      )}
 
       {/* Original Data Table View */}
       {data.length > 0 ? (

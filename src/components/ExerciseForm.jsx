@@ -4,14 +4,19 @@ import './ExerciseForm.css'
 
 /**
  * Form for adding or editing an exercise within a workout plan
+ *
+ * FIXED C2: Added tag field for muscle group selection
+ *
  * @param {Object} props
  * @param {Object|null} props.exercise - Exercise to edit (null for new exercise)
+ * @param {Array<string>} props.availableTags - Available muscle group tags for selection
  * @param {Function} props.onSave - Callback when exercise is saved: (exercise) => void
  * @param {Function} props.onCancel - Callback when form is cancelled
  */
-function ExerciseForm({ exercise, onSave, onCancel }) {
+function ExerciseForm({ exercise, availableTags = [], onSave, onCancel }) {
   const [formData, setFormData] = useState({
     name: exercise?.name || '',
+    tag: exercise?.tag || (availableTags[0] || ''),
     sets: exercise?.sets || '',
     reps: exercise?.reps || '',
     weight: exercise?.weight || '',
@@ -50,6 +55,7 @@ function ExerciseForm({ exercise, onSave, onCancel }) {
     const exerciseData = {
       id: exercise?.id || crypto.randomUUID(),
       name: formData.name.trim(),
+      tag: formData.tag, // FIXED C2: Include tag/muscle group
       sets: parseInt(formData.sets, 10),
       reps: formData.reps.trim(),
       weight: formData.weight.trim() || undefined,
@@ -82,6 +88,34 @@ function ExerciseForm({ exercise, onSave, onCancel }) {
           className={errors.name ? 'error' : ''}
         />
         {errors.name && <span className="error-text">{errors.name}</span>}
+      </div>
+
+      {/* FIXED C2: Add muscle group/tag selector */}
+      <div className="form-field">
+        <label htmlFor="exercise-tag">
+          Muscle Group <span className="required">*</span>
+        </label>
+        <select
+          id="exercise-tag"
+          value={formData.tag}
+          onChange={(e) => handleChange('tag', e.target.value)}
+          className={errors.tag ? 'error' : ''}
+          disabled={availableTags.length === 0}
+        >
+          {availableTags.length === 0 ? (
+            <option value="">No muscle groups available</option>
+          ) : (
+            availableTags.map(tag => (
+              <option key={tag} value={tag}>{tag}</option>
+            ))
+          )}
+        </select>
+        {errors.tag && <span className="error-text">{errors.tag}</span>}
+        {availableTags.length === 0 && (
+          <span className="help-text">
+            Add exercises to your workout plans to populate muscle groups
+          </span>
+        )}
       </div>
 
       <div className="form-row">

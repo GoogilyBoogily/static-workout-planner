@@ -12,8 +12,8 @@
 }
 
 .exercise-item {
-  background: #1a1a1a;
-  border: 1px solid #333;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-secondary);
   border-radius: 8px;
   padding: 16px;
   cursor: pointer;
@@ -26,14 +26,14 @@
 }
 
 .exercise-item:hover {
-  background: #2a2a2a;
-  border-color: #646cff;
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.15);
 }
 
 .exercise-item:focus {
-  outline: 2px solid #646cff;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -43,8 +43,8 @@
 
 /* Highlighted state when muscle is hovered in diagram */
 .exercise-item-highlighted {
-  background: #2a2a2a;
-  border-color: #646cff;
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
   box-shadow: 0 0 16px rgba(100, 108, 255, 0.3);
   animation: pulse-highlight 1.5s ease-in-out infinite;
 }
@@ -65,7 +65,7 @@
 }
 
 .exercise-name {
-  color: #fff;
+  color: var(--color-text-primary);
   font-size: 16px;
   font-weight: 600;
   margin: 0;
@@ -79,9 +79,9 @@
 }
 
 .exercise-tag {
-  background: #2a2a2a;
-  border: 1px solid #444;
-  color: #999;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-primary);
+  color: var(--color-text-secondary);
   padding: 4px 10px;
   border-radius: 4px;
   font-size: 12px;
@@ -95,9 +95,9 @@
 }
 
 .equipment-badge {
-  background: #3a3a2a;
-  border: 1px solid #666;
-  color: #ffd700;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-tertiary);
+  color: var(--color-warning);
   padding: 4px 10px;
   border-radius: 4px;
   font-size: 11px;
@@ -106,13 +106,13 @@
 
 .equipment-badge-optional {
   background: transparent;
-  border: 1px dashed #888;
-  color: #aaa;
+  border: 1px dashed var(--color-border-tertiary);
+  color: var(--color-text-tertiary);
   font-weight: 500;
 }
 
 .exercise-list-empty {
-  color: #999;
+  color: var(--color-text-secondary);
   text-align: center;
   padding: 40px 20px;
   font-size: 16px;

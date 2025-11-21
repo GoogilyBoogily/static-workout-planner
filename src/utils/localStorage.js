@@ -23,6 +23,7 @@ export function isAvailable() {
 
 /**
  * Load all workout plans from localStorage
+ * Ensures backward compatibility by adding default values for new properties.
  * @returns {Array} Array of workout plan objects, or empty array if none exist or error occurs
  */
 export function loadPlans() {
@@ -40,7 +41,15 @@ export function loadPlans() {
       return [];
     }
 
-    return plans;
+    // Backward compatibility: ensure new properties exist
+    // Feature 005 adds: pinStatus, isGenerated, generationTimestamp
+    return plans.map(plan => ({
+      ...plan,
+      // Set defaults for feature 005 properties if not present
+      pinStatus: plan.pinStatus || {},
+      isGenerated: plan.isGenerated || false,
+      generationTimestamp: plan.generationTimestamp || null
+    }));
   } catch (error) {
     console.error('Failed to load plans from localStorage:', error);
     return [];

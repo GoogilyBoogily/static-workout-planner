@@ -162,7 +162,7 @@ This project uses a custom workflow system for feature development via Claude Co
 }
 ```
 
-**Quota Templates** (planned, from `002-random-generator-tag-quotas`):
+**Quota Templates** (Feature 005):
 ```javascript
 {
   id: "uuid-v4",
@@ -171,21 +171,30 @@ This project uses a custom workflow system for feature development via Claude Co
     { tag: "chest", count: 3 },
     { tag: "shoulders", count: 2 },
     { tag: "triceps", count: 2 }
-  ]
+  ],
+  createdAt: 1700000000000
 }
 ```
 
+**Generated Workout Plans** (Feature 005):
+- Plans generated via random generator have additional properties:
+  - `isGenerated: true` - Flag to show generated badge in UI
+  - `generationTimestamp: number` - When plan was generated
+  - `pinStatus: { [exerciseId]: boolean }` - Which exercises are pinned (locked during regeneration)
+
 ### localStorage Keys
 - `workout-plans` - Array of workout plan objects (implemented)
-- `quota-templates` - Array of quota template objects (planned)
+- `workout-quota-templates` - Array of quota template objects (implemented)
 - Future: `exercise-library` - Custom user exercises
 
 ### Utility Modules
 - **`src/utils/localStorage.js`**: Centralized localStorage operations with error handling and quota detection
 - **`src/utils/muscleFilter.js`**: Exercise filtering by muscle groups with OR-based matching logic
 - **`src/utils/youtube.js`**: YouTube URL parsing and privacy-enhanced embed URL generation
-- **`src/utils/validation.js`**: Form validation utilities (plan names, exercise inputs)
+- **`src/utils/validation.js`**: Form validation utilities (plan names, exercise inputs, quota validation)
 - **`src/utils/dateFormat.js`**: Timestamp formatting for plan display
+- **`src/utils/randomGenerator.js`**: Fisher-Yates shuffle, random exercise selection, exercise pool building, workout generation, regeneration
+- **`src/utils/quotaTemplates.js`**: Quota template CRUD operations with localStorage persistence
 
 ### Identity & Uniqueness
 - **Entity IDs**: Use `crypto.randomUUID()` for all entities (plans, exercises, templates)
@@ -235,9 +244,9 @@ This project follows strict architectural principles defined in `.specify/memory
 - **002-exercise-list-filters**: Search and tag-based exercise filtering with synchronized UI (SearchInput + TagFilter + MuscleDiagram)
 - **003-exercise-details-youtube**: YouTube video integration in ExerciseDetailModal with privacy-enhanced embeds
 - **004-muscle-diagram**: Interactive muscle group visualization with dual-view (front/back) and male/female toggle
+- **005-random-generator-tag-quotas**: Random workout generation with tag quotas, exercise reroll/pin/regenerate, and quota template management
 
 ### Planned Features (see `specs/` directory)
-- **002-random-generator-tag-quotas**: Random workout generation with tag quotas, exercise reroll/pin, and quota template management
 - **Exercise reordering**: Drag-and-drop within workout plans
 - **Export plans**: Generate printable/shareable workout plans
 
@@ -246,7 +255,7 @@ This project follows strict architectural principles defined in `.specify/memory
 - **Muscle diagram**: `@mjcdev/react-body-highlighter` package (only external component library)
 - **YouTube integration**: YouTube iframe embed API with privacy-enhanced domain (no package needed)
 - **CSV parsing**: PapaParse for robust CSV handling with headers
-- **Random generation** (planned): `Math.random()`, Fisher-Yates shuffle algorithm
+- **Random generation**: Fisher-Yates shuffle algorithm, exercise pool building, reroll history tracking, pin/regenerate workflow
 
 ## Code Patterns & Conventions
 
