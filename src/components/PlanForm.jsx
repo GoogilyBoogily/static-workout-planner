@@ -14,9 +14,10 @@ const REROLL_HISTORY_SIZE = 3 // Remember last 3 rerolled exercises per position
  * @param {Function} props.onSave - Callback when plan is saved: (planData) => void
  * @param {Function} props.onCancel - Callback when form is cancelled
  * @param {Object} props.exercisePool - Exercise pool for reroll functionality (Feature 005)
+ * @param {Array} props.exerciseLibrary - Array of exercises from loaded CSV data
  * @param {boolean} props.isGenerated - Whether this plan was randomly generated (Feature 005)
  */
-function PlanForm({ plan, onSave, onCancel, exercisePool = {}, isGenerated = false }) {
+function PlanForm({ plan, onSave, onCancel, exercisePool = {}, exerciseLibrary = [], isGenerated = false }) {
   const [planName, setPlanName] = useState(plan?.name || '')
   const [exercises, setExercises] = useState(plan?.exercises || [])
   const [isAddingExercise, setIsAddingExercise] = useState(false)
@@ -31,7 +32,11 @@ function PlanForm({ plan, onSave, onCancel, exercisePool = {}, isGenerated = fal
   // Track which exercises are pinned (locked during regeneration)
   const [pinStatus, setPinStatus] = useState(plan?.pinStatus || {})
 
-  // FIXED C2: Extract available tags from exercise pool for ExerciseForm
+  // Drag and drop state
+  const [draggedIndex, setDraggedIndex] = useState(null)
+  const [dragOverIndex, setDragOverIndex] = useState(null)
+
+  // Extract available tags from exercise pool for reroll functionality
   const availableTags = useMemo(() => {
     return Object.keys(exercisePool).sort()
   }, [exercisePool])
@@ -143,6 +148,50 @@ function PlanForm({ plan, onSave, onCancel, exercisePool = {}, isGenerated = fal
     newExercises[index + 1] = newExercises[index]
     newExercises[index] = temp
     setExercises(newExercises)
+  }
+
+  // Drag and drop handlers
+  const handleDragStart = (e, index) => {
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = 'move'
+    // Add a slight delay to allow the drag image to be set
+    setTimeout(() => {
+      e.target.classList.add('dragging')
+    }, 0)
+  }
+
+  const handleDragEnd = (e) => {
+    e.target.classList.remove('dragging')
+    setDraggedIndex(null)
+    setDragOverIndex(null)
+  }
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    if (draggedIndex !== null && index !== draggedIndex) {
+      setDragOverIndex(index)
+    }
+  }
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null)
+  }
+
+  const handleDrop = (e, dropIndex) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDragOverIndex(null)
+      return
+    }
+
+    const newExercises = [...exercises]
+    const [draggedItem] = newExercises.splice(draggedIndex, 1)
+    newExercises.splice(dropIndex, 0, draggedItem)
+    setExercises(newExercises)
+
+    setDraggedIndex(null)
+    setDragOverIndex(null)
   }
 
   /**
@@ -375,26 +424,18 @@ function PlanForm({ plan, onSave, onCancel, exercisePool = {}, isGenerated = fal
         {exercises.length > 0 && !isAddingExercise && (
           <div className="exercises-list">
             {exercises.map((exercise, index) => (
-              <div key={exercise.id} className="exercise-item">
-                <div className="exercise-reorder">
-                  <button
-                    type="button"
-                    onClick={() => handleMoveExerciseUp(index)}
-                    disabled={index === 0}
-                    className="button-icon button-reorder"
-                    aria-label={`Move ${exercise.name} up`}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleMoveExerciseDown(index)}
-                    disabled={index === exercises.length - 1}
-                    className="button-icon button-reorder"
-                    aria-label={`Move ${exercise.name} down`}
-                  >
-                    ↓
-                  </button>
+              <div
+                key={exercise.id}
+                className={`exercise-item ${draggedIndex === index ? 'dragging' : ''} ${dragOverIndex === index ? 'drag-over' : ''}`}
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragEnd={handleDragEnd}
+                onDragOver={(e) => handleDragOver(e, index)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, index)}
+              >
+                <div className="exercise-drag-handle" title="Drag to reorder">
+                  <span className="drag-icon">⋮⋮</span>
                 </div>
                 <div className="exercise-info">
                   <div className="exercise-name">{exercise.name}</div>
@@ -473,7 +514,7 @@ function PlanForm({ plan, onSave, onCancel, exercisePool = {}, isGenerated = fal
         {isAddingExercise && (
           <ExerciseForm
             exercise={editingExercise !== null ? exercises[editingExercise] : null}
-            availableTags={availableTags}
+            exerciseLibrary={exerciseLibrary}
             onSave={handleSaveExercise}
             onCancel={handleCancelExercise}
           />

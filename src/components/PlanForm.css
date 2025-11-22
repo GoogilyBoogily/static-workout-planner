@@ -125,29 +125,46 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
-.exercise-reorder {
+/* Drag and drop styles */
+.exercise-drag-handle {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  cursor: grab;
+  color: var(--color-text-tertiary);
+  user-select: none;
+  padding: 8px 4px;
+  border-radius: 4px;
+  transition: color 0.2s, background-color 0.2s;
 }
 
-.button-reorder {
+.exercise-drag-handle:hover {
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-hover);
+}
+
+.exercise-drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-icon {
   font-size: 16px;
   font-weight: bold;
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  padding: 0;
+  letter-spacing: 2px;
 }
 
-.button-reorder:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+.exercise-item.dragging {
+  opacity: 0.5;
+  background: var(--color-bg-tertiary);
+  border-style: dashed;
 }
 
-.button-reorder:disabled:hover {
-  background-color: transparent;
+.exercise-item.drag-over {
+  border-color: var(--color-primary);
+  border-width: 2px;
+  background: var(--color-bg-hover);
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
 
 .exercise-info {
@@ -314,9 +331,19 @@
   }
 
   .exercise-item {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 12px;
+  }
+
+  .exercise-drag-handle {
+    order: -1;
+  }
+
+  .exercise-info {
+    flex: 1 1 calc(100% - 48px);
+    min-width: 0;
   }
 
   .exercise-actions {

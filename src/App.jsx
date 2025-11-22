@@ -538,6 +538,7 @@ function App() {
             onSave={handleSavePlan}
             onCancel={handleCancelPlan}
             exercisePool={exercisePool}
+            exerciseLibrary={exercises}
             isGenerated={false}
           />
         )}
@@ -548,6 +549,7 @@ function App() {
             onSave={handleSavePlan}
             onCancel={handleCancelPlan}
             exercisePool={exercisePool}
+            exerciseLibrary={exercises}
             isGenerated={selectedPlan.isGenerated || false}
           />
         )}
