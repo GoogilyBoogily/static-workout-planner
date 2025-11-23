@@ -6,7 +6,7 @@
 
 .equipment-filter-label {
   font-size: 0.9rem;
-  color: #aaa;
+  color: var(--color-text-secondary);
   margin-bottom: 0.75rem;
   text-align: center;
 }
@@ -22,18 +22,18 @@
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
   font-weight: 600;
-  border: 2px solid #666;
-  border-radius: 20px;
-  background-color: #3a3a2a;
-  color: #d4af37;
+  border: 2px solid var(--color-equipment);
+  border-radius: var(--radius-full);
+  background-color: var(--color-equipment-bg);
+  color: var(--color-equipment);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   user-select: none;
 }
 
 .equipment-pill:hover {
-  border-color: #ffd700;
-  background-color: #444;
+  border-color: var(--color-equipment-hover);
+  background-color: var(--color-bg-hover);
   transform: translateY(-1px);
 }
 
@@ -42,21 +42,21 @@
 }
 
 .equipment-pill:focus {
-  outline: 2px solid #ffd700;
+  outline: 2px solid var(--color-equipment);
   outline-offset: 2px;
 }
 
 /* Active (selected) state */
 .equipment-pill-active {
-  background-color: #ffd700;
-  border-color: #ffd700;
-  color: #1a1a1a;
+  background-color: var(--color-equipment);
+  border-color: var(--color-equipment);
+  color: var(--color-text-inverse);
   font-weight: 700;
 }
 
 .equipment-pill-active:hover {
-  background-color: #ffed4e;
-  border-color: #ffed4e;
+  background-color: var(--color-equipment-hover);
+  border-color: var(--color-equipment-hover);
 }
 
 /* Responsive design for mobile */

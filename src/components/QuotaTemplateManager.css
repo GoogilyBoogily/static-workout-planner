@@ -7,15 +7,15 @@
 .template-manager h3 {
   margin: 0 0 12px 0;
   font-size: 1.1rem;
-  color: var(--text-primary, #333);
+  color: var(--color-text-primary);
 }
 
 .template-empty {
   padding: 16px;
-  background-color: var(--bg-secondary, #f9f9f9);
-  border: 1px dashed var(--border-color, #ddd);
-  border-radius: 4px;
-  color: var(--text-secondary, #666);
+  background-color: var(--color-bg-tertiary);
+  border: 1px dashed var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
   font-size: 0.9rem;
   text-align: center;
 }
@@ -27,20 +27,20 @@
 }
 
 .template-item {
-  background-color: var(--bg-secondary, #f9f9f9);
-  border: 1px solid var(--border-color, #ddd);
-  border-radius: 6px;
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--radius-md);
   padding: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  transition: box-shadow 0.2s;
+  transition: box-shadow var(--transition-fast);
   position: relative;
 }
 
 .template-item:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .template-info {
@@ -53,7 +53,7 @@
 .template-name {
   font-weight: 600;
   font-size: 1rem;
-  color: var(--text-primary, #333);
+  color: var(--color-text-primary);
 }
 
 .template-quotas {
@@ -65,16 +65,16 @@
 .template-quota-badge {
   display: inline-block;
   padding: 2px 8px;
-  background-color: #e3f2fd;
-  color: #1976d2;
-  border-radius: 12px;
+  background-color: rgba(100, 108, 255, 0.15);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
   font-size: 0.85rem;
   font-weight: 500;
 }
 
 .template-date {
   font-size: 0.8rem;
-  color: var(--text-secondary, #888);
+  color: var(--color-text-tertiary);
   font-style: italic;
 }
 
@@ -87,31 +87,31 @@
 .template-delete-button {
   padding: 8px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color var(--transition-fast);
 }
 
 .template-load-button {
-  background-color: var(--accent-color, #007bff);
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
 }
 
 .template-load-button:hover {
-  background-color: var(--accent-hover, #0056b3);
+  background-color: var(--color-primary-hover);
 }
 
 .template-delete-button {
-  background-color: #fff;
-  color: #dc3545;
-  border: 1px solid #dc3545;
+  background-color: transparent;
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
 }
 
 .template-delete-button:hover {
-  background-color: #dc3545;
-  color: white;
+  background-color: var(--color-error);
+  color: var(--color-text-inverse);
 }
 
 /* Delete confirmation overlay */
@@ -121,8 +121,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.98);
-  border-radius: 6px;
+  background-color: var(--color-bg-elevated);
+  border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -130,12 +130,13 @@
   gap: 12px;
   padding: 12px;
   z-index: 10;
+  border: 1px solid var(--color-border-secondary);
 }
 
 .template-delete-confirm p {
   margin: 0;
   font-weight: 500;
-  color: var(--text-primary, #333);
+  color: var(--color-text-primary);
 }
 
 .template-confirm-actions {
@@ -147,29 +148,30 @@
 .confirm-cancel-button {
   padding: 8px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color var(--transition-fast);
 }
 
 .confirm-delete-button {
-  background-color: #dc3545;
-  color: white;
+  background-color: var(--color-error);
+  color: var(--color-text-inverse);
 }
 
 .confirm-delete-button:hover {
-  background-color: #c82333;
+  filter: brightness(1.1);
 }
 
 .confirm-cancel-button {
-  background-color: #6c757d;
-  color: white;
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-primary);
 }
 
 .confirm-cancel-button:hover {
-  background-color: #5a6268;
+  background-color: var(--color-bg-hover);
 }
 
 /* Mobile responsiveness */
@@ -186,22 +188,5 @@
   .template-load-button,
   .template-delete-button {
     flex: 1;
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .template-item {
-    background-color: var(--bg-secondary, #2d2d2d);
-    border-color: var(--border-color, #444);
-  }
-
-  .template-delete-confirm {
-    background-color: rgba(45, 45, 45, 0.98);
-  }
-
-  .template-empty {
-    background-color: var(--bg-secondary, #2d2d2d);
-    border-color: var(--border-color, #444);
   }
 }

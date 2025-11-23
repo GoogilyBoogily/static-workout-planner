@@ -1,0 +1,142 @@
+/**
+ * Theme Variables (Design Tokens)
+ *
+ * All CSS custom properties for theming. Components should only use these
+ * variables for colors, not hardcoded values.
+ *
+ * Theme is controlled via [data-theme] attribute on document.documentElement
+ */
+
+/* Dark Theme (Default) */
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Background colors */
+  --color-bg-primary: #1a1a1a;
+  --color-bg-secondary: #242424;
+  --color-bg-tertiary: #2a2a2a;
+  --color-bg-elevated: #333333;
+  --color-bg-hover: #3a3a3a;
+
+  /* Text colors */
+  --color-text-primary: rgba(255, 255, 255, 0.87);
+  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-tertiary: rgba(255, 255, 255, 0.38);
+  --color-text-inverse: #1a1a1a;
+
+  /* Accent colors */
+  --color-primary: #646cff;
+  --color-primary-hover: #535bf2;
+  --color-primary-active: #4249d8;
+
+  /* Semantic colors */
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
+
+  /* Semantic background variants (for alerts/banners) */
+  --color-success-bg: rgba(74, 222, 128, 0.15);
+  --color-warning-bg: rgba(251, 191, 36, 0.15);
+  --color-error-bg: rgba(248, 113, 113, 0.15);
+
+  /* Equipment accent (distinct from warning) */
+  --color-equipment: #ffd700;
+  --color-equipment-hover: #ffed4e;
+  --color-equipment-bg: rgba(255, 215, 0, 0.1);
+
+  /* Border colors */
+  --color-border-primary: #444;
+  --color-border-secondary: #333;
+  --color-border-tertiary: #555;
+
+  /* Component-specific */
+  --color-button-bg: #1a1a1a;
+  --color-input-bg: #2a2a2a;
+  --color-modal-overlay: rgba(0, 0, 0, 0.75);
+
+  /* Disabled state */
+  --color-disabled-bg: #2a2a2a;
+  --color-disabled-text: rgba(255, 255, 255, 0.3);
+  --color-disabled-border: #333;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Spacing (for consistency) */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.35s ease;
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Background colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9f9f9;
+  --color-bg-tertiary: #f0f0f0;
+  --color-bg-elevated: #ffffff;
+  --color-bg-hover: #e8e8e8;
+
+  /* Text colors */
+  --color-text-primary: #213547;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+  --color-text-inverse: #ffffff;
+
+  /* Accent colors */
+  --color-primary: #4a90e2;
+  --color-primary-hover: #357abd;
+  --color-primary-active: #2868a8;
+
+  /* Semantic colors */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  /* Semantic background variants (for alerts/banners) */
+  --color-success-bg: rgba(34, 197, 94, 0.1);
+  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+
+  /* Equipment accent (distinct from warning) */
+  --color-equipment: #b8860b;
+  --color-equipment-hover: #996f0a;
+  --color-equipment-bg: rgba(184, 134, 11, 0.1);
+
+  /* Border colors */
+  --color-border-primary: #ddd;
+  --color-border-secondary: #e5e5e5;
+  --color-border-tertiary: #ccc;
+
+  /* Component-specific */
+  --color-button-bg: #f9f9f9;
+  --color-input-bg: #ffffff;
+  --color-modal-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Disabled state */
+  --color-disabled-bg: #f0f0f0;
+  --color-disabled-text: #999999;
+  --color-disabled-border: #ddd;
+
+  /* Shadows (lighter for light mode) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+}

@@ -9,25 +9,25 @@
   width: 100%;
   padding: 0.75rem 2.5rem 0.75rem 1rem;
   font-size: 1rem;
-  border: 2px solid #444;
-  border-radius: 8px;
-  background-color: #2a2a2a;
-  color: #e0e0e0;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  background-color: var(--color-input-bg);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .search-input::placeholder {
-  color: #888;
+  color: var(--color-text-tertiary);
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #646cff;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.2);
 }
 
 .search-input:hover:not(:focus) {
-  border-color: #555;
+  border-color: var(--color-border-tertiary);
 }
 
 .search-clear-button {
@@ -37,22 +37,24 @@
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  color: #888;
+  color: var(--color-text-tertiary);
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   line-height: 1;
-  transition: color 0.2s ease;
+  transition: color var(--transition-fast);
 }
 
 .search-clear-button:hover {
-  color: #e0e0e0;
+  color: var(--color-text-primary);
+  background: transparent;
+  border-color: transparent;
 }
 
 .search-clear-button:focus {
-  outline: 2px solid #646cff;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 /* Responsive design for mobile */
