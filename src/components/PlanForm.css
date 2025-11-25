@@ -160,11 +160,15 @@
   border-style: dashed;
 }
 
-.exercise-item.drag-over {
-  border-color: var(--color-primary);
-  border-width: 2px;
-  background: var(--color-bg-hover);
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+/* Drop zone indicators - before (top) and after (bottom) */
+.exercise-item.drag-over-before {
+  border-top: 3px solid var(--color-primary);
+  margin-top: -1px;
+}
+
+.exercise-item.drag-over-after {
+  border-bottom: 3px solid var(--color-primary);
+  margin-bottom: -1px;
 }
 
 .exercise-info {
@@ -311,6 +315,141 @@
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid var(--color-border-secondary);
+}
+
+/* Circuit Mode Styles */
+.circuit-toggle-field {
+  margin-bottom: 16px;
+}
+
+.circuit-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.circuit-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.circuit-toggle-text {
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.circuit-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Round Groups */
+.circuit-rounds {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.round-group {
+  background-color: var(--hover-bg, rgba(0, 0, 0, 0.03));
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.round-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.round-group-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.round-exercises {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.round-exercises .exercise-item {
+  background-color: var(--card-bg);
+}
+
+.round-selector {
+  padding: 4px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.round-selector:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.add-to-round-button {
+  width: 100%;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.add-round-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+}
+
+/* Empty round styles */
+.round-exercises.empty-round {
+  min-height: 60px;
+  border: 2px dashed var(--color-border-primary, var(--border-color));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.round-exercises.drag-over-round {
+  border-color: var(--color-primary, var(--accent-color));
+  background: var(--color-bg-hover, rgba(74, 144, 226, 0.1));
+}
+
+.empty-round-drop-zone {
+  color: var(--color-text-secondary, var(--text-secondary));
+  font-size: 13px;
+  font-style: italic;
+  padding: 16px;
+  text-align: center;
+}
+
+.empty-circuit {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.empty-circuit p {
+  margin: 0 0 16px 0;
 }
 
 /* Mobile responsive */

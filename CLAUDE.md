@@ -113,3 +113,10 @@ All in `src/utils/`:
 - Each `.jsx` has matching `.css` file
 - Class names: kebab-case (e.g., `.exercise-list-item`)
 - Dark mode via CSS custom properties in `index.css` + `prefers-color-scheme`
+
+## Active Technologies
+- JavaScript (ES2020+) with JSX + React 18, Vite 6 (existing stack - no new dependencies needed) (001-circuit-timer)
+- N/A (timer config resets on page load per spec) (001-circuit-timer)
+
+## Recent Changes
+- 001-circuit-timer: Added JavaScript (ES2020+) with JSX + React 18, Vite 6 (existing stack - no new dependencies needed)

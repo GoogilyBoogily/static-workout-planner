@@ -14,6 +14,7 @@ import PlanList from './components/PlanList'
 import PlanDetail from './components/PlanDetail'
 import QuotaForm from './components/QuotaForm'
 import ThemeToggle from './components/ThemeToggle'
+import CircuitTimer from './components/CircuitTimer'
 import { filterExercisesByMuscles } from './utils/muscleFilter'
 import PlansStorage from './utils/localStorage'
 import { QuotaTemplateStorage } from './utils/quotaTemplates'
@@ -48,6 +49,10 @@ function App() {
   const [quotaFormOpen, setQuotaFormOpen] = useState(false)
   const [exercisePool, setExercisePool] = useState({})
   const [quotaTemplates, setQuotaTemplates] = useState([])
+
+  // Circuit Timer state (Feature 006)
+  const [timerActive, setTimerActive] = useState(false)
+  const [timerPlan, setTimerPlan] = useState(null)
 
   // Theme state with localStorage persistence
   const [theme, setTheme] = useState(() => {
@@ -272,6 +277,7 @@ function App() {
           ...selectedPlan,
           name: planData.name,
           exercises: planData.exercises,
+          isCircuit: planData.isCircuit,
           updatedAt: Date.now()
         }
 
@@ -287,6 +293,7 @@ function App() {
           id: crypto.randomUUID(),
           name: planData.name,
           exercises: planData.exercises,
+          isCircuit: planData.isCircuit || false,
           createdAt: Date.now(),
           updatedAt: Date.now()
         }
@@ -384,6 +391,37 @@ function App() {
   // Handle quota form cancel
   const handleQuotaFormCancel = () => {
     setQuotaFormOpen(false)
+  }
+
+  // T005-T007: Circuit Timer handlers (Feature 006)
+  const handleStartTimer = (plan) => {
+    setTimerPlan(plan)
+    setTimerActive(true)
+  }
+
+  const handleCloseTimer = () => {
+    setTimerActive(false)
+    setTimerPlan(null)
+  }
+
+  // Handle timer plan update (e.g., when exercises are reordered via drag-and-drop)
+  const handleUpdateTimerPlan = (updatedPlan) => {
+    try {
+      // Update local timer plan state
+      setTimerPlan(updatedPlan)
+
+      // Update the plan in the plans array
+      const updatedPlans = plans.map(p =>
+        p.id === updatedPlan.id ? updatedPlan : p
+      )
+
+      // Persist to localStorage
+      PlansStorage.savePlans(updatedPlans)
+      setPlans(updatedPlans)
+    } catch (error) {
+      console.error('Failed to update timer plan:', error)
+      setStorageError('Failed to save exercise changes.')
+    }
   }
 
   // T068: Handle save quota template with error handling (Feature 005)
@@ -520,7 +558,16 @@ function App() {
       {/* Plans Section: Full width at top */}
       <div className="plans-section">
         {/* T032-T043: Plan List */}
-        {currentView === 'list' && (
+        {/* T007: Circuit Timer View (Feature 006) */}
+        {timerActive && (
+          <CircuitTimer
+            onClose={handleCloseTimer}
+            plan={timerPlan}
+            onUpdatePlan={handleUpdateTimerPlan}
+          />
+        )}
+
+        {currentView === 'list' && !timerActive && (
           <PlanList
             plans={sortedPlans}
             onCreate={handleCreatePlan}
@@ -529,6 +576,7 @@ function App() {
             onView={handleViewPlan}
             onGenerateRandom={handleGenerateRandom}
             exercisePoolEmpty={Object.keys(exercisePool).length === 0}
+            onStartTimer={handleStartTimer}
           />
         )}
 

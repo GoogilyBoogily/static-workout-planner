@@ -1,0 +1,737 @@
+/* Circuit Timer Styles */
+
+.circuit-timer {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  outline: none;
+}
+
+.circuit-timer:focus {
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+.circuit-timer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.circuit-timer-header h2 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.timer-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.plan-name-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.close-button:hover {
+  color: var(--text-primary);
+  background-color: var(--hover-bg);
+}
+
+/* Configuration Form */
+.timer-config {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.config-field label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.config-field input {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.config-field input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.2);
+}
+
+.start-button {
+  margin-top: 1rem;
+  padding: 1rem;
+  font-size: 1.125rem;
+}
+
+/* Volume Control */
+.volume-field {
+  margin-top: 0.5rem;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.volume-slider {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border-color);
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-color, #3b82f6);
+  cursor: pointer;
+  border: 2px solid var(--card-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-color, #3b82f6);
+  cursor: pointer;
+  border: 2px solid var(--card-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.volume-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border-color);
+}
+
+.volume-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border-color);
+}
+
+.test-beep-button {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+/* Sound Settings */
+.sound-settings {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background-color: var(--hover-bg, rgba(0, 0, 0, 0.05));
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.sound-settings-header {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sound-selector-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.sound-selector-row:last-child {
+  margin-bottom: 0;
+}
+
+.sound-selector-label {
+  min-width: 70px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Phase-specific color indicators for labels */
+.phase-exercise-label {
+  color: var(--success-color, #22c55e);
+}
+
+.phase-rest-label {
+  color: var(--info-color, #3b82f6);
+}
+
+.phase-finisher-label {
+  color: var(--warning-color, #f59e0b);
+}
+
+.phase-warning-label {
+  color: var(--danger-color, #ef4444);
+}
+
+.phase-complete-label {
+  color: var(--success-color, #22c55e);
+}
+
+.sound-select {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.sound-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.2);
+}
+
+.test-sound-button {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.875rem;
+  min-width: auto;
+}
+
+/* Timer Layout - Side by Side */
+.timer-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+/* Exercise Panel */
+.exercise-panel {
+  flex: 0 0 280px;
+  background-color: var(--hover-bg, rgba(0, 0, 0, 0.05));
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.exercise-panel-header {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.exercise-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Circuit Groups */
+.circuit-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.circuit-group {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.5rem;
+  transition: all 0.2s;
+}
+
+.circuit-group.current {
+  border-color: var(--accent-color, #3b82f6);
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.circuit-group.completed {
+  opacity: 0.5;
+}
+
+.circuit-group.upcoming {
+  opacity: 0.7;
+}
+
+.circuit-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.circuit-group.current .circuit-group-header {
+  color: var(--accent-color, #3b82f6);
+}
+
+.current-badge {
+  background-color: var(--accent-color, #3b82f6);
+  color: white;
+  font-size: 0.625rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+}
+
+.circuit-group .exercise-list {
+  margin: 0;
+}
+
+.circuit-group .exercise-item {
+  padding: 0.5rem;
+  margin-bottom: 0.25rem;
+  background-color: transparent;
+}
+
+.circuit-group .exercise-item:last-child {
+  margin-bottom: 0;
+}
+
+.exercise-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.exercise-item:last-child {
+  margin-bottom: 0;
+}
+
+.exercise-item.current {
+  background-color: var(--accent-color, #3b82f6);
+  color: white;
+}
+
+.exercise-item.current .exercise-details {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.exercise-item.completed {
+  opacity: 0.5;
+}
+
+.exercise-item.completed .exercise-name {
+  text-decoration: line-through;
+}
+
+.exercise-item.upcoming {
+  opacity: 0.7;
+}
+
+.exercise-status {
+  flex: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+}
+
+.check-mark {
+  color: var(--success-color, #22c55e);
+}
+
+.current-marker {
+  font-size: 0.75rem;
+}
+
+.exercise-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.exercise-name {
+  font-weight: 500;
+  font-size: 0.9375rem;
+  word-break: break-word;
+}
+
+.exercise-details {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Timer Display */
+.timer-display {
+  flex: 1;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.phase-indicator {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+/* Phase-specific colors */
+.phase-exercise .phase-indicator {
+  color: var(--success-color, #22c55e);
+}
+
+.phase-rest .phase-indicator {
+  color: var(--info-color, #3b82f6);
+}
+
+.phase-finisher .phase-indicator {
+  color: var(--warning-color, #f59e0b);
+}
+
+.countdown {
+  font-size: 5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.round-counter {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+/* Paused state */
+.timer-display.paused .countdown {
+  opacity: 0.5;
+}
+
+.paused-indicator {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--warning-color, #f59e0b);
+  margin-bottom: 1rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Timer Controls */
+.timer-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.timer-controls button {
+  min-width: 100px;
+}
+
+/* Completion Display */
+.timer-complete {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.complete-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.complete-message {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--success-color, #22c55e);
+  margin-bottom: 2rem;
+}
+
+.complete-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.complete-actions button {
+  min-width: 150px;
+}
+
+/* Config Exercise Preview with Drag-and-Drop */
+.config-exercise-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: var(--hover-bg, rgba(0, 0, 0, 0.05));
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.config-exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.drag-hint {
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.config-circuit-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.config-circuit-group {
+  border: 2px dashed var(--border-color);
+  border-radius: 6px;
+  padding: 0.75rem;
+  min-height: 60px;
+  transition: all 0.2s;
+}
+
+/* Removed: group drag-over no longer needed - exercises are drop targets */
+
+.config-group-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.config-exercise-list {
+  padding: 0;
+  margin: 0;
+}
+
+.config-exercise-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  margin-bottom: 0.25rem;
+  border-radius: 4px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  cursor: grab;
+  transition: all 0.2s;
+}
+
+.config-exercise-item:last-child {
+  margin-bottom: 0;
+}
+
+.config-exercise-item:hover {
+  background-color: var(--hover-bg);
+}
+
+.config-exercise-item.dragging {
+  opacity: 0.5;
+  border-style: dashed;
+  cursor: grabbing;
+}
+
+.config-exercise-item.drag-over {
+  border-color: var(--accent-color, #3b82f6);
+  background-color: rgba(59, 130, 246, 0.15);
+  border-width: 2px;
+}
+
+.config-exercise-item .exercise-drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  cursor: grab;
+  color: var(--text-secondary);
+  user-select: none;
+  padding: 8px 4px;
+  border-radius: 4px;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.config-exercise-item .exercise-drag-handle:hover {
+  color: var(--text-primary);
+  background-color: var(--hover-bg);
+}
+
+.config-exercise-item.dragging .exercise-drag-handle {
+  cursor: grabbing;
+}
+
+.config-exercise-item .drag-icon {
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.config-exercise-item .exercise-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .timer-layout {
+    flex-direction: column-reverse;
+  }
+
+  .exercise-panel {
+    flex: none;
+    width: 100%;
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .circuit-timer {
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 0 0.5rem;
+  }
+
+  .exercise-panel {
+    max-height: 150px;
+    padding: 0.75rem;
+  }
+
+  .exercise-item {
+    padding: 0.5rem;
+  }
+
+  .exercise-name {
+    font-size: 0.875rem;
+  }
+
+  .countdown {
+    font-size: 3.5rem;
+  }
+
+  .phase-indicator {
+    font-size: 1.25rem;
+  }
+
+  .round-counter {
+    font-size: 1rem;
+  }
+
+  .timer-controls {
+    flex-direction: column;
+  }
+
+  .timer-controls button {
+    width: 100%;
+  }
+
+  .complete-actions {
+    flex-direction: column;
+  }
+
+  .complete-actions button {
+    width: 100%;
+  }
+
+  .complete-icon {
+    font-size: 3rem;
+  }
+
+  .complete-message {
+    font-size: 1.5rem;
+  }
+
+  .sound-settings {
+    padding: 0.75rem;
+  }
+
+  .sound-selector-row {
+    flex-wrap: wrap;
+  }
+
+  .sound-selector-label {
+    min-width: 60px;
+  }
+
+  .sound-select {
+    flex: 1;
+    min-width: 120px;
+  }
+}

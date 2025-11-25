@@ -19,10 +19,21 @@ const REROLL_HISTORY_SIZE = 3 // Remember last 3 rerolled exercises per position
  */
 function PlanForm({ plan, onSave, onCancel, exercisePool = {}, exerciseLibrary = [], isGenerated = false }) {
   const [planName, setPlanName] = useState(plan?.name || '')
-  const [exercises, setExercises] = useState(plan?.exercises || [])
+  const [exercises, setExercises] = useState(() => {
+    // Initialize exercises with roundGroup if not present
+    const planExercises = plan?.exercises || []
+    return planExercises.map(ex => ({
+      ...ex,
+      roundGroup: ex.roundGroup ?? 0
+    }))
+  })
   const [isAddingExercise, setIsAddingExercise] = useState(false)
   const [editingExercise, setEditingExercise] = useState(null)
   const [nameError, setNameError] = useState(null)
+
+  // Circuit mode state
+  const [isCircuit, setIsCircuit] = useState(plan?.isCircuit || false)
+  const [addingToRound, setAddingToRound] = useState(null) // Which round group to add to
 
   // T027: Reroll history state (Feature 005)
   // Track recently shown exercises per exercise position to avoid immediate repeats
@@ -35,11 +46,41 @@ function PlanForm({ plan, onSave, onCancel, exercisePool = {}, exerciseLibrary =
   // Drag and drop state
   const [draggedIndex, setDraggedIndex] = useState(null)
   const [dragOverIndex, setDragOverIndex] = useState(null)
+  const [dragOverPosition, setDragOverPosition] = useState(null) // 'before' or 'after'
+  const [dragOverRound, setDragOverRound] = useState(null) // For empty round highlighting
+
+  // Round count state (for empty rounds support)
+  const [roundCount, setRoundCount] = useState(() => {
+    // Initialize from existing exercises or default to 1
+    if (plan?.exercises?.length > 0) {
+      const maxGroup = Math.max(...plan.exercises.map(ex => ex.roundGroup ?? 0))
+      return maxGroup + 1
+    }
+    return 1
+  })
 
   // Extract available tags from exercise pool for reroll functionality
   const availableTags = useMemo(() => {
     return Object.keys(exercisePool).sort()
   }, [exercisePool])
+
+  // Group exercises by roundGroup for circuit mode display
+  const exercisesByRound = useMemo(() => {
+    if (!isCircuit) return null
+    const groups = {}
+    exercises.forEach((exercise, originalIndex) => {
+      const group = exercise.roundGroup ?? 0
+      if (!groups[group]) {
+        groups[group] = []
+      }
+      groups[group].push({ ...exercise, originalIndex })
+    })
+    // Return sorted array of [groupNumber, exercises[]] pairs
+    return Object.entries(groups)
+      .map(([group, exs]) => [parseInt(group, 10), exs])
+      .sort((a, b) => a[0] - b[0])
+  }, [exercises, isCircuit])
+
 
   // FIXED L6: Keyboard shortcuts for power users
   useEffect(() => {
@@ -129,6 +170,55 @@ function PlanForm({ plan, onSave, onCancel, exercisePool = {}, exerciseLibrary =
     setIsAddingExercise(true)
   }
 
+  // Circuit mode handlers
+  const handleAddRound = () => {
+    // Simply increment round count - no need to force adding exercise
+    setRoundCount(prev => prev + 1)
+  }
+
+  const handleRemoveRound = (roundGroup) => {
+    // Remove all exercises in this round group and renumber remaining groups
+    setExercises(prev => {
+      const filtered = prev.filter(ex => ex.roundGroup !== roundGroup)
+      // Renumber groups to fill the gap
+      return filtered.map(ex => ({
+        ...ex,
+        roundGroup: ex.roundGroup > roundGroup ? ex.roundGroup - 1 : ex.roundGroup
+      }))
+    })
+    // Decrement round count
+    setRoundCount(prev => Math.max(1, prev - 1))
+  }
+
+  const handleAddExerciseToRound = (roundGroup) => {
+    setAddingToRound(roundGroup)
+    setIsAddingExercise(true)
+    setEditingExercise(null)
+  }
+
+  const handleMoveExerciseToRound = (exerciseIndex, newRoundGroup) => {
+    setExercises(prev => prev.map((ex, idx) =>
+      idx === exerciseIndex ? { ...ex, roundGroup: newRoundGroup } : ex
+    ))
+  }
+
+  // Override handleSaveExercise to include roundGroup for circuit mode
+  const handleSaveExerciseWithRound = (exerciseData) => {
+    if (editingExercise !== null) {
+      // Editing existing exercise - preserve its roundGroup
+      setExercises(prev =>
+        prev.map((ex, idx) => idx === editingExercise ? { ...exerciseData, roundGroup: ex.roundGroup } : ex)
+      )
+      setEditingExercise(null)
+    } else {
+      // Adding new exercise
+      const roundGroup = isCircuit && addingToRound !== null ? addingToRound : 0
+      setExercises(prev => [...prev, { ...exerciseData, roundGroup }])
+    }
+    setIsAddingExercise(false)
+    setAddingToRound(null)
+  }
+
   // T047-T048: Exercise reordering functions
   const handleMoveExerciseUp = (index) => {
     if (index === 0) return
@@ -164,34 +254,91 @@ function PlanForm({ plan, onSave, onCancel, exercisePool = {}, exerciseLibrary =
     e.target.classList.remove('dragging')
     setDraggedIndex(null)
     setDragOverIndex(null)
+    setDragOverPosition(null)
+    setDragOverRound(null)
   }
 
   const handleDragOver = (e, index) => {
     e.preventDefault()
     e.dataTransfer.dropEffect = 'move'
     if (draggedIndex !== null && index !== draggedIndex) {
+      // Calculate if mouse is in top or bottom half of element
+      const rect = e.currentTarget.getBoundingClientRect()
+      const midpoint = rect.top + rect.height / 2
+      const position = e.clientY < midpoint ? 'before' : 'after'
+
       setDragOverIndex(index)
+      setDragOverPosition(position)
     }
   }
 
   const handleDragLeave = () => {
     setDragOverIndex(null)
+    setDragOverPosition(null)
+    setDragOverRound(null)
   }
 
   const handleDrop = (e, dropIndex) => {
     e.preventDefault()
-    if (draggedIndex === null || draggedIndex === dropIndex) {
+    if (draggedIndex === null) {
       setDragOverIndex(null)
+      setDragOverPosition(null)
       return
     }
 
+    // Get target exercise's roundGroup before any modifications
+    const targetRoundGroup = exercises[dropIndex]?.roundGroup
+
     const newExercises = [...exercises]
     const [draggedItem] = newExercises.splice(draggedIndex, 1)
-    newExercises.splice(dropIndex, 0, draggedItem)
+
+    // Update roundGroup to match target's round (for circuit mode cross-round drag)
+    if (targetRoundGroup !== undefined) {
+      draggedItem.roundGroup = targetRoundGroup
+    }
+
+    // Calculate actual insert position based on before/after
+    let insertIndex = dropIndex
+    if (draggedIndex < dropIndex) {
+      // Dragging from above: adjust for the splice
+      insertIndex = dragOverPosition === 'after' ? dropIndex : dropIndex - 1
+    } else {
+      // Dragging from below: insert at position or after
+      insertIndex = dragOverPosition === 'after' ? dropIndex + 1 : dropIndex
+    }
+
+    // Clamp to valid range
+    insertIndex = Math.max(0, Math.min(insertIndex, newExercises.length))
+
+    newExercises.splice(insertIndex, 0, draggedItem)
     setExercises(newExercises)
 
     setDraggedIndex(null)
     setDragOverIndex(null)
+    setDragOverPosition(null)
+  }
+
+  // Empty round drag handlers
+  const handleEmptyRoundDragOver = (e, roundIndex) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    setDragOverRound(roundIndex)
+  }
+
+  const handleEmptyRoundDrop = (e, roundGroup) => {
+    e.preventDefault()
+    if (draggedIndex === null) return
+
+    const newExercises = [...exercises]
+    const [draggedItem] = newExercises.splice(draggedIndex, 1)
+    draggedItem.roundGroup = roundGroup
+    newExercises.push(draggedItem)
+    setExercises(newExercises)
+
+    setDraggedIndex(null)
+    setDragOverIndex(null)
+    setDragOverPosition(null)
+    setDragOverRound(null)
   }
 
   /**
@@ -353,6 +500,7 @@ function PlanForm({ plan, onSave, onCancel, exercisePool = {}, exerciseLibrary =
     const planData = {
       name: planName.trim(),
       exercises: exercises,
+      isCircuit: isCircuit,
       // Include pin status if this is a generated plan
       ...(isGenerated && { pinStatus })
     }
@@ -388,6 +536,24 @@ function PlanForm({ plan, onSave, onCancel, exercisePool = {}, exerciseLibrary =
         {nameError && <span className="error-text">{nameError}</span>}
       </div>
 
+      {/* Circuit Mode Toggle */}
+      <div className="form-field circuit-toggle-field">
+        <label className="circuit-toggle-label">
+          <input
+            type="checkbox"
+            checked={isCircuit}
+            onChange={(e) => setIsCircuit(e.target.checked)}
+            className="circuit-checkbox"
+          />
+          <span className="circuit-toggle-text">Circuit Workout</span>
+        </label>
+        {isCircuit && (
+          <span className="circuit-hint">
+            Group exercises into rounds. All exercises in a round are done back-to-back.
+          </span>
+        )}
+      </div>
+
       <div className="exercises-section">
         <div className="exercises-header">
           <h3>Exercises ({exercises.length})</h3>
@@ -421,7 +587,8 @@ function PlanForm({ plan, onSave, onCancel, exercisePool = {}, exerciseLibrary =
           </div>
         </div>
 
-        {exercises.length > 0 && !isAddingExercise && (
+        {/* Flat exercise list (non-circuit mode) */}
+        {exercises.length > 0 && !isAddingExercise && !isCircuit && (
           <div className="exercises-list">
             {exercises.map((exercise, index) => (
               <div
@@ -511,12 +678,119 @@ function PlanForm({ plan, onSave, onCancel, exercisePool = {}, exerciseLibrary =
           </div>
         )}
 
+        {/* Grouped exercise list (circuit mode) */}
+        {isCircuit && !isAddingExercise && (
+          <div className="circuit-rounds">
+            {Array.from({ length: roundCount }, (_, roundIndex) => {
+              const roundExercises = exercisesByRound?.find(([g]) => g === roundIndex)?.[1] || []
+              return (
+                <div key={roundIndex} className="round-group">
+                  <div className="round-group-header">
+                    <h4>Round {roundIndex + 1}</h4>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveRound(roundIndex)}
+                      className="button-icon button-danger"
+                      title="Delete this round and all its exercises"
+                      aria-label={`Delete Round ${roundIndex + 1}`}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                  <div
+                    className={`round-exercises ${roundExercises.length === 0 ? 'empty-round' : ''} ${dragOverRound === roundIndex ? 'drag-over-round' : ''}`}
+                    onDragOver={roundExercises.length === 0 ? (e) => handleEmptyRoundDragOver(e, roundIndex) : undefined}
+                    onDragLeave={roundExercises.length === 0 ? handleDragLeave : undefined}
+                    onDrop={roundExercises.length === 0 ? (e) => handleEmptyRoundDrop(e, roundIndex) : undefined}
+                  >
+                    {roundExercises.map((exercise) => (
+                      <div
+                        key={exercise.id}
+                        className={`exercise-item ${draggedIndex === exercise.originalIndex ? 'dragging' : ''} ${dragOverIndex === exercise.originalIndex ? `drag-over-${dragOverPosition}` : ''}`}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, exercise.originalIndex)}
+                        onDragEnd={handleDragEnd}
+                        onDragOver={(e) => handleDragOver(e, exercise.originalIndex)}
+                        onDragLeave={handleDragLeave}
+                        onDrop={(e) => handleDrop(e, exercise.originalIndex)}
+                      >
+                        <div className="exercise-drag-handle" title="Drag to reorder">
+                          <span className="drag-icon">⋮⋮</span>
+                        </div>
+                        <div className="exercise-info">
+                          <div className="exercise-name">{exercise.name}</div>
+                          <div className="exercise-details">
+                            {exercise.sets} sets × {exercise.reps} reps
+                            {exercise.weight && ` @ ${exercise.weight}`}
+                          </div>
+                        </div>
+                        <div className="exercise-actions">
+                          {/* Round selector dropdown */}
+                          <select
+                            value={exercise.roundGroup}
+                            onChange={(e) => handleMoveExerciseToRound(exercise.originalIndex, parseInt(e.target.value, 10))}
+                            className="round-selector"
+                            title="Move to different round"
+                          >
+                            {Array.from({ length: roundCount }, (_, i) => (
+                              <option key={i} value={i}>Round {i + 1}</option>
+                            ))}
+                          </select>
+                          <button
+                            type="button"
+                            onClick={() => handleEditExercise(exercise.originalIndex)}
+                            className="button-icon"
+                            aria-label={`Edit ${exercise.name}`}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveExercise(exercise.originalIndex)}
+                            className="button-icon button-danger"
+                            aria-label={`Remove ${exercise.name}`}
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    {roundExercises.length === 0 && (
+                      <div className="empty-round-drop-zone">
+                        Drag exercises here
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleAddExerciseToRound(roundIndex)}
+                    className="button-secondary add-to-round-button"
+                  >
+                    + Add Exercise to Round {roundIndex + 1}
+                  </button>
+                </div>
+              )
+            })}
+
+            <button
+              type="button"
+              onClick={handleAddRound}
+              className="button-primary add-round-button"
+            >
+              + Add New Round
+            </button>
+          </div>
+        )}
+
         {isAddingExercise && (
           <ExerciseForm
             exercise={editingExercise !== null ? exercises[editingExercise] : null}
             exerciseLibrary={exerciseLibrary}
-            onSave={handleSaveExercise}
-            onCancel={handleCancelExercise}
+            onSave={isCircuit ? handleSaveExerciseWithRound : handleSaveExercise}
+            onCancel={() => {
+              handleCancelExercise()
+              setAddingToRound(null)
+            }}
           />
         )}
 

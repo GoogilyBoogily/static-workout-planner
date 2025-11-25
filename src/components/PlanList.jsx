@@ -11,8 +11,9 @@ import './PlanList.css'
  * @param {Function} props.onView - Callback when viewing plan details: (plan) => void
  * @param {Function} props.onGenerateRandom - Callback when "Generate Random Workout" is clicked
  * @param {boolean} props.exercisePoolEmpty - True if no exercises available for generation
+ * @param {Function} props.onStartTimer - Callback when starting circuit timer: (plan) => void
  */
-function PlanList({ plans, onCreate, onEdit, onDelete, onView, onGenerateRandom, exercisePoolEmpty = false }) {
+function PlanList({ plans, onCreate, onEdit, onDelete, onView, onGenerateRandom, exercisePoolEmpty = false, onStartTimer }) {
   if (plans.length === 0) {
     return (
       <div className="plan-list-empty">
@@ -87,6 +88,13 @@ function PlanList({ plans, onCreate, onEdit, onDelete, onView, onGenerateRandom,
             </div>
 
             <div className="plan-card-actions">
+              <button
+                onClick={() => onStartTimer(plan)}
+                className="button-secondary timer-button"
+                aria-label={`Start timer for ${plan.name}`}
+              >
+                ⏱️ Timer
+              </button>
               <button
                 onClick={() => onEdit(plan)}
                 className="button-secondary"
