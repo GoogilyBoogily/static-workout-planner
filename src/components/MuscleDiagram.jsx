@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Body from '@mjcdev/react-body-highlighter'
-import { convertToLibraryNames, getOurMuscleName } from '../assets/muscle-groups'
+import { convertToLibraryNames, getOurMuscleName, ALL_LIBRARY_SLUGS } from '../assets/muscle-groups'
 
 /**
  * MuscleDiagram Component
@@ -13,10 +13,27 @@ import { convertToLibraryNames, getOurMuscleName } from '../assets/muscle-groups
  * @param {Function} props.onMuscleToggle - Callback when muscle is clicked
  * @param {string[]} props.hoveredMuscle - Array of currently hovered muscle names
  * @param {Function} props.onMuscleHover - Callback when muscle is hovered (receives array or single string)
+ * @param {string[]} props.availableMuscles - Array of library muscle slugs that have exercises (others are disabled)
  */
-function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle = [], onMuscleHover }) {
+function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle = [], onMuscleHover, availableMuscles = [] }) {
   // Body type toggle state (male/female)
   const [bodyType, setBodyType] = useState('female')
+
+  // Compute unavailable muscle slugs and generate CSS to disable them
+  const unavailableSlugs = useMemo(() => {
+    return ALL_LIBRARY_SLUGS.filter(slug => !availableMuscles.includes(slug))
+  }, [availableMuscles])
+
+  const unavailableCSS = useMemo(() => {
+    if (unavailableSlugs.length === 0) return ''
+    const selectors = unavailableSlugs.map(slug => `.muscle-diagram svg path#${slug}`).join(',\n')
+    return `${selectors} {
+      fill: #3a3a3a !important;
+      cursor: default !important;
+      opacity: 0.3;
+      pointer-events: none;
+    }`
+  }, [unavailableSlugs])
 
   // Convert our muscle names to library format
   const librarySelectedMuscles = convertToLibraryNames(selectedMuscles)
@@ -51,6 +68,8 @@ function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle = [
 
   // Handle muscle click from library
   const handleBodyPartClick = (bodyPart, side) => {
+    // Ignore clicks on unavailable muscles
+    if (!availableMuscles.includes(bodyPart.slug)) return
     // bodyPart.slug contains the library muscle name
     const ourMuscleName = getOurMuscleName(bodyPart.slug)
     if (onMuscleToggle) {
@@ -63,6 +82,8 @@ function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle = [
     // Check if hovering over an SVG path element (muscle part)
     const target = event.target
     if (target.tagName === 'path' && target.id) {
+      // Ignore hover on unavailable muscles
+      if (!availableMuscles.includes(target.id)) return
       // The library sets id attribute to the muscle slug
       const libraryMuscleName = target.id
       const ourMuscleName = getOurMuscleName(libraryMuscleName)
@@ -85,6 +106,9 @@ function MuscleDiagram({ selectedMuscles = [], onMuscleToggle, hoveredMuscle = [
 
   return (
     <div className="muscle-diagram">
+      {/* Dynamic CSS to disable unavailable muscles */}
+      {unavailableCSS && <style>{unavailableCSS}</style>}
+
       {/* Body type toggle buttons (Male/Female) */}
       <div className="body-type-toggle">
         <button

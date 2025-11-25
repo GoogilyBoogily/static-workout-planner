@@ -73,3 +73,19 @@ export function convertToLibraryNames(ourNames) {
  * @type {string[]}
  */
 export const allMuscleGroups = Object.keys(muscleNameMap)
+
+/**
+ * All muscle slugs supported by @mjcdev/react-body-highlighter library
+ * Used to determine which muscles to disable when not available in exercise data
+ * @type {string[]}
+ */
+export const ALL_LIBRARY_SLUGS = [
+  // Upper body
+  'chest', 'trapezius', 'upper-back', 'lower-back', 'biceps', 'triceps', 'forearm', 'deltoids',
+  // Core
+  'abs', 'obliques',
+  // Lower body
+  'adductors', 'hamstring', 'quadriceps', 'calves', 'gluteal', 'tibialis',
+  // Other
+  'head', 'neck', 'hands', 'feet', 'ankles', 'knees', 'hair'
+]

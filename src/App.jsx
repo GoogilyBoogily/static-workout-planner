@@ -16,6 +16,7 @@ import QuotaForm from './components/QuotaForm'
 import ThemeToggle from './components/ThemeToggle'
 import CircuitTimer from './components/CircuitTimer'
 import { filterExercisesByMuscles } from './utils/muscleFilter'
+import { convertToLibraryNames } from './assets/muscle-groups'
 import PlansStorage from './utils/localStorage'
 import { QuotaTemplateStorage } from './utils/quotaTemplates'
 import { buildExercisePool, getAvailableTags, generateWorkoutPlan, generatePlanName } from './utils/randomGenerator'
@@ -468,6 +469,11 @@ function App() {
     return Array.from(tagSet).sort()
   }, [exercises])
 
+  // Convert available tags to library muscle slugs for MuscleDiagram
+  const availableMuscles = useMemo(() => {
+    return convertToLibraryNames(availableTags)
+  }, [availableTags])
+
   // Extract unique equipment from all exercises for EquipmentFilter (both required and optional)
   const availableEquipment = useMemo(() => {
     const equipmentSet = new Set()
@@ -620,6 +626,7 @@ function App() {
             onMuscleToggle={handleMuscleToggle}
             hoveredMuscle={hoveredMuscle}
             onMuscleHover={setHoveredMuscle}
+            availableMuscles={availableMuscles}
           />
         </div>
 
