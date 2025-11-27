@@ -14,7 +14,8 @@ A feature-rich React application for planning workouts, exploring exercises, and
 
 - **Interactive Muscle Diagram** - Click muscles to filter exercises, toggle male/female body models
 - **Exercise Library** - Search and filter 200+ exercises by muscle group or equipment
-- **Workout Plans** - Create, edit, and manage custom workout plans with circuit mode
+- **Add to Plan** - Quickly add exercises to plans with customizable sets, reps, weight, and rest
+- **Workout Plans** - Create, edit, and manage custom workout plans with drag-drop reordering
 - **Random Workout Generator** - Generate workouts based on muscle group quotas with pin/reroll
 - **Circuit Timer** - Full-featured interval timer with sound alerts and keyboard controls
 - **Dark/Light Theme** - Automatic OS preference detection with manual toggle
@@ -52,11 +53,21 @@ Browse a comprehensive exercise database with powerful filtering. Search by name
 
 ---
 
+## Add Exercises to Plans
+
+Quickly add exercises from the library to your workout plans. Hover over any exercise card to reveal a "+" button, or use the "Add to Plan" button in the exercise detail modal. Choose from:
+
+- **Quick Add** - Add with default settings (3 sets x 8-12 reps)
+- **Customize** - Configure sets, reps, weight, and rest periods before adding
+- **Create New Plan** - Start a fresh workout plan with the selected exercise
+
+---
+
 ## Workout Plans
 
 ![Plan Management](./docs/gifs/plan-management.gif)
 
-Create and manage custom workout plans with full control over sets, reps, weight, and rest periods. Enable circuit mode to organize exercises into rounds with drag-and-drop reordering. All plans persist in localStorage with cross-tab synchronization.
+Create and manage custom workout plans with full control over sets, reps, weight, and rest periods. **Drag and drop plans to reorder them** in your list. Enable circuit mode to organize exercises into rounds with drag-and-drop reordering within the plan. All plans persist in localStorage with cross-tab synchronization.
 
 <p align="center">
   <img src="./docs/screenshots/01-plan-list.png" alt="Plan List" width="600">

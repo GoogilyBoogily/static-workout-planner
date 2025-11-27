@@ -21,6 +21,7 @@ import { convertToLibraryNames } from './assets/muscle-groups'
 import PlansStorage from './utils/localStorage'
 import { QuotaTemplateStorage } from './utils/quotaTemplates'
 import { buildExercisePool, getAvailableTags, generateWorkoutPlan, generatePlanName } from './utils/randomGenerator'
+import { createWorkoutPlan, reorderPlans } from './utils/planHelpers'
 
 import type {
   ParsedExercise,
@@ -291,23 +292,12 @@ function App() {
   // Create a new plan with an exercise from the library
   const handleCreateNewPlanWithExercise = (planName: string, exercise: PlanExercise) => {
     try {
-      // Increment all existing plans' sortOrder
-      const shiftedPlans = plans.map(p => ({
-        ...p,
-        sortOrder: p.sortOrder + 1
-      }))
-
-      const newPlan: WorkoutPlan = {
-        id: crypto.randomUUID(),
+      const { updatedPlans } = createWorkoutPlan(plans, {
         name: planName,
         exercises: [exercise],
-        isCircuit: false,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-        sortOrder: 0
-      }
+        isCircuit: false
+      })
 
-      const updatedPlans = [newPlan, ...shiftedPlans]
       PlansStorage.savePlans(updatedPlans)
       setPlans(updatedPlans)
     } catch (err) {
@@ -371,23 +361,12 @@ function App() {
         setPlans(updatedPlans)
       } else {
         // Creating new plan - insert at top (sortOrder = 0)
-        // Increment all existing plans' sortOrder
-        const shiftedPlans = plans.map(p => ({
-          ...p,
-          sortOrder: p.sortOrder + 1
-        }))
-
-        const newPlan: WorkoutPlan = {
-          id: crypto.randomUUID(),
+        const { updatedPlans } = createWorkoutPlan(plans, {
           name: planData.name,
           exercises: planData.exercises,
-          isCircuit: planData.isCircuit || false,
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-          sortOrder: 0
-        }
+          isCircuit: planData.isCircuit || false
+        })
 
-        const updatedPlans = [newPlan, ...shiftedPlans]
         PlansStorage.savePlans(updatedPlans)
         setPlans(updatedPlans)
       }
@@ -459,29 +438,19 @@ function App() {
       return
     }
 
-    // Create new plan with generated exercises
-    // Increment all existing plans' sortOrder
-    const shiftedPlans = plans.map(p => ({
-      ...p,
-      sortOrder: p.sortOrder + 1
-    }))
-
-    const newPlan: WorkoutPlan = {
-      id: crypto.randomUUID(),
+    // Create new plan with generated exercises using utility
+    const { newPlan, updatedPlans } = createWorkoutPlan(plans, {
       name: generatePlanName(),
       exercises: generatedExercises,
       isCircuit: false,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      sortOrder: 0,
       isGenerated: true,
-      generationTimestamp: Date.now(),
       pinStatus: {}
-    }
+    })
 
-    // Save the shifted plans before opening edit mode
-    PlansStorage.savePlans(shiftedPlans)
-    setPlans(shiftedPlans)
+    // Save all plans (excluding new plan which goes to edit mode)
+    const plansWithoutNew = updatedPlans.filter(p => p.id !== newPlan.id)
+    PlansStorage.savePlans(plansWithoutNew)
+    setPlans(plansWithoutNew)
 
     // Set as selected plan and open in edit mode
     setSelectedPlan(newPlan)
@@ -630,22 +599,8 @@ function App() {
 
   // Handle drag-drop reordering of plans
   const handleReorderPlans = (sourceId: string, targetId: string) => {
-    const sourceIndex = sortedPlans.findIndex(p => p.id === sourceId)
-    const targetIndex = sortedPlans.findIndex(p => p.id === targetId)
-
-    if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex) return
-
-    // Create reordered array
-    const reordered = [...sortedPlans]
-    const [moved] = reordered.splice(sourceIndex, 1)
-    if (!moved) return
-    reordered.splice(targetIndex, 0, moved)
-
-    // Reassign sortOrder to all plans (0, 1, 2, ...)
-    const updated = reordered.map((plan, index) => ({
-      ...plan,
-      sortOrder: index
-    }))
+    const updated = reorderPlans(sortedPlans, sourceId, targetId)
+    if (!updated) return
 
     PlansStorage.savePlans(updated)
     setPlans(updated)

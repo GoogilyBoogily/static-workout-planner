@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import './AddToPlanDropdown.css'
 
 import type { ParsedExercise, PlanExercise, WorkoutPlan } from '../types'
@@ -15,6 +15,9 @@ interface AddToPlanDropdownProps {
   /** Button variant: 'icon' for card, 'full' for modal */
   variant?: 'icon' | 'full'
 }
+
+/** Duration for success feedback animation (ms) */
+const SUCCESS_FEEDBACK_DURATION = 1000
 
 /**
  * AddToPlanDropdown Component
@@ -45,9 +48,22 @@ function AddToPlanDropdown({
   })
 
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const successTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Sort plans by updatedAt (most recent first)
-  const sortedPlans = [...plans].sort((a, b) => b.updatedAt - a.updatedAt)
+  // Sort plans by updatedAt (most recent first) - memoized to avoid sorting on every render
+  const sortedPlans = useMemo(
+    () => [...plans].sort((a, b) => b.updatedAt - a.updatedAt),
+    [plans]
+  )
+
+  // Cleanup timeout on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // Click outside handler
   useEffect(() => {
@@ -104,6 +120,21 @@ function AddToPlanDropdown({
     rest: rest || undefined
   })
 
+  // Show success feedback and close dropdown after delay
+  const showSuccessFeedback = () => {
+    setShowSuccess(true)
+    // Clear any existing timeout before setting a new one
+    if (successTimeoutRef.current) {
+      clearTimeout(successTimeoutRef.current)
+    }
+    successTimeoutRef.current = setTimeout(() => {
+      setShowSuccess(false)
+      setIsOpen(false)
+      resetForm()
+      successTimeoutRef.current = null
+    }, SUCCESS_FEEDBACK_DURATION)
+  }
+
   // Handle quick add with defaults
   const handleQuickAdd = () => {
     const planExercise = createPlanExercise(3, '8-12')
@@ -116,13 +147,7 @@ function AddToPlanDropdown({
       onAddToPlan(selectedPlanId, planExercise)
     }
 
-    // Show success feedback
-    setShowSuccess(true)
-    setTimeout(() => {
-      setShowSuccess(false)
-      setIsOpen(false)
-      resetForm()
-    }, 1000)
+    showSuccessFeedback()
   }
 
   // Handle customized add
@@ -143,13 +168,7 @@ function AddToPlanDropdown({
       onAddToPlan(selectedPlanId, planExercise)
     }
 
-    // Show success feedback
-    setShowSuccess(true)
-    setTimeout(() => {
-      setShowSuccess(false)
-      setIsOpen(false)
-      resetForm()
-    }, 1000)
+    showSuccessFeedback()
   }
 
   // Handle toggle dropdown

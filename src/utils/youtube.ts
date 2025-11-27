@@ -6,6 +6,12 @@
  */
 
 /**
+ * Regex pattern for valid YouTube video IDs
+ * YouTube video IDs are exactly 11 characters using Base64-like charset: A-Z, a-z, 0-9, _, -
+ */
+const YOUTUBE_VIDEO_ID_REGEX = /^[A-Za-z0-9_-]{11}$/
+
+/**
  * Extract YouTube video ID from watch URL
  *
  * Supports URLs in the format: youtube.com/watch?v=VIDEO_ID
@@ -40,8 +46,8 @@ export function extractVideoId(url: string | null | undefined): string | null {
     // Extract 'v' parameter
     const videoId = urlObj.searchParams.get('v')
 
-    // Validate video ID length (YouTube video IDs are exactly 11 characters)
-    return videoId && videoId.length === 11 ? videoId : null
+    // Validate video ID format: exactly 11 chars with valid Base64-like charset
+    return videoId && YOUTUBE_VIDEO_ID_REGEX.test(videoId) ? videoId : null
   } catch {
     // Invalid URL format
     return null

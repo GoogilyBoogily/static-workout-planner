@@ -56,6 +56,15 @@ Additional commands: `/speckit.checklist`, `/speckit.clarify`, `/speckit.constit
 3. CSV columns: Exercise, Muscle Group, Description, Equipment, YouTube URL
 4. Workout plans (sets, reps, weight, rest) stored in localStorage, not CSV
 
+### Key Components
+- `App.tsx` - Main application with state management and view routing
+- `AddToPlanDropdown.tsx` - Dropdown for adding exercises to plans (variants: icon/full)
+- `ExerciseList.tsx` - Exercise cards with hover-reveal "+" button for quick add
+- `ExerciseDetailModal.tsx` - Exercise details with video and "Add to Plan" button
+- `PlanForm.tsx` - Create/edit plans with drag-drop exercise reordering
+- `PlanList.tsx` - Plan cards with drag-drop reordering
+- `CircuitTimer.tsx` - Interval timer with keyboard controls
+
 ### Key Dependencies
 - **React 18** - UI framework
 - **PapaParse** - CSV parsing
@@ -68,12 +77,19 @@ Additional commands: `/speckit.checklist`, `/speckit.clarify`, `/speckit.constit
 - `workout-plans` - Array of workout plan objects
 - `workout-quota-templates` - Array of quota template objects
 
+### Plan Ordering
+- Plans are sorted by `sortOrder` ascending (lower = first in list)
+- New plans are inserted at top with `sortOrder: 0`, existing plans incremented
+- Drag-and-drop in PlanList updates sortOrder for affected plans
+- Use `planHelpers.ts` utilities for plan creation to ensure correct sortOrder management
+
 ### Entity IDs
 Use `crypto.randomUUID()` for all entities (plans, exercises, templates).
 
 ### Utility Modules
 All in `src/utils/`:
 - `localStorage.ts` - Centralized storage operations (never call localStorage directly)
+- `planHelpers.ts` - Plan creation and reordering utilities (eliminates duplication)
 - `muscleFilter.ts` - Exercise filtering by muscle groups (OR-based matching)
 - `youtube.ts` - YouTube URL parsing and privacy-enhanced embed URLs
 - `validation.ts` - Form validation utilities

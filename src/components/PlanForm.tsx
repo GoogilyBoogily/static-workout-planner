@@ -9,7 +9,9 @@ import type {
   PlanExercise,
   PinStatus,
   RerollHistory,
-  DragPosition
+  DragPosition,
+  TagQuota,
+  WorkoutPlan
 } from '../types'
 import type { PlanFormProps } from '../types/components'
 
@@ -416,6 +418,7 @@ function PlanForm({
       isCircuit,
       createdAt: plan?.createdAt ?? Date.now(),
       updatedAt: Date.now(),
+      sortOrder: plan?.sortOrder ?? 0,
       pinStatus
     }
 

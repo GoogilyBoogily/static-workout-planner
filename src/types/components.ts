@@ -30,6 +30,8 @@ export interface AddToPlanDropdownProps {
   plans: WorkoutPlan[]
   /** Callback when exercise is added to a plan */
   onAddToPlan: (planId: string, exercise: PlanExercise) => void
+  /** Callback when creating a new plan with this exercise */
+  onCreateNewPlanWithExercise?: (planName: string, exercise: PlanExercise) => void
   /** Button variant: 'icon' for card, 'full' for modal */
   variant?: 'icon' | 'full'
 }
@@ -52,6 +54,8 @@ export interface ExerciseListProps {
   plans?: WorkoutPlan[]
   /** Callback when exercise is added to a plan */
   onAddToPlan?: (planId: string, exercise: PlanExercise) => void
+  /** Callback when creating a new plan with this exercise */
+  onCreateNewPlanWithExercise?: (planName: string, exercise: PlanExercise) => void
 }
 
 /**
@@ -74,6 +78,8 @@ export interface ExerciseDetailModalProps {
   plans?: WorkoutPlan[]
   /** Callback when exercise is added to a plan */
   onAddToPlan?: (planId: string, exercise: PlanExercise) => void
+  /** Callback when creating a new plan with this exercise */
+  onCreateNewPlanWithExercise?: (planName: string, exercise: PlanExercise) => void
 }
 
 /**
@@ -98,7 +104,7 @@ export interface ExerciseFormProps {
  * Props for PlanList component
  */
 export interface PlanListProps {
-  /** Array of plan objects sorted by updatedAt desc */
+  /** Array of plan objects sorted by sortOrder ascending */
   plans: WorkoutPlan[]
   /** Callback when "Create New Plan" is clicked */
   onCreate: () => void
@@ -114,6 +120,8 @@ export interface PlanListProps {
   exercisePoolEmpty?: boolean
   /** Callback when starting circuit timer */
   onStartTimer: (plan: WorkoutPlan) => void
+  /** Callback when plans are reordered via drag-drop */
+  onReorder?: (sourceId: string, targetId: string) => void
 }
 
 /**
