@@ -1,5 +1,11 @@
 # Workout Planner
 
+## Warning
+
+An incredible amount of this project has been vibe coded. Here there be dragons not of my design. You have been warned
+
+## Details
+
 A feature-rich React application for planning workouts, exploring exercises, and timing circuit training sessions. Built with an interactive muscle diagram, comprehensive exercise library, and smart workout generation.
 
 ![Workout Planner Demo](./docs/gifs/muscle-filtering.gif)
