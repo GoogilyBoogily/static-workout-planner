@@ -1,7 +1,7 @@
 .App {
   max-width: 1800px;
   margin: 0 auto;
-  padding: 20px;
+  padding: var(--space-lg);
   width: 95%;
 }
 
@@ -65,10 +65,10 @@
 
 .error {
   color: var(--color-error);
-  margin: 20px 0;
-  padding: 10px;
+  margin: var(--space-lg) 0;
+  padding: var(--space-md);
   background-color: var(--color-bg-tertiary);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-error);
 }
 
@@ -79,9 +79,9 @@
 
 /* Filter Section Styles (002-exercise-list-filters) */
 .filter-section {
-  margin: 0 0 20px 0;
-  padding: 20px;
-  border-radius: 8px;
+  margin: 0 0 var(--space-lg) 0;
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
   background-color: var(--color-bg-tertiary);
   border: 1px solid var(--color-border-secondary);
 }
@@ -90,12 +90,12 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 15px;
+  gap: var(--space-md);
   justify-content: center;
-  margin-top: 15px;
-  padding: 12px;
+  margin-top: var(--space-md);
+  padding: var(--space-md);
   background-color: var(--color-bg-elevated);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   font-size: 0.9rem;
 }
 
@@ -113,11 +113,11 @@
   font-size: 0.9rem;
   font-weight: 500;
   background-color: var(--color-primary);
-  color: var(--color-text-primary);
+  color: var(--color-text-inverse);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
 }
 
 .clear-all-filters:hover {
@@ -209,9 +209,9 @@
 /* Muscle Diagram Styles - Professional Anatomical */
 .muscle-diagram {
   margin: 0;
-  padding: 20px;
+  padding: var(--space-lg);
   border: 1px solid var(--color-border-primary);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background-color: var(--color-bg-tertiary);
 }
 
@@ -250,11 +250,11 @@
   border: 2px solid var(--color-primary);
   background-color: var(--color-bg-primary);
   color: var(--color-primary);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
 }
 
 .body-button:hover {
@@ -278,8 +278,8 @@
   align-items: center;
   margin: 0 auto;
   background-color: var(--color-bg-elevated);
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
 }
 
 /* Mobile responsive - stack views vertically */
@@ -303,7 +303,7 @@
 /* Ensure muscle paths are clickable with smooth transitions */
 .muscle-diagram svg path {
   cursor: pointer;
-  transition: fill 0.2s ease;
+  transition: fill var(--transition-fast);
 }
 
 /* Note: Hover and selection colors are managed by the library via the data prop
@@ -314,17 +314,17 @@
 /* T021: Tooltip styles */
 .muscle-tooltip {
   position: fixed;
-  padding: 8px 12px;
+  padding: var(--space-sm) var(--space-md);
   background-color: rgba(0, 0, 0, 0.85);
   color: white;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
   pointer-events: none;
   z-index: 1000;
   white-space: nowrap;
   transform: translate(10px, -30px);
-  animation: fadeIn 0.2s;
+  animation: fadeIn var(--transition-fast);
 }
 
 @keyframes fadeIn {

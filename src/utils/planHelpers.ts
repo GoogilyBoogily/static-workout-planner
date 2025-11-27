@@ -5,7 +5,7 @@
  * Eliminates duplication across App.tsx handlers.
  */
 
-import type { WorkoutPlan, PlanExercise, PinStatus } from '../types'
+import type { WorkoutPlan, PlanExercise, PinStatus, DragPosition } from '../types'
 
 /**
  * Options for creating a new workout plan
@@ -85,12 +85,14 @@ export function createWorkoutPlan(
  * @param sortedPlans - Plans array already sorted by sortOrder
  * @param sourceId - ID of the plan being moved
  * @param targetId - ID of the plan being dropped onto
+ * @param position - Drop position relative to target ('before' or 'after')
  * @returns Updated plans array with new sortOrder values, or null if invalid
  */
 export function reorderPlans(
   sortedPlans: WorkoutPlan[],
   sourceId: string,
-  targetId: string
+  targetId: string,
+  position: DragPosition = 'before'
 ): WorkoutPlan[] | null {
   const sourceIndex = sortedPlans.findIndex(p => p.id === sourceId)
   const targetIndex = sortedPlans.findIndex(p => p.id === targetId)
@@ -103,7 +105,21 @@ export function reorderPlans(
   const reordered = [...sortedPlans]
   const [moved] = reordered.splice(sourceIndex, 1)
   if (!moved) return null
-  reordered.splice(targetIndex, 0, moved)
+
+  // Calculate insert position based on before/after
+  let insertIndex = targetIndex
+  if (sourceIndex < targetIndex) {
+    // Dragging from above: adjust for the splice
+    insertIndex = position === 'after' ? targetIndex : targetIndex - 1
+  } else {
+    // Dragging from below: insert at position or after
+    insertIndex = position === 'after' ? targetIndex + 1 : targetIndex
+  }
+
+  // Clamp to valid range
+  insertIndex = Math.max(0, Math.min(insertIndex, reordered.length))
+
+  reordered.splice(insertIndex, 0, moved)
 
   // Reassign sortOrder to all plans (0, 1, 2, ...)
   return reordered.map((plan, index) => ({

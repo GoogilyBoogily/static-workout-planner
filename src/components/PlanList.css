@@ -43,12 +43,12 @@
 .plan-card {
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border-primary);
-  border-radius: 8px;
-  padding: 20px;
-  transition: all 0.2s;
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  transition: all var(--transition-fast);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-md);
   cursor: grab;
 }
 
@@ -57,7 +57,7 @@
 }
 
 .plan-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
@@ -78,11 +78,17 @@
   box-shadow: none;
 }
 
-/* Drop target highlight */
-.plan-card.drag-over {
-  border: 2px solid var(--color-primary);
-  box-shadow: 0 0 12px rgba(74, 144, 226, 0.4);
-  transform: none;
+/* Drop zone indicators - before (left) and after (right) for grid layout */
+.plan-card.drag-over-before {
+  border-left: 3px solid var(--color-primary);
+  margin-left: -1px;
+  box-shadow: var(--shadow-md);
+}
+
+.plan-card.drag-over-after {
+  border-right: 3px solid var(--color-primary);
+  margin-right: -1px;
+  box-shadow: var(--shadow-md);
 }
 
 .plan-name {
@@ -91,7 +97,7 @@
   font-weight: 600;
   color: var(--color-primary);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color var(--transition-fast);
   word-break: break-word;
   flex: 1;
 }
@@ -104,7 +110,7 @@
 .plan-name:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 /* T071: Generated plan badge */
@@ -164,21 +170,23 @@
   min-height: 44px;
 }
 
-.button-danger {
+/* Button danger variant - extends utilities.css .button-danger
+   with outline style for this context */
+.plan-card .button-danger {
   background-color: var(--color-bg-primary);
   color: var(--color-error);
   border: 1px solid var(--color-error);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
 }
 
-.button-danger:hover {
+.plan-card .button-danger:hover {
   background-color: var(--color-error);
-  color: var(--color-text-primary);
+  color: var(--color-text-inverse);
 }
 
-.button-danger:focus {
+.plan-card .button-danger:focus {
   outline: 2px solid var(--color-error);
   outline-offset: 2px;
 }

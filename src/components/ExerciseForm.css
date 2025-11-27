@@ -1,9 +1,9 @@
 .exercise-form {
   background: var(--color-bg-tertiary);
   border: 1px solid var(--color-border-primary);
-  border-radius: 8px;
-  padding: 20px;
-  margin: 16px 0;
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin: var(--space-md) 0;
 }
 
 .exercise-form h3 {
@@ -33,10 +33,10 @@
   width: 100%;
   padding: 8px 12px;
   border: 1px solid var(--color-border-primary);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   box-sizing: border-box;
-  transition: border-color 0.2s;
+  transition: border-color var(--transition-fast);
   background-color: var(--color-input-bg);
   color: var(--color-text-primary);
 }
@@ -75,11 +75,11 @@
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border-primary);
   border-top: none;
-  border-radius: 0 0 4px 4px;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   max-height: 300px;
   overflow-y: auto;
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
 }
 
 .autocomplete-item {
@@ -88,7 +88,7 @@
   align-items: center;
   padding: 10px 12px;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color var(--transition-fast);
 }
 
 .autocomplete-item:hover,
@@ -110,22 +110,22 @@
 }
 
 .autocomplete-no-results {
-  padding: 12px;
+  padding: var(--space-md);
   color: var(--color-text-secondary);
   font-size: 14px;
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border-primary);
   border-top: none;
-  border-radius: 0 0 4px 4px;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
 }
 
 /* Selected tag display (read-only) */
 .selected-tag {
   display: inline-block;
-  padding: 8px 16px;
+  padding: var(--space-sm) var(--space-md);
   background: var(--color-primary);
-  color: white;
-  border-radius: 4px;
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 500;
 }
@@ -145,49 +145,11 @@
   border-top: 1px solid var(--color-border-primary);
 }
 
-.button-primary,
-.button-secondary {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
+/* Button styles - using utility classes from utilities.css
+   .button-primary and .button-secondary are defined there */
+.exercise-form .button-primary,
+.exercise-form .button-secondary {
   min-width: 100px;
-}
-
-.button-primary {
-  background-color: var(--color-primary);
-  color: var(--color-text-primary);
-}
-
-.button-primary:hover {
-  background-color: var(--color-primary-hover);
-}
-
-.button-primary:active {
-  background-color: var(--color-primary-active);
-}
-
-.button-secondary {
-  background-color: var(--color-bg-elevated);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border-primary);
-}
-
-.button-secondary:hover {
-  background-color: var(--color-bg-hover);
-}
-
-.button-secondary:active {
-  background-color: var(--color-bg-tertiary);
-}
-
-.button-primary:focus,
-.button-secondary:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
 }
 
 /* Mobile responsive */

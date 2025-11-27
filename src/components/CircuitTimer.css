@@ -1,42 +1,42 @@
 /* Circuit Timer Styles */
 
 .circuit-timer {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 2rem;
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
   max-width: 800px;
   margin: 0 auto;
   outline: none;
 }
 
 .circuit-timer:focus {
-  box-shadow: 0 0 0 2px var(--accent-color);
+  box-shadow: 0 0 0 2px var(--color-primary);
 }
 
 .circuit-timer-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border-primary);
 }
 
 .circuit-timer-header h2 {
   margin: 0;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
 }
 
 .timer-title {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-xs);
 }
 
 .plan-name-subtitle {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-weight: 500;
 }
 
@@ -44,61 +44,71 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  transition: color 0.2s, background-color 0.2s;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-button:hover {
-  color: var(--text-primary);
-  background-color: var(--hover-bg);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-hover);
+}
+
+.close-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 /* Configuration Form */
 .timer-config {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .config-field {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-sm);
 }
 
 .config-field label {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
   font-weight: 500;
 }
 
 .config-field input {
   padding: 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  background-color: var(--input-bg);
-  color: var(--text-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  background-color: var(--color-input-bg);
+  color: var(--color-text-primary);
   font-size: 1rem;
 }
 
 .config-field input:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.2);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
 }
 
 .start-button {
-  margin-top: 1rem;
-  padding: 1rem;
+  margin-top: var(--space-md);
+  padding: var(--space-md);
   font-size: 1.125rem;
 }
 
 /* Volume Control */
 .volume-field {
-  margin-top: 0.5rem;
+  margin-top: var(--space-sm);
 }
 
 .volume-control {
@@ -110,8 +120,8 @@
 .volume-slider {
   flex: 1;
   height: 8px;
-  border-radius: 4px;
-  background: var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--color-border-primary);
   outline: none;
   cursor: pointer;
   -webkit-appearance: none;
@@ -124,11 +134,11 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--accent-color, #3b82f6);
+  background: var(--color-primary);
   cursor: pointer;
-  border: 2px solid var(--card-bg);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: transform 0.15s ease;
+  border: 2px solid var(--color-bg-primary);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast);
 }
 
 .volume-slider::-webkit-slider-thumb:hover {
@@ -139,11 +149,11 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--accent-color, #3b82f6);
+  background: var(--color-primary);
   cursor: pointer;
-  border: 2px solid var(--card-bg);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: transform 0.15s ease;
+  border: 2px solid var(--color-bg-primary);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast);
 }
 
 .volume-slider::-moz-range-thumb:hover {
@@ -152,35 +162,35 @@
 
 .volume-slider::-webkit-slider-runnable-track {
   height: 8px;
-  border-radius: 4px;
-  background: var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--color-border-primary);
 }
 
 .volume-slider::-moz-range-track {
   height: 8px;
-  border-radius: 4px;
-  background: var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--color-border-primary);
 }
 
 .test-beep-button {
-  padding: 0.5rem 0.75rem;
+  padding: var(--space-sm) 0.75rem;
   font-size: 0.875rem;
   white-space: nowrap;
 }
 
 /* Sound Settings */
 .sound-settings {
-  margin-top: 0.5rem;
-  padding: 1rem;
-  background-color: var(--hover-bg, rgba(0, 0, 0, 0.05));
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
+  margin-top: var(--space-sm);
+  padding: var(--space-md);
+  background-color: var(--color-bg-hover);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-primary);
 }
 
 .sound-settings-header {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   margin-bottom: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -190,7 +200,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-sm);
 }
 
 .sound-selector-row:last-child {
@@ -201,45 +211,45 @@
   min-width: 70px;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
 }
 
 /* Phase-specific color indicators for labels */
 .phase-exercise-label {
-  color: var(--success-color, #22c55e);
+  color: var(--color-success);
 }
 
 .phase-rest-label {
-  color: var(--info-color, #3b82f6);
+  color: var(--color-primary);
 }
 
 .phase-finisher-label {
-  color: var(--warning-color, #f59e0b);
+  color: var(--color-warning);
 }
 
 .phase-warning-label {
-  color: var(--danger-color, #ef4444);
+  color: var(--color-error);
 }
 
 .phase-complete-label {
-  color: var(--success-color, #22c55e);
+  color: var(--color-success);
 }
 
 .sound-select {
   flex: 1;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  background-color: var(--input-bg);
-  color: var(--text-primary);
+  padding: var(--space-sm) 0.75rem;
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  background-color: var(--color-input-bg);
+  color: var(--color-text-primary);
   font-size: 0.875rem;
   cursor: pointer;
 }
 
 .sound-select:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.2);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
 }
 
 .test-sound-button {
@@ -251,17 +261,17 @@
 /* Timer Layout - Side by Side */
 .timer-layout {
   display: flex;
-  gap: 2rem;
+  gap: var(--space-xl);
   align-items: flex-start;
 }
 
 /* Exercise Panel */
 .exercise-panel {
   flex: 0 0 280px;
-  background-color: var(--hover-bg, rgba(0, 0, 0, 0.05));
-  border-radius: 8px;
-  padding: 1rem;
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-hover);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  border: 1px solid var(--color-border-primary);
   max-height: 400px;
   overflow-y: auto;
 }
@@ -269,12 +279,12 @@
 .exercise-panel-header {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-border-primary);
 }
 
 .exercise-list {
@@ -291,15 +301,15 @@
 }
 
 .circuit-group {
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 0.5rem;
-  transition: all 0.2s;
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  transition: all var(--transition-fast);
 }
 
 .circuit-group.current {
-  border-color: var(--accent-color, #3b82f6);
-  background-color: rgba(59, 130, 246, 0.1);
+  border-color: var(--color-primary);
+  background-color: rgba(100, 108, 255, 0.1);
 }
 
 .circuit-group.completed {
@@ -316,24 +326,24 @@
   align-items: center;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--space-sm);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--color-border-primary);
 }
 
 .circuit-group.current .circuit-group-header {
-  color: var(--accent-color, #3b82f6);
+  color: var(--color-primary);
 }
 
 .current-badge {
-  background-color: var(--accent-color, #3b82f6);
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
   font-size: 0.625rem;
   padding: 0.125rem 0.375rem;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 .circuit-group .exercise-list {
@@ -341,8 +351,8 @@
 }
 
 .circuit-group .exercise-item {
-  padding: 0.5rem;
-  margin-bottom: 0.25rem;
+  padding: var(--space-sm);
+  margin-bottom: var(--space-xs);
   background-color: transparent;
 }
 
@@ -355,9 +365,9 @@
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
-  transition: background-color 0.2s, opacity 0.2s;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+  transition: background-color var(--transition-fast), opacity var(--transition-fast);
 }
 
 .exercise-item:last-child {
@@ -365,8 +375,8 @@
 }
 
 .exercise-item.current {
-  background-color: var(--accent-color, #3b82f6);
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
 }
 
 .exercise-item.current .exercise-details {
@@ -394,7 +404,7 @@
 }
 
 .check-mark {
-  color: var(--success-color, #22c55e);
+  color: var(--color-success);
 }
 
 .current-marker {
@@ -404,7 +414,7 @@
 .exercise-info {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-xs);
   min-width: 0;
 }
 
@@ -416,14 +426,14 @@
 
 .exercise-details {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 /* Timer Display */
 .timer-display {
   flex: 1;
   text-align: center;
-  padding: 2rem 0;
+  padding: var(--space-xl) 0;
 }
 
 .phase-indicator {
@@ -431,35 +441,35 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
 }
 
 /* Phase-specific colors */
 .phase-exercise .phase-indicator {
-  color: var(--success-color, #22c55e);
+  color: var(--color-success);
 }
 
 .phase-rest .phase-indicator {
-  color: var(--info-color, #3b82f6);
+  color: var(--color-primary);
 }
 
 .phase-finisher .phase-indicator {
-  color: var(--warning-color, #f59e0b);
+  color: var(--color-warning);
 }
 
 .countdown {
   font-size: 5rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
   line-height: 1;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
 }
 
 .round-counter {
   font-size: 1.25rem;
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-lg);
 }
 
 /* Paused state */
@@ -470,8 +480,8 @@
 .paused-indicator {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--warning-color, #f59e0b);
-  margin-bottom: 1rem;
+  color: var(--color-warning);
+  margin-bottom: var(--space-md);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -483,7 +493,7 @@
 /* Timer Controls */
 .timer-controls {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-md);
   justify-content: center;
 }
 
@@ -494,24 +504,24 @@
 /* Completion Display */
 .timer-complete {
   text-align: center;
-  padding: 2rem 0;
+  padding: var(--space-xl) 0;
 }
 
 .complete-icon {
   font-size: 4rem;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
 }
 
 .complete-message {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--success-color, #22c55e);
-  margin-bottom: 2rem;
+  color: var(--color-success);
+  margin-bottom: var(--space-xl);
 }
 
 .complete-actions {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-md);
   justify-content: center;
 }
 
@@ -521,11 +531,11 @@
 
 /* Config Exercise Preview with Drag-and-Drop */
 .config-exercise-preview {
-  margin-top: 1rem;
-  padding: 1rem;
-  background-color: var(--hover-bg, rgba(0, 0, 0, 0.05));
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background-color: var(--color-bg-hover);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-primary);
 }
 
 .config-exercise-header {
@@ -534,7 +544,7 @@
   align-items: center;
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   margin-bottom: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -545,7 +555,7 @@
   font-weight: 400;
   text-transform: none;
   letter-spacing: normal;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   opacity: 0.7;
 }
 
@@ -556,24 +566,22 @@
 }
 
 .config-circuit-group {
-  border: 2px dashed var(--border-color);
-  border-radius: 6px;
+  border: 2px dashed var(--color-border-primary);
+  border-radius: var(--radius-md);
   padding: 0.75rem;
   min-height: 60px;
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
 }
-
-/* Removed: group drag-over no longer needed - exercises are drop targets */
 
 .config-group-header {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--space-sm);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--color-border-primary);
 }
 
 .config-exercise-list {
@@ -584,14 +592,14 @@
 .config-exercise-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  margin-bottom: 0.25rem;
-  border-radius: 4px;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  margin-bottom: var(--space-xs);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-primary);
   cursor: grab;
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
 }
 
 .config-exercise-item:last-child {
@@ -599,7 +607,7 @@
 }
 
 .config-exercise-item:hover {
-  background-color: var(--hover-bg);
+  background-color: var(--color-bg-hover);
 }
 
 .config-exercise-item.dragging {
@@ -609,8 +617,8 @@
 }
 
 .config-exercise-item.drag-over {
-  border-color: var(--accent-color, #3b82f6);
-  background-color: rgba(59, 130, 246, 0.15);
+  border-color: var(--color-primary);
+  background-color: rgba(100, 108, 255, 0.15);
   border-width: 2px;
 }
 
@@ -621,7 +629,7 @@
 .config-exercise-item .exercise-name {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
   flex: 1;
 }
 
@@ -640,9 +648,9 @@
 
 @media (max-width: 480px) {
   .circuit-timer {
-    padding: 1rem;
-    border-radius: 8px;
-    margin: 0 0.5rem;
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin: 0 var(--space-sm);
   }
 
   .exercise-panel {
@@ -651,7 +659,7 @@
   }
 
   .exercise-item {
-    padding: 0.5rem;
+    padding: var(--space-sm);
   }
 
   .exercise-name {
@@ -709,5 +717,16 @@
   .sound-select {
     flex: 1;
     min-width: 120px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .circuit-timer *,
+  .circuit-timer *::before,
+  .circuit-timer *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

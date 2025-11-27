@@ -15,10 +15,10 @@
   position: relative;
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border-secondary);
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -30,7 +30,7 @@
   background: var(--color-bg-hover);
   border-color: var(--color-primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.15);
+  box-shadow: var(--shadow-md);
 }
 
 .exercise-item:focus {
@@ -46,13 +46,13 @@
 .exercise-item-highlighted {
   background: var(--color-bg-hover);
   border-color: var(--color-primary);
-  box-shadow: 0 0 16px rgba(100, 108, 255, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 /* When highlighted exercise is also hovered, combine effects */
 .exercise-item-highlighted:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 24px rgba(100, 108, 255, 0.4);
+  box-shadow: var(--shadow-lg);
 }
 
 .exercise-name {
@@ -74,7 +74,7 @@
   border: 1px solid var(--color-border-primary);
   color: var(--color-text-secondary);
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 12px;
   font-weight: 500;
 }
@@ -90,7 +90,7 @@
   border: 1px solid var(--color-border-tertiary);
   color: var(--color-warning);
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: 600;
 }
@@ -112,10 +112,10 @@
 /* Add to Plan button - hover reveal */
 .exercise-add-button {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: var(--space-sm);
+  right: var(--space-sm);
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity var(--transition-fast);
   z-index: 10;
 }
 

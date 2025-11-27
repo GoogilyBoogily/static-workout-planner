@@ -590,7 +590,7 @@ function PlanForm({
             {exercises.map((exercise, index) => (
               <div
                 key={exercise.id}
-                className={`exercise-item ${draggedIndex === index ? 'dragging' : ''} ${dragOverIndex === index ? 'drag-over' : ''}`}
+                className={`exercise-item ${draggedIndex === index ? 'dragging' : ''} ${dragOverIndex === index && dragOverPosition ? `drag-over-${dragOverPosition}` : ''}`}
                 draggable
                 onDragStart={(e) => handleDragStart(e, index)}
                 onDragEnd={handleDragEnd}

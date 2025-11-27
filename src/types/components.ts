@@ -13,7 +13,8 @@ import type {
   TagQuota,
   QuotaTemplate,
   Theme,
-  MuscleSlug
+  MuscleSlug,
+  DragPosition
 } from './index'
 
 // ============================================
@@ -121,7 +122,7 @@ export interface PlanListProps {
   /** Callback when starting circuit timer */
   onStartTimer: (plan: WorkoutPlan) => void
   /** Callback when plans are reordered via drag-drop */
-  onReorder?: (sourceId: string, targetId: string) => void
+  onReorder?: (sourceId: string, targetId: string, position: DragPosition) => void
 }
 
 /**

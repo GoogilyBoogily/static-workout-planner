@@ -33,7 +33,8 @@ import type {
   TagQuota,
   QuotaTemplate,
   Theme,
-  AppView
+  AppView,
+  DragPosition
 } from './types'
 
 function App() {
@@ -598,8 +599,8 @@ function App() {
   )
 
   // Handle drag-drop reordering of plans
-  const handleReorderPlans = (sourceId: string, targetId: string) => {
-    const updated = reorderPlans(sortedPlans, sourceId, targetId)
+  const handleReorderPlans = (sourceId: string, targetId: string, position: DragPosition) => {
+    const updated = reorderPlans(sortedPlans, sourceId, targetId, position)
     if (!updated) return
 
     PlansStorage.savePlans(updated)

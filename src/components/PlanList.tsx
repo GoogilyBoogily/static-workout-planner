@@ -3,7 +3,7 @@ import type { KeyboardEvent, DragEvent } from 'react'
 import { formatRelativeTime, formatAbsoluteTime } from '../utils/dateFormat'
 import './PlanList.css'
 
-import type { WorkoutPlan } from '../types'
+import type { WorkoutPlan, DragPosition } from '../types'
 
 interface PlanListProps {
   /** Array of plan objects sorted by sortOrder */
@@ -23,7 +23,7 @@ interface PlanListProps {
   /** Callback when starting circuit timer */
   onStartTimer: (plan: WorkoutPlan) => void
   /** Callback when plans are reordered via drag-drop */
-  onReorder?: (sourceId: string, targetId: string) => void
+  onReorder?: (sourceId: string, targetId: string, position: DragPosition) => void
 }
 
 /**
@@ -43,6 +43,7 @@ function PlanList({
   // Drag-and-drop state
   const [draggedId, setDraggedId] = useState<string | null>(null)
   const [dragOverId, setDragOverId] = useState<string | null>(null)
+  const [dragOverPosition, setDragOverPosition] = useState<DragPosition | null>(null)
 
   // Drag-and-drop handlers
   const handleDragStart = (e: DragEvent<HTMLDivElement>, planId: string) => {
@@ -58,30 +59,40 @@ function PlanList({
     (e.target as HTMLElement).classList.remove('dragging')
     setDraggedId(null)
     setDragOverId(null)
+    setDragOverPosition(null)
   }
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>, planId: string) => {
     e.preventDefault()
     e.dataTransfer.dropEffect = 'move'
     if (draggedId !== null && planId !== draggedId) {
+      // Calculate if cursor is in left or right half (for grid layout)
+      const rect = e.currentTarget.getBoundingClientRect()
+      const midpoint = rect.left + rect.width / 2
+      const position: DragPosition = e.clientX < midpoint ? 'before' : 'after'
+
       setDragOverId(planId)
+      setDragOverPosition(position)
     }
   }
 
   const handleDragLeave = () => {
     setDragOverId(null)
+    setDragOverPosition(null)
   }
 
   const handleDrop = (e: DragEvent<HTMLDivElement>, targetId: string) => {
     e.preventDefault()
-    if (draggedId === null || draggedId === targetId) {
+    if (draggedId === null || draggedId === targetId || dragOverPosition === null) {
       setDragOverId(null)
+      setDragOverPosition(null)
       return
     }
 
-    onReorder?.(draggedId, targetId)
+    onReorder?.(draggedId, targetId, dragOverPosition)
     setDraggedId(null)
     setDragOverId(null)
+    setDragOverPosition(null)
   }
 
   if (plans.length === 0) {
@@ -129,7 +140,7 @@ function PlanList({
         {plans.map((plan) => (
           <div
             key={plan.id}
-            className={`plan-card${draggedId === plan.id ? ' dragging' : ''}${dragOverId === plan.id ? ' drag-over' : ''}`}
+            className={`plan-card${draggedId === plan.id ? ' dragging' : ''}${dragOverId === plan.id && dragOverPosition ? ` drag-over-${dragOverPosition}` : ''}`}
             draggable
             onDragStart={(e) => handleDragStart(e, plan.id)}
             onDragEnd={handleDragEnd}
