@@ -1,11 +1,12 @@
-import type { KeyboardEvent } from 'react'
+import { useState } from 'react'
+import type { KeyboardEvent, DragEvent } from 'react'
 import { formatRelativeTime, formatAbsoluteTime } from '../utils/dateFormat'
 import './PlanList.css'
 
 import type { WorkoutPlan } from '../types'
 
 interface PlanListProps {
-  /** Array of plan objects sorted by updatedAt desc */
+  /** Array of plan objects sorted by sortOrder */
   plans: WorkoutPlan[]
   /** Callback when "Create New Plan" is clicked */
   onCreate: () => void
@@ -21,6 +22,8 @@ interface PlanListProps {
   exercisePoolEmpty?: boolean
   /** Callback when starting circuit timer */
   onStartTimer: (plan: WorkoutPlan) => void
+  /** Callback when plans are reordered via drag-drop */
+  onReorder?: (sourceId: string, targetId: string) => void
 }
 
 /**
@@ -34,8 +37,53 @@ function PlanList({
   onView,
   onGenerateRandom,
   exercisePoolEmpty = false,
-  onStartTimer
+  onStartTimer,
+  onReorder
 }: PlanListProps) {
+  // Drag-and-drop state
+  const [draggedId, setDraggedId] = useState<string | null>(null)
+  const [dragOverId, setDragOverId] = useState<string | null>(null)
+
+  // Drag-and-drop handlers
+  const handleDragStart = (e: DragEvent<HTMLDivElement>, planId: string) => {
+    setDraggedId(planId)
+    e.dataTransfer.effectAllowed = 'move'
+    // Add dragging class after a brief delay for visual feedback
+    setTimeout(() => {
+      (e.target as HTMLElement).classList.add('dragging')
+    }, 0)
+  }
+
+  const handleDragEnd = (e: DragEvent<HTMLDivElement>) => {
+    (e.target as HTMLElement).classList.remove('dragging')
+    setDraggedId(null)
+    setDragOverId(null)
+  }
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>, planId: string) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    if (draggedId !== null && planId !== draggedId) {
+      setDragOverId(planId)
+    }
+  }
+
+  const handleDragLeave = () => {
+    setDragOverId(null)
+  }
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>, targetId: string) => {
+    e.preventDefault()
+    if (draggedId === null || draggedId === targetId) {
+      setDragOverId(null)
+      return
+    }
+
+    onReorder?.(draggedId, targetId)
+    setDraggedId(null)
+    setDragOverId(null)
+  }
+
   if (plans.length === 0) {
     return (
       <div className="plan-list-empty">
@@ -79,7 +127,16 @@ function PlanList({
 
       <div className="plan-grid">
         {plans.map((plan) => (
-          <div key={plan.id} className="plan-card">
+          <div
+            key={plan.id}
+            className={`plan-card${draggedId === plan.id ? ' dragging' : ''}${dragOverId === plan.id ? ' drag-over' : ''}`}
+            draggable
+            onDragStart={(e) => handleDragStart(e, plan.id)}
+            onDragEnd={handleDragEnd}
+            onDragOver={(e) => handleDragOver(e, plan.id)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, plan.id)}
+          >
             <div className="plan-card-header">
               <h3
                 className="plan-name"

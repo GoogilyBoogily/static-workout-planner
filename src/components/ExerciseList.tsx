@@ -1,6 +1,7 @@
 import './ExerciseList.css'
+import AddToPlanDropdown from './AddToPlanDropdown'
 
-import type { ParsedExercise } from '../types'
+import type { ParsedExercise, PlanExercise, WorkoutPlan } from '../types'
 
 interface ExerciseListProps {
   /** Array of exercises to display */
@@ -13,6 +14,12 @@ interface ExerciseListProps {
   emptyMessage?: string
   /** Array of currently hovered muscles from diagram or exercise hover */
   hoveredMuscle?: string[]
+  /** Available workout plans for "Add to Plan" feature */
+  plans?: WorkoutPlan[]
+  /** Callback when exercise is added to a plan */
+  onAddToPlan?: (planId: string, exercise: PlanExercise) => void
+  /** Callback when creating a new plan with this exercise */
+  onCreateNewPlanWithExercise?: (planName: string, exercise: PlanExercise) => void
 }
 
 /**
@@ -25,7 +32,10 @@ function ExerciseList({
   onExerciseClick,
   onExerciseHover,
   emptyMessage = 'No exercises available',
-  hoveredMuscle = []
+  hoveredMuscle = [],
+  plans,
+  onAddToPlan,
+  onCreateNewPlanWithExercise
 }: ExerciseListProps) {
   if (!exercises || exercises.length === 0) {
     return <div className="exercise-list-empty">{emptyMessage}</div>
@@ -63,6 +73,27 @@ function ExerciseList({
             onMouseLeave={handleExerciseMouseLeave}
             tabIndex={0}
           >
+            {/* Add to Plan button - hover reveal */}
+            {plans && onAddToPlan && (
+              <div
+                className="exercise-add-button"
+                onClick={(e) => e.stopPropagation()}
+                onMouseEnter={(e) => {
+                  e.stopPropagation()
+                  // Clear any muscle highlighting when interacting with dropdown
+                  if (onExerciseHover) onExerciseHover([])
+                }}
+                onMouseLeave={(e) => e.stopPropagation()}
+              >
+                <AddToPlanDropdown
+                  exercise={exercise}
+                  plans={plans}
+                  onAddToPlan={onAddToPlan}
+                  onCreateNewPlanWithExercise={onCreateNewPlanWithExercise}
+                  variant="icon"
+                />
+              </div>
+            )}
             <div className="exercise-name">{exercise.name}</div>
             {exercise.tags && exercise.tags.length > 0 && (
               <div className="exercise-tags">

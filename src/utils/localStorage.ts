@@ -45,12 +45,15 @@ export function loadPlans(): WorkoutPlan[] {
 
     // Backward compatibility: ensure new properties exist
     // Feature 005 adds: pinStatus, isGenerated, generationTimestamp
-    return plans.map((plan: Record<string, unknown>) => ({
+    // Drag-drop feature adds: sortOrder
+    return plans.map((plan: Record<string, unknown>, index: number) => ({
       ...plan,
       // Set defaults for feature 005 properties if not present
       pinStatus: (plan.pinStatus as Record<string, boolean> | undefined) ?? {},
       isGenerated: (plan.isGenerated as boolean | undefined) ?? false,
-      generationTimestamp: (plan.generationTimestamp as number | null | undefined) ?? null
+      generationTimestamp: (plan.generationTimestamp as number | null | undefined) ?? null,
+      // Default sortOrder to array index for existing plans without it
+      sortOrder: (plan.sortOrder as number | undefined) ?? index
     })) as WorkoutPlan[]
   } catch (error) {
     console.error('Failed to load plans from localStorage:', error)

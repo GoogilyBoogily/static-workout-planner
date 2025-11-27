@@ -12,10 +12,10 @@ import type { ParsedExercise } from '../types'
  * Maps to our application's muscle naming (case-insensitive)
  */
 const KNOWN_MUSCLES: string[] = [
-  'chest', 'shoulders', 'biceps', 'forearms', 'abdominals', 'quadriceps',
-  'back', 'trapezius', 'triceps', 'glutes', 'hamstrings', 'calves',
+  'chest', 'shoulders', 'biceps', 'forearms', 'abdominals', 'obliques', 'quadriceps',
+  'back', 'lower back', 'trapezius', 'triceps', 'glutes', 'hamstrings', 'calves', 'adductors',
   // Also accept library names for flexibility
-  'deltoids', 'abs', 'upper-back', 'gluteal', 'hamstring', 'forearm'
+  'deltoids', 'abs', 'upper-back', 'lower-back', 'gluteal', 'hamstring', 'forearm'
 ]
 
 /**

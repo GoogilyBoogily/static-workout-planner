@@ -112,8 +112,8 @@ function MuscleDiagram({
 
   // Custom colors array: [hover color, selected color]
   // Hover: Soft peachy-beige (#e8c9a3)
-  // Selected: Warm red (#c44545)
-  const customColors = ['#e8c9a3', '#c44545']
+  // Selected: Primary purple (#646cff) - matches app theme
+  const customColors = ['#e8c9a3', '#646cff']
 
   // Handle muscle click from library
   const handleBodyPartClick = (bodyPart: BodyPartClick) => {

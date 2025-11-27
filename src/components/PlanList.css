@@ -49,6 +49,11 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  cursor: grab;
+}
+
+.plan-card:active {
+  cursor: grabbing;
 }
 
 .plan-card:hover {
@@ -63,6 +68,21 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
+}
+
+/* Dragging state */
+.plan-card.dragging {
+  opacity: 0.5;
+  border-style: dashed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Drop target highlight */
+.plan-card.drag-over {
+  border: 2px solid var(--color-primary);
+  box-shadow: 0 0 12px rgba(74, 144, 226, 0.4);
+  transform: none;
 }
 
 .plan-name {

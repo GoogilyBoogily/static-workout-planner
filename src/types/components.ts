@@ -21,6 +21,20 @@ import type {
 // ============================================
 
 /**
+ * Props for AddToPlanDropdown component
+ */
+export interface AddToPlanDropdownProps {
+  /** The exercise to add (from CSV library) */
+  exercise: ParsedExercise
+  /** Available workout plans */
+  plans: WorkoutPlan[]
+  /** Callback when exercise is added to a plan */
+  onAddToPlan: (planId: string, exercise: PlanExercise) => void
+  /** Button variant: 'icon' for card, 'full' for modal */
+  variant?: 'icon' | 'full'
+}
+
+/**
  * Props for ExerciseList component
  */
 export interface ExerciseListProps {
@@ -34,6 +48,10 @@ export interface ExerciseListProps {
   emptyMessage?: string
   /** Array of currently hovered muscles from diagram or exercise hover */
   hoveredMuscle?: string[]
+  /** Available workout plans for "Add to Plan" feature */
+  plans?: WorkoutPlan[]
+  /** Callback when exercise is added to a plan */
+  onAddToPlan?: (planId: string, exercise: PlanExercise) => void
 }
 
 /**
@@ -52,6 +70,10 @@ export interface ExerciseDetailModalProps {
   onNext: () => void
   /** Callback to navigate to previous exercise */
   onPrevious: () => void
+  /** Available workout plans for "Add to Plan" feature */
+  plans?: WorkoutPlan[]
+  /** Callback when exercise is added to a plan */
+  onAddToPlan?: (planId: string, exercise: PlanExercise) => void
 }
 
 /**

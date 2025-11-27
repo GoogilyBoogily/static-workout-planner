@@ -426,10 +426,10 @@ async function captureDemoGifs(): Promise<void> {
 
       // Click generate random button using direct DOM click
       await page.evaluate(() => {
-        const btn = document.querySelector('.generate-random-button') as HTMLButtonElement |
+        const btn = (document.querySelector('.generate-random-button') ||
           Array.from(document.querySelectorAll('button')).find(b =>
             b.textContent?.includes('Generate Random') || b.textContent?.includes('🎲')
-          ) as HTMLButtonElement | null
+          )) as HTMLButtonElement | null
         if (btn) btn.click()
       })
       await delay(4000)

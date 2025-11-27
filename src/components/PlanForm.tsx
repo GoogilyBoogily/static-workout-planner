@@ -627,9 +627,6 @@ function PlanForm({
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, index)}
               >
-                <div className="exercise-drag-handle" title="Drag to reorder">
-                  <span className="drag-icon">⋮⋮</span>
-                </div>
                 <div className="exercise-info">
                   <div className="exercise-name">{exercise.name}</div>
                   <div className="exercise-details">
@@ -739,9 +736,6 @@ function PlanForm({
                         onDragLeave={handleDragLeave}
                         onDrop={(e) => handleDrop(e, exercise.originalIndex)}
                       >
-                        <div className="exercise-drag-handle" title="Drag to reorder">
-                          <span className="drag-icon">⋮⋮</span>
-                        </div>
                         <div className="exercise-info">
                           <div className="exercise-name">{exercise.name}</div>
                           <div className="exercise-details">

@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react'
 import './ExerciseDetailModal.css'
 import { extractVideoId, getEmbedUrl } from '../utils/youtube'
+import AddToPlanDropdown from './AddToPlanDropdown'
 
-import type { ParsedExercise, PlanExercise } from '../types'
+import type { ParsedExercise, PlanExercise, WorkoutPlan } from '../types'
 
 type ExerciseType = ParsedExercise | PlanExercise
 
@@ -19,6 +20,12 @@ interface ExerciseDetailModalProps {
   onNext: () => void
   /** Callback to navigate to previous exercise */
   onPrevious: () => void
+  /** Available workout plans for "Add to Plan" feature */
+  plans?: WorkoutPlan[]
+  /** Callback when exercise is added to a plan */
+  onAddToPlan?: (planId: string, exercise: PlanExercise) => void
+  /** Callback when creating a new plan with this exercise */
+  onCreateNewPlanWithExercise?: (planName: string, exercise: PlanExercise) => void
 }
 
 /**
@@ -34,7 +41,10 @@ function ExerciseDetailModal({
   totalExercises,
   onClose,
   onNext,
-  onPrevious
+  onPrevious,
+  plans,
+  onAddToPlan,
+  onCreateNewPlanWithExercise
 }: ExerciseDetailModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
 
@@ -131,6 +141,19 @@ function ExerciseDetailModal({
         </button>
 
         <h2 id="modal-title">{exercise.name}</h2>
+
+        {/* Add to Plan button - only for ParsedExercise (library), not PlanExercise (already in plan) */}
+        {plans && onAddToPlan && !('sets' in exercise) && (
+          <div className="modal-add-to-plan">
+            <AddToPlanDropdown
+              exercise={exercise as ParsedExercise}
+              plans={plans}
+              onAddToPlan={onAddToPlan}
+              onCreateNewPlanWithExercise={onCreateNewPlanWithExercise}
+              variant="full"
+            />
+          </div>
+        )}
 
         <div className="exercise-details">
           {/* Muscle Groups */}

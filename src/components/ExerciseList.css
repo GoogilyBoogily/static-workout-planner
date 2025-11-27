@@ -12,6 +12,7 @@
 }
 
 .exercise-item {
+  position: relative;
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border-secondary);
   border-radius: 8px;
@@ -46,16 +47,6 @@
   background: var(--color-bg-hover);
   border-color: var(--color-primary);
   box-shadow: 0 0 16px rgba(100, 108, 255, 0.3);
-  animation: pulse-highlight 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse-highlight {
-  0%, 100% {
-    box-shadow: 0 0 16px rgba(100, 108, 255, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 24px rgba(100, 108, 255, 0.5);
-  }
 }
 
 /* When highlighted exercise is also hovered, combine effects */
@@ -118,6 +109,27 @@
   font-size: 16px;
 }
 
+/* Add to Plan button - hover reveal */
+.exercise-add-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+.exercise-item:hover .exercise-add-button,
+.exercise-item:focus-within .exercise-add-button,
+.exercise-add-button:focus-within {
+  opacity: 1;
+}
+
+/* Raise entire card's z-index when dropdown is open */
+.exercise-item:has(.add-to-plan-panel) {
+  z-index: 100;
+}
+
 /* Responsive breakpoints */
 @media (max-width: 600px) {
   .exercise-list {
@@ -131,5 +143,10 @@
 
   .exercise-name {
     font-size: 15px;
+  }
+
+  /* Always show add button on mobile (no hover) */
+  .exercise-add-button {
+    opacity: 1;
   }
 }

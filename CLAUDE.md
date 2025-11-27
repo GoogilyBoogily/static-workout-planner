@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A React-based workout planner with localStorage persistence, random workout generation, muscle diagram visualization, and exercise library features. Built with Vite and **Bun** (not npm/yarn).
+A React + TypeScript workout planner with localStorage persistence, random workout generation, muscle diagram visualization, and exercise library features. Built with Vite and **Bun** (not npm/yarn).
 
 ## Development Commands
 
@@ -13,6 +13,7 @@ bun install              # Install dependencies
 bun dev                  # Start dev server at http://localhost:5173
 bun run build            # Build for production
 bun run preview          # Preview production build locally
+bun run type-check       # TypeScript type checking (tsc --noEmit)
 ```
 
 **No tests or linting configured** - manual testing only.
@@ -36,15 +37,16 @@ Additional commands: `/speckit.checklist`, `/speckit.clarify`, `/speckit.constit
 ## Architecture
 
 ### Key Architectural Decisions
-- **No routing library** - Single-page app with view state in `App.jsx` (`currentView`)
+- **No routing library** - Single-page app with view state in `App.tsx` (`currentView`)
 - **No global state library** - React hooks only (`useState`, `useMemo`)
 - **No backend** - Purely client-side with localStorage persistence
-- **Component-scoped CSS** - Each `.jsx` has co-located `.css` file
-- **Muscle filtering** - Centralized in `src/utils/muscleFilter.js` with OR-based matching
+- **Component-scoped CSS** - Each `.tsx` has co-located `.css` file
+- **Muscle filtering** - Centralized in `src/utils/muscleFilter.ts` with OR-based matching
+- **Centralized types** - All TypeScript interfaces in `src/types/` directory
 
 ### State Management
 - Local component state for UI (`useState`)
-- Lifted state in `App.jsx` for shared data (exercises, plans, filters)
+- Lifted state in `App.tsx` for shared data (exercises, plans, filters)
 - Cross-tab sync via `window.storage` event listener
 - Derived state uses `useMemo` for expensive filtering
 
@@ -71,13 +73,19 @@ Use `crypto.randomUUID()` for all entities (plans, exercises, templates).
 
 ### Utility Modules
 All in `src/utils/`:
-- `localStorage.js` - Centralized storage operations (never call localStorage directly)
-- `muscleFilter.js` - Exercise filtering by muscle groups (OR-based matching)
-- `youtube.js` - YouTube URL parsing and privacy-enhanced embed URLs
-- `validation.js` - Form validation utilities
-- `dateFormat.js` - Timestamp formatting
-- `randomGenerator.js` - Fisher-Yates shuffle, workout generation, reroll/pin workflow
-- `quotaTemplates.js` - Quota template CRUD with localStorage
+- `localStorage.ts` - Centralized storage operations (never call localStorage directly)
+- `muscleFilter.ts` - Exercise filtering by muscle groups (OR-based matching)
+- `youtube.ts` - YouTube URL parsing and privacy-enhanced embed URLs
+- `validation.ts` - Form validation utilities
+- `dateFormat.ts` - Timestamp formatting
+- `randomGenerator.ts` - Fisher-Yates shuffle, workout generation, reroll/pin workflow
+- `quotaTemplates.ts` - Quota template CRUD with localStorage
+- `timerAudio.ts` - Web Audio API sound generation for circuit timer
+
+### Type Definitions
+All in `src/types/`:
+- `index.ts` - Core domain types (Exercise, Plan, Timer, Storage, etc.)
+- `components.ts` - Component prop types
 
 ## Constitutional Principles
 
@@ -87,7 +95,7 @@ All in `src/utils/`:
 2. **Performance by Default** - Question every new dependency, minimize re-renders
 3. **Component Simplicity** - No component libraries unless necessary, avoid premature abstraction
 4. **Vite-Optimized** - Use Vite defaults, minimal custom configuration
-5. **JSDoc over TypeScript** - Type hints via comments, manual testing prioritized
+5. **TypeScript** - Full TypeScript with strict types; run `bun run type-check` to verify
 
 ## Code Patterns & Conventions
 
@@ -105,18 +113,11 @@ All in `src/utils/`:
 
 ### localStorage Rules
 
-- **Always use `src/utils/localStorage.js`** - never call localStorage directly
+- **Always use `src/utils/localStorage.ts`** - never call localStorage directly
 - Validate data on load; return empty array/object if corrupted
 
 ### CSS Conventions
 
-- Each `.jsx` has matching `.css` file
+- Each `.tsx` has matching `.css` file
 - Class names: kebab-case (e.g., `.exercise-list-item`)
 - Dark mode via CSS custom properties in `index.css` + `prefers-color-scheme`
-
-## Active Technologies
-- JavaScript (ES2020+) with JSX + React 18, Vite 6 (existing stack - no new dependencies needed) (001-circuit-timer)
-- N/A (timer config resets on page load per spec) (001-circuit-timer)
-
-## Recent Changes
-- 001-circuit-timer: Added JavaScript (ES2020+) with JSX + React 18, Vite 6 (existing stack - no new dependencies needed)

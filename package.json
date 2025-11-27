@@ -8,8 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "generate-screenshots": "bun ./scripts/capture-screenshots.js",
-    "generate-demo-gifs": "bun ./scripts/capture-demo-gifs.js"
+    "generate-screenshots": "bun ./scripts/capture-screenshots.ts",
+    "generate-demo-gifs": "bun ./scripts/capture-demo-gifs.ts"
   },
   "dependencies": {
     "@mjcdev/react-body-highlighter": "0.0.4",
@@ -18,6 +18,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@types/bun": "1.3.3",
     "@types/node": "24.10.1",
     "@types/papaparse": "5.5.0",
     "@types/react": "^18.3.12",

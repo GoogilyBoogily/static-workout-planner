@@ -1,0 +1,332 @@
+/**
+ * Add to Plan Dropdown Styles
+ *
+ * Dropdown component for adding exercises to workout plans.
+ * Supports 'icon' variant (small + button) and 'full' variant (text button).
+ */
+
+.add-to-plan-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Trigger Button - Icon Variant (for exercise cards) */
+.add-to-plan-trigger-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(100, 108, 255, 0.3);
+}
+
+.add-to-plan-trigger-icon:hover {
+  background: var(--color-primary-hover);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.4);
+}
+
+.add-to-plan-trigger-icon:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Trigger Button - Full Variant (for modal) */
+.add-to-plan-trigger-full {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.add-to-plan-trigger-full:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.add-to-plan-trigger-full:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Dropdown Panel */
+.add-to-plan-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 280px;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-lg);
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Adjust panel position for icon variant - align right */
+.add-to-plan-trigger-icon + .add-to-plan-panel {
+  right: 0;
+}
+
+/* Plan Selector */
+.plan-selector-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.plan-selector-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.plan-selector {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.plan-selector:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+/* New Plan Input */
+.new-plan-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.new-plan-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.new-plan-input {
+  flex: 1;
+  padding: 10px 12px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.new-plan-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.new-plan-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.new-plan-cancel {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.new-plan-cancel:hover {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: white;
+}
+
+/* Quick Add Button */
+.quick-add-button {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.quick-add-button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.quick-add-button:disabled {
+  background: var(--color-disabled-bg);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+
+/* Customize Toggle */
+.customize-toggle {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: left;
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.customize-toggle:hover {
+  color: var(--color-primary);
+}
+
+/* Customize Form */
+.customize-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border-secondary);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+}
+
+.form-field input {
+  padding: 8px 10px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.form-field input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* Custom Add Button */
+.custom-add-button {
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.custom-add-button:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: white;
+}
+
+.custom-add-button:disabled {
+  border-color: var(--color-disabled-border);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+
+/* No Plans Message */
+.no-plans-message {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  text-align: center;
+  margin: 0;
+  padding: 8px 0;
+}
+
+/* Success State */
+.add-success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  color: var(--color-success);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.success-icon {
+  font-size: 24px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .add-to-plan-panel {
+    min-width: 240px;
+    /* On mobile, position from left if it would go off screen */
+    right: auto;
+    left: 0;
+  }
+
+  .add-to-plan-trigger-icon + .add-to-plan-panel {
+    right: auto;
+    left: -100px; /* Center roughly under trigger on mobile */
+  }
+}

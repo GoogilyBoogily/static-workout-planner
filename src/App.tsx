@@ -24,6 +24,7 @@ import { buildExercisePool, getAvailableTags, generateWorkoutPlan, generatePlanN
 
 import type {
   ParsedExercise,
+  PlanExercise,
   CSVExerciseRow,
   WorkoutPlan,
   PlanFormData,
@@ -257,6 +258,67 @@ function App() {
     }
   }
 
+  // Add exercise from library to an existing plan
+  const handleAddExerciseToPlan = (planId: string, exercise: PlanExercise) => {
+    try {
+      const targetPlan = plans.find(p => p.id === planId)
+      if (!targetPlan) {
+        console.error('Plan not found:', planId)
+        return
+      }
+
+      const updatedPlan: WorkoutPlan = {
+        ...targetPlan,
+        exercises: [...targetPlan.exercises, exercise],
+        updatedAt: Date.now()
+      }
+
+      const updatedPlans = plans.map(p =>
+        p.id === planId ? updatedPlan : p
+      )
+
+      PlansStorage.savePlans(updatedPlans)
+      setPlans(updatedPlans)
+    } catch (err) {
+      if (err instanceof Error && err.name === 'QuotaExceededError') {
+        setStorageError('Storage limit reached. Delete old plans to free space.')
+      } else {
+        setStorageError(err instanceof Error ? err.message : String(err))
+      }
+    }
+  }
+
+  // Create a new plan with an exercise from the library
+  const handleCreateNewPlanWithExercise = (planName: string, exercise: PlanExercise) => {
+    try {
+      // Increment all existing plans' sortOrder
+      const shiftedPlans = plans.map(p => ({
+        ...p,
+        sortOrder: p.sortOrder + 1
+      }))
+
+      const newPlan: WorkoutPlan = {
+        id: crypto.randomUUID(),
+        name: planName,
+        exercises: [exercise],
+        isCircuit: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        sortOrder: 0
+      }
+
+      const updatedPlans = [newPlan, ...shiftedPlans]
+      PlansStorage.savePlans(updatedPlans)
+      setPlans(updatedPlans)
+    } catch (err) {
+      if (err instanceof Error && err.name === 'QuotaExceededError') {
+        setStorageError('Storage limit reached. Delete old plans to free space.')
+      } else {
+        setStorageError(err instanceof Error ? err.message : String(err))
+      }
+    }
+  }
+
   // T024: Muscle toggle handler (used by both MuscleDiagram and TagFilter)
   const handleMuscleToggle = (muscleName: string) => {
     setSelectedMuscles(prev =>
@@ -308,17 +370,24 @@ function App() {
         PlansStorage.savePlans(updatedPlans)
         setPlans(updatedPlans)
       } else {
-        // Creating new plan
+        // Creating new plan - insert at top (sortOrder = 0)
+        // Increment all existing plans' sortOrder
+        const shiftedPlans = plans.map(p => ({
+          ...p,
+          sortOrder: p.sortOrder + 1
+        }))
+
         const newPlan: WorkoutPlan = {
           id: crypto.randomUUID(),
           name: planData.name,
           exercises: planData.exercises,
           isCircuit: planData.isCircuit || false,
           createdAt: Date.now(),
-          updatedAt: Date.now()
+          updatedAt: Date.now(),
+          sortOrder: 0
         }
 
-        const updatedPlans = [...plans, newPlan]
+        const updatedPlans = [newPlan, ...shiftedPlans]
         PlansStorage.savePlans(updatedPlans)
         setPlans(updatedPlans)
       }
@@ -391,6 +460,12 @@ function App() {
     }
 
     // Create new plan with generated exercises
+    // Increment all existing plans' sortOrder
+    const shiftedPlans = plans.map(p => ({
+      ...p,
+      sortOrder: p.sortOrder + 1
+    }))
+
     const newPlan: WorkoutPlan = {
       id: crypto.randomUUID(),
       name: generatePlanName(),
@@ -398,10 +473,15 @@ function App() {
       isCircuit: false,
       createdAt: Date.now(),
       updatedAt: Date.now(),
+      sortOrder: 0,
       isGenerated: true,
       generationTimestamp: Date.now(),
       pinStatus: {}
     }
+
+    // Save the shifted plans before opening edit mode
+    PlansStorage.savePlans(shiftedPlans)
+    setPlans(shiftedPlans)
 
     // Set as selected plan and open in edit mode
     setSelectedPlan(newPlan)
@@ -542,8 +622,34 @@ function App() {
     return filtered
   }, [exercises, searchText, selectedMuscles, selectedEquipment])
 
-  // T042: Sort plans by updatedAt descending (newest first)
-  const sortedPlans = [...plans].sort((a, b) => b.updatedAt - a.updatedAt)
+  // Sort plans by sortOrder ascending (lower = first)
+  const sortedPlans = useMemo(() =>
+    [...plans].sort((a, b) => a.sortOrder - b.sortOrder),
+    [plans]
+  )
+
+  // Handle drag-drop reordering of plans
+  const handleReorderPlans = (sourceId: string, targetId: string) => {
+    const sourceIndex = sortedPlans.findIndex(p => p.id === sourceId)
+    const targetIndex = sortedPlans.findIndex(p => p.id === targetId)
+
+    if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex) return
+
+    // Create reordered array
+    const reordered = [...sortedPlans]
+    const [moved] = reordered.splice(sourceIndex, 1)
+    if (!moved) return
+    reordered.splice(targetIndex, 0, moved)
+
+    // Reassign sortOrder to all plans (0, 1, 2, ...)
+    const updated = reordered.map((plan, index) => ({
+      ...plan,
+      sortOrder: index
+    }))
+
+    PlansStorage.savePlans(updated)
+    setPlans(updated)
+  }
 
   return (
     <div className="App">
@@ -603,6 +709,7 @@ function App() {
             onGenerateRandom={handleGenerateRandom}
             exercisePoolEmpty={Object.keys(exercisePool).length === 0}
             onStartTimer={handleStartTimer}
+            onReorder={handleReorderPlans}
           />
         )}
 
@@ -712,6 +819,9 @@ function App() {
               onExerciseClick={handleExerciseClick}
               onExerciseHover={setHoveredMuscle}
               hoveredMuscle={hoveredMuscle}
+              plans={plans}
+              onAddToPlan={handleAddExerciseToPlan}
+              onCreateNewPlanWithExercise={handleCreateNewPlanWithExercise}
             />
           )}
 
@@ -732,6 +842,9 @@ function App() {
         onClose={handleCloseModal}
         onNext={handleNext}
         onPrevious={handlePrevious}
+        plans={plans}
+        onAddToPlan={handleAddExerciseToPlan}
+        onCreateNewPlanWithExercise={handleCreateNewPlanWithExercise}
       />
 
       {/* T022: Quota Form Modal (Feature 005) */}

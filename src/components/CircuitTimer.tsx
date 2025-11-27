@@ -686,9 +686,6 @@ function CircuitTimer({ onClose, plan, onUpdatePlan }: CircuitTimerProps) {
                             onDragLeave={handleDragLeave}
                             onDrop={(e) => handleDrop(e, flatIndex)}
                           >
-                            <div className="exercise-drag-handle" title="Drag to reorder">
-                              <span className="drag-icon">⋮⋮</span>
-                            </div>
                             <div className="exercise-name">{exercise.name}</div>
                           </div>
                         )

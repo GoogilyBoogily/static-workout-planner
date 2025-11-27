@@ -119,41 +119,18 @@
   border: 1px solid var(--color-border-primary);
   border-radius: 6px;
   transition: box-shadow 0.2s;
+  cursor: grab;
 }
 
 .exercise-item:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
-/* Drag and drop styles */
-.exercise-drag-handle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  cursor: grab;
-  color: var(--color-text-tertiary);
-  user-select: none;
-  padding: 8px 4px;
-  border-radius: 4px;
-  transition: color 0.2s, background-color 0.2s;
-}
-
-.exercise-drag-handle:hover {
-  color: var(--color-text-secondary);
-  background-color: var(--color-bg-hover);
-}
-
-.exercise-drag-handle:active {
+.exercise-item:active {
   cursor: grabbing;
 }
 
-.drag-icon {
-  font-size: 16px;
-  font-weight: bold;
-  letter-spacing: 2px;
-}
-
+/* Drag and drop styles */
 .exercise-item.dragging {
   opacity: 0.5;
   background: var(--color-bg-tertiary);
@@ -474,10 +451,6 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 12px;
-  }
-
-  .exercise-drag-handle {
-    order: -1;
   }
 
   .exercise-info {

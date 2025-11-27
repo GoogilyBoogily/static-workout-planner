@@ -74,6 +74,8 @@ export interface WorkoutPlan {
   isCircuit: boolean
   createdAt: number
   updatedAt: number
+  /** Custom sort order for drag-drop reordering (lower = first) */
+  sortOrder: number
   /** Feature 005: true if randomly generated */
   isGenerated?: boolean
   /** Feature 005: timestamp of last generation */
@@ -294,13 +296,16 @@ export type MuscleGroupName =
   | 'Biceps'
   | 'Forearms'
   | 'Abdominals'
+  | 'Obliques'
   | 'Quadriceps'
   | 'Back'
+  | 'Lower Back'
   | 'Trapezius'
   | 'Triceps'
   | 'Glutes'
   | 'Hamstrings'
   | 'Calves'
+  | 'Adductors'
 
 /** Map from our muscle names to library slugs */
 export type MuscleNameMap = Record<MuscleGroupName, MuscleSlug>

@@ -24,13 +24,16 @@ export const muscleNameMap: MuscleNameMap = {
   'Biceps': 'biceps',
   'Forearms': 'forearm',
   'Abdominals': 'abs',
+  'Obliques': 'obliques',
   'Quadriceps': 'quadriceps',
-  'Back': 'upper-back',  // Combines upper and lower back
+  'Back': 'upper-back',  // Primary back muscles
+  'Lower Back': 'lower-back',
   'Trapezius': 'trapezius',
   'Triceps': 'triceps',
   'Glutes': 'gluteal',
   'Hamstrings': 'hamstring',
-  'Calves': 'calves'
+  'Calves': 'calves',
+  'Adductors': 'adductors'
 }
 
 /**
