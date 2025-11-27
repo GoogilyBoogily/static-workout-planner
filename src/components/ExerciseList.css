@@ -88,7 +88,7 @@
 .equipment-badge {
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border-tertiary);
-  color: var(--color-warning);
+  color: var(--color-equipment);
   padding: 4px 10px;
   border-radius: var(--radius-sm);
   font-size: 11px;

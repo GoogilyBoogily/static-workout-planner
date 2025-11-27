@@ -39,10 +39,10 @@
   --color-warning-bg: rgba(251, 191, 36, 0.15);
   --color-error-bg: rgba(248, 113, 113, 0.15);
 
-  /* Equipment accent (distinct from warning) */
-  --color-equipment: #ffd700;
-  --color-equipment-hover: #ffed4e;
-  --color-equipment-bg: rgba(255, 215, 0, 0.1);
+  /* Equipment accent (amber - matches warning for consistency) */
+  --color-equipment: #fbbf24;
+  --color-equipment-hover: #f59e0b;
+  --color-equipment-bg: rgba(251, 191, 36, 0.1);
 
   /* Border colors */
   --color-border-primary: #444;
@@ -115,10 +115,10 @@
   --color-warning-bg: rgba(245, 158, 11, 0.1);
   --color-error-bg: rgba(239, 68, 68, 0.1);
 
-  /* Equipment accent (distinct from warning) */
-  --color-equipment: #b8860b;
-  --color-equipment-hover: #996f0a;
-  --color-equipment-bg: rgba(184, 134, 11, 0.1);
+  /* Equipment accent (amber - matches warning for consistency) */
+  --color-equipment: #d97706;
+  --color-equipment-hover: #b45309;
+  --color-equipment-bg: rgba(217, 119, 6, 0.1);
 
   /* Border colors */
   --color-border-primary: #ddd;

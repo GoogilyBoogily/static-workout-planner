@@ -22,9 +22,9 @@
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
   font-weight: 600;
-  border: 2px solid var(--color-equipment);
+  border: 1px solid var(--color-border-tertiary);
   border-radius: var(--radius-full);
-  background-color: var(--color-equipment-bg);
+  background-color: var(--color-bg-elevated);
   color: var(--color-equipment);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -32,7 +32,7 @@
 }
 
 .equipment-pill:hover {
-  border-color: var(--color-equipment-hover);
+  border-color: var(--color-equipment);
   background-color: var(--color-bg-hover);
   transform: translateY(-1px);
 }
@@ -48,15 +48,16 @@
 
 /* Active (selected) state */
 .equipment-pill-active {
-  background-color: var(--color-equipment);
+  background-color: var(--color-equipment-bg);
   border-color: var(--color-equipment);
-  color: var(--color-text-inverse);
+  color: var(--color-equipment);
   font-weight: 700;
 }
 
 .equipment-pill-active:hover {
-  background-color: var(--color-equipment-hover);
+  background-color: var(--color-bg-hover);
   border-color: var(--color-equipment-hover);
+  color: var(--color-equipment-hover);
 }
 
 /* Responsive design for mobile */
