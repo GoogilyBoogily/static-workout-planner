@@ -187,7 +187,7 @@ function App() {
   }
 
   const loadSampleData = () => {
-    fetch('/default-workouts.csv')
+    fetch(`${import.meta.env.BASE_URL}default-workouts.csv`)
       .then(response => response.text())
       .then(csvText => {
         Papa.parse<CSVExerciseRow>(csvText, {
