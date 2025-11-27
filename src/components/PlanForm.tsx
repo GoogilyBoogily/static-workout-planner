@@ -74,11 +74,6 @@ function PlanForm({
     return 1
   })
 
-  // Extract available tags from exercise pool for reroll functionality
-  const availableTags = useMemo(() => {
-    return Object.keys(exercisePool).sort()
-  }, [exercisePool])
-
   // Group exercises by roundGroup for circuit mode display
   const exercisesByRound = useMemo((): [number, IndexedExercise[]][] | null => {
     if (!isCircuit) return null
@@ -235,33 +230,6 @@ function PlanForm({
     }
     setIsAddingExercise(false)
     setAddingToRound(null)
-  }
-
-  // T047-T048: Exercise reordering functions
-  const handleMoveExerciseUp = (index: number) => {
-    if (index === 0) return
-
-    const newExercises = [...exercises]
-    const temp = newExercises[index - 1]
-    const current = newExercises[index]
-    if (temp && current) {
-      newExercises[index - 1] = current
-      newExercises[index] = temp
-    }
-    setExercises(newExercises)
-  }
-
-  const handleMoveExerciseDown = (index: number) => {
-    if (index === exercises.length - 1) return
-
-    const newExercises = [...exercises]
-    const temp = newExercises[index + 1]
-    const current = newExercises[index]
-    if (temp && current) {
-      newExercises[index + 1] = current
-      newExercises[index] = temp
-    }
-    setExercises(newExercises)
   }
 
   // Drag and drop handlers
