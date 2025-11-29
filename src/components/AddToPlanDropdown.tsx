@@ -137,10 +137,8 @@ function AddToPlanDropdown({
     }, SUCCESS_FEEDBACK_DURATION)
   }
 
-  // Handle quick add with defaults
-  const handleQuickAdd = () => {
-    const planExercise = createPlanExercise(3, '8-12')
-
+  // Shared handler for adding exercise to plan (DRY: extracted from handleQuickAdd and handleCustomAdd)
+  const addExerciseToPlan = (planExercise: PlanExercise) => {
     if (isCreatingNew) {
       if (!newPlanName.trim() || !onCreateNewPlanWithExercise) return
       setAddedToPlanName(newPlanName.trim())
@@ -151,8 +149,13 @@ function AddToPlanDropdown({
       setAddedToPlanName(plan?.name || 'plan')
       onAddToPlan(selectedPlanId, planExercise)
     }
-
     showSuccessFeedback()
+  }
+
+  // Handle quick add with defaults
+  const handleQuickAdd = () => {
+    const planExercise = createPlanExercise(3, '8-12')
+    addExerciseToPlan(planExercise)
   }
 
   // Handle customized add
@@ -164,19 +167,7 @@ function AddToPlanDropdown({
       formData.weight || undefined,
       formData.rest || undefined
     )
-
-    if (isCreatingNew) {
-      if (!newPlanName.trim() || !onCreateNewPlanWithExercise) return
-      setAddedToPlanName(newPlanName.trim())
-      onCreateNewPlanWithExercise(newPlanName.trim(), planExercise)
-    } else {
-      if (!selectedPlanId) return
-      const plan = sortedPlans.find(p => p.id === selectedPlanId)
-      setAddedToPlanName(plan?.name || 'plan')
-      onAddToPlan(selectedPlanId, planExercise)
-    }
-
-    showSuccessFeedback()
+    addExerciseToPlan(planExercise)
   }
 
   // Handle toggle dropdown

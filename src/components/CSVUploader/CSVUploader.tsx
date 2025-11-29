@@ -9,12 +9,20 @@ import type {
   UploadPhase,
   ValidationIssue,
   ColumnMapping,
-  EXPECTED_CSV_COLUMNS
+  RequiredColumn
 } from '../../types'
 
-const REQUIRED_COLUMNS = ['Exercise', 'Muscle Group'] as const
-const OPTIONAL_COLUMNS = ['Equipment', 'Optional Equipment', 'Description', 'YouTube URL'] as const
+import { EXPECTED_CSV_COLUMNS } from '../../types'
+
+// Derive local constants from single source of truth
+const REQUIRED_COLUMNS = EXPECTED_CSV_COLUMNS.required
+const OPTIONAL_COLUMNS = EXPECTED_CSV_COLUMNS.optional
 const ALL_EXPECTED_COLUMNS = [...REQUIRED_COLUMNS, ...OPTIONAL_COLUMNS]
+
+/** Maximum file size allowed (5MB) */
+const MAX_FILE_SIZE = 5 * 1024 * 1024
+/** Maximum number of rows allowed */
+const MAX_ROW_COUNT = 5000
 
 interface CSVUploaderProps {
   onUploadComplete: (exercises: ParsedExercise[], headers: string[], rawData: Record<string, string>[]) => void
@@ -184,6 +192,13 @@ function CSVUploader({ onUploadComplete, onError }: CSVUploaderProps) {
       return
     }
 
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      setErrorMessage('File too large. Maximum size is 5MB.')
+      setPhase('error')
+      return
+    }
+
     setFileName(file.name)
     setErrorMessage(null)
     setPhase('parsing')
@@ -203,6 +218,13 @@ function CSVUploader({ onUploadComplete, onError }: CSVUploaderProps) {
 
         if (!results.data || results.data.length === 0) {
           setErrorMessage('CSV file is empty')
+          setPhase('error')
+          return
+        }
+
+        // Validate row count
+        if (results.data.length > MAX_ROW_COUNT) {
+          setErrorMessage(`Too many rows. Maximum is ${MAX_ROW_COUNT.toLocaleString()}.`)
           setPhase('error')
           return
         }
@@ -329,7 +351,14 @@ function CSVUploader({ onUploadComplete, onError }: CSVUploaderProps) {
         <div className="csv-uploader-parsing">
           <h3 className="upload-section-header">Processing File</h3>
           <div className="upload-file-name">{fileName}</div>
-          <div className="upload-progress">
+          <div
+            className="upload-progress"
+            role="progressbar"
+            aria-valuenow={progress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="CSV parsing progress"
+          >
             <div
               className="upload-progress-bar"
               style={{ width: `${progress}%` }}
@@ -365,7 +394,7 @@ function CSVUploader({ onUploadComplete, onError }: CSVUploaderProps) {
                   {ALL_EXPECTED_COLUMNS.map(col => (
                     <option key={col} value={col}>
                       {col}
-                      {REQUIRED_COLUMNS.includes(col as typeof REQUIRED_COLUMNS[number]) ? ' *' : ''}
+                      {REQUIRED_COLUMNS.includes(col as RequiredColumn) ? ' *' : ''}
                     </option>
                   ))}
                 </select>

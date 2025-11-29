@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import Papa from 'papaparse'
 import './App.css'
 import ExerciseDetailModal from './components/ExerciseDetailModal'
@@ -149,16 +149,16 @@ function App() {
   }, [])
 
   // Handle CSV upload completion from CSVUploader component
-  const handleCSVUploadComplete = (
+  const handleCSVUploadComplete = useCallback((
     parsedExercises: ParsedExercise[],
-    headers: string[],
+    newHeaders: string[],
     rawData: Record<string, string>[]
   ) => {
     setExercises(parsedExercises)
-    setHeaders(headers)
+    setHeaders(newHeaders)
     setData(rawData)
     setError(null)
-  }
+  }, [])
 
   const handleCSVUploadError = (message: string) => {
     setError(message)
