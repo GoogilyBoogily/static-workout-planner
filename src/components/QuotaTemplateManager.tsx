@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { formatAbsoluteTime } from '../utils/dateFormat'
 import './QuotaTemplateManager.css'
 
-import type { QuotaTemplate } from '../types'
+import type { MuscleQuotaTemplate } from '../types'
 
 interface QuotaTemplateManagerProps {
   /** Array of saved quota templates */
-  templates: QuotaTemplate[]
+  templates: MuscleQuotaTemplate[]
   /** Callback when template loaded */
-  onLoad: (template: QuotaTemplate) => void
+  onLoad: (template: MuscleQuotaTemplate) => void
   /** Callback when template deleted */
   onDelete: (templateId: string) => void
 }
@@ -23,7 +23,7 @@ export default function QuotaTemplateManager({ templates, onLoad, onDelete }: Qu
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
 
   // T054: Handle load template
-  const handleLoadTemplate = (template: QuotaTemplate) => {
+  const handleLoadTemplate = (template: MuscleQuotaTemplate) => {
     onLoad(template)
   }
 
@@ -60,11 +60,16 @@ export default function QuotaTemplateManager({ templates, onLoad, onDelete }: Qu
         {templates.map(template => (
           <div key={template.id} className="template-item">
             <div className="template-info">
-              <div className="template-name">{template.name}</div>
+              <div className="template-name">
+                {template.name}
+                {template.isCircuit && (
+                  <span className="template-circuit-badge">Circuit</span>
+                )}
+              </div>
               <div className="template-quotas">
                 {template.quotas.map((q, idx) => (
                   <span key={idx} className="template-quota-badge">
-                    {q.tag}: {q.count}
+                    {q.muscleGroup}: {q.count}
                   </span>
                 ))}
               </div>

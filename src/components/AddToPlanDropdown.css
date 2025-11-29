@@ -319,16 +319,45 @@
 }
 
 /* Mobile Responsive */
-@media (max-width: 600px) {
+@media (max-width: 599px) {
+  /* Center panel on mobile using fixed positioning */
   .add-to-plan-panel {
-    min-width: 240px;
-    /* On mobile, position from left if it would go off screen */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     right: auto;
-    left: 0;
+    min-width: 280px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    z-index: 1200;
+    padding: 14px;
   }
 
   .add-to-plan-trigger-icon + .add-to-plan-panel {
     right: auto;
-    left: -100px; /* Center roughly under trigger on mobile */
+    left: 50%;
+  }
+
+  /* Single column form fields on mobile */
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .plan-selector,
+  .new-plan-input,
+  .quick-add-button {
+    padding: 10px 12px;
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+
+  .customize-form {
+    gap: 10px;
+  }
+
+  .form-field input {
+    font-size: 16px; /* Prevent iOS zoom */
   }
 }

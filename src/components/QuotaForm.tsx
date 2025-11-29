@@ -1,24 +1,23 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { ChangeEvent } from 'react'
-import { validateQuotas } from '../utils/validation'
+import { validateMuscleQuotas } from '../utils/validation'
+import { getAvailableMuscleGroups, getMuscleGroupStats } from '../utils/randomGenerator'
 import QuotaTemplateManager from './QuotaTemplateManager'
 import './QuotaForm.css'
 
-import type { ExercisePool, TagQuota, QuotaTemplate } from '../types'
+import type { ParsedExercise, MuscleQuota, MuscleQuotaTemplate, GenerationConfig } from '../types'
 
 interface QuotaFormProps {
-  /** Tags from exercise pool */
-  availableTags: string[]
-  /** Exercise pool grouped by tag */
-  exercisePool: ExercisePool
+  /** Exercises from CSV library */
+  exercises: ParsedExercise[]
   /** Saved quota templates */
-  quotaTemplates?: QuotaTemplate[]
+  quotaTemplates?: MuscleQuotaTemplate[]
   /** Callback when "Generate" clicked */
-  onGenerate: (quotas: TagQuota[]) => void
+  onGenerate: (config: GenerationConfig) => void
   /** Callback when cancelled */
   onCancel: () => void
   /** Callback to save template */
-  onSaveTemplate: (name: string, quotas: TagQuota[]) => void
+  onSaveTemplate: (name: string, quotas: MuscleQuota[], isCircuit: boolean, roundCount?: number) => void
   /** Callback to delete template */
   onDeleteTemplate: (templateId: string) => void
 }
@@ -26,23 +25,28 @@ interface QuotaFormProps {
 /**
  * QuotaForm Component
  *
- * Modal form for configuring tag quotas to generate random workout plans.
- * Allows users to specify how many exercises of each tag they want.
+ * Modal form for configuring muscle group quotas to generate random workout plans.
+ * Allows users to specify how many exercises of each muscle group they want.
  */
 export default function QuotaForm({
-  availableTags,
-  exercisePool,
+  exercises,
   quotaTemplates = [],
   onGenerate,
   onCancel,
   onSaveTemplate,
   onDeleteTemplate
 }: QuotaFormProps) {
-  // Quota state: array of { tag, count } objects
-  const [quotas, setQuotas] = useState<TagQuota[]>([])
+  // Quota state: array of { muscleGroup, count } objects
+  const [quotas, setQuotas] = useState<MuscleQuota[]>([])
+
+  // Circuit mode toggle
+  const [isCircuit, setIsCircuit] = useState(false)
+
+  // Round count for circuit mode (optional - auto-calculates if not set)
+  const [roundCount, setRoundCount] = useState<number | undefined>(undefined)
 
   // Selected template (for loading saved configurations)
-  const [selectedTemplate, setSelectedTemplate] = useState<QuotaTemplate | null>(null)
+  const [selectedTemplate, setSelectedTemplate] = useState<MuscleQuotaTemplate | null>(null)
 
   // FIXED H5: Separate validation errors and warnings
   const [validationErrors, setValidationErrors] = useState<string[]>([])
@@ -55,24 +59,34 @@ export default function QuotaForm({
   // T070: Loading state for generation
   const [isGenerating, setIsGenerating] = useState(false)
 
+  // Derive available muscle groups and stats from exercises
+  const availableMuscleGroups = useMemo(
+    () => getAvailableMuscleGroups(exercises),
+    [exercises]
+  )
+  const muscleGroupStats = useMemo(
+    () => getMuscleGroupStats(exercises),
+    [exercises]
+  )
+
   /**
    * Add a new empty quota row
    *
-   * FIXED M3: Prevent duplicate tags by selecting first unused tag
+   * FIXED M3: Prevent duplicate muscle groups by selecting first unused
    */
   const handleAddQuota = () => {
-    // Find tags that are already in use
-    const usedTags = new Set(quotas.map(q => q.tag))
+    // Find muscle groups that are already in use
+    const usedGroups = new Set(quotas.map(q => q.muscleGroup))
 
-    // Find first unused tag
-    const unusedTag = availableTags.find(tag => !usedTags.has(tag))
+    // Find first unused muscle group
+    const unusedGroup = availableMuscleGroups.find(group => !usedGroups.has(group))
 
-    if (!unusedTag) {
+    if (!unusedGroup) {
       alert('All available muscle groups have been added to the quota list.')
       return
     }
 
-    setQuotas([...quotas, { tag: unusedTag, count: 1 }])
+    setQuotas([...quotas, { muscleGroup: unusedGroup, count: 1 }])
     setValidationErrors([]) // Clear errors when user makes changes
     setValidationWarnings([]) // Clear warnings too
   }
@@ -88,13 +102,13 @@ export default function QuotaForm({
   }
 
   /**
-   * Update a quota's tag
+   * Update a quota's muscle group
    */
-  const handleTagChange = (index: number, newTag: string) => {
+  const handleMuscleGroupChange = (index: number, newMuscleGroup: string) => {
     const updated = [...quotas]
     const quota = updated[index]
     if (quota) {
-      quota.tag = newTag
+      quota.muscleGroup = newMuscleGroup
     }
     setQuotas(updated)
     setValidationErrors([])
@@ -122,7 +136,7 @@ export default function QuotaForm({
    * FIXED H5: Handle both errors and warnings from validation
    */
   const handleGenerate = () => {
-    const { valid, errors, warnings } = validateQuotas(quotas, exercisePool)
+    const { valid, errors, warnings } = validateMuscleQuotas(quotas, exercises)
 
     // Show errors (blocking) and warnings (non-blocking)
     setValidationErrors(errors)
@@ -141,7 +155,12 @@ export default function QuotaForm({
     // setTimeout schedules after next event loop tick
     requestAnimationFrame(() => {
       setTimeout(() => {
-        onGenerate(quotas)
+        const config: GenerationConfig = {
+          quotas,
+          isCircuit,
+          roundCount: isCircuit ? roundCount : undefined
+        }
+        onGenerate(config)
         setIsGenerating(false)
       }, 0)
     })
@@ -150,8 +169,10 @@ export default function QuotaForm({
   /**
    * Load a saved quota template (T063)
    */
-  const handleLoadTemplate = (template: QuotaTemplate) => {
+  const handleLoadTemplate = (template: MuscleQuotaTemplate) => {
     setQuotas([...template.quotas])
+    setIsCircuit(template.isCircuit)
+    setRoundCount(template.roundCount)
     setSelectedTemplate(template)
     setValidationErrors([])
     setValidationWarnings([])
@@ -189,7 +210,7 @@ export default function QuotaForm({
       return
     }
 
-    onSaveTemplate(templateName, quotas)
+    onSaveTemplate(templateName, quotas, isCircuit, isCircuit ? roundCount : undefined)
 
     // Reset template save UI
     setShowTemplateSave(false)
@@ -212,7 +233,7 @@ export default function QuotaForm({
 
         {/* Quota inputs */}
         <div className="quota-form-section">
-          <h3>Tag Quotas</h3>
+          <h3>Muscle Group Quotas</h3>
           <p className="quota-form-hint">
             Specify how many exercises you want for each muscle group
           </p>
@@ -220,13 +241,13 @@ export default function QuotaForm({
           {quotas.map((quota, index) => (
             <div key={index} className="quota-form-row">
               <select
-                value={quota.tag}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) => handleTagChange(index, e.target.value)}
+                value={quota.muscleGroup}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => handleMuscleGroupChange(index, e.target.value)}
                 className="quota-tag-select"
               >
-                {availableTags.map(tag => (
-                  <option key={tag} value={tag}>
-                    {tag} ({exercisePool[tag]?.length ?? 0} available)
+                {availableMuscleGroups.map(group => (
+                  <option key={group} value={group}>
+                    {group} ({muscleGroupStats[group] ?? 0} available)
                   </option>
                 ))}
               </select>
@@ -253,17 +274,56 @@ export default function QuotaForm({
             type="button"
             onClick={handleAddQuota}
             className="quota-add-button"
-            disabled={availableTags.length === 0}
+            disabled={availableMuscleGroups.length === 0}
           >
-            Add Tag
+            Add Muscle Group
           </button>
 
-          {availableTags.length === 0 && (
+          {availableMuscleGroups.length === 0 && (
             <p className="quota-form-warning">
-              No exercises in pool. Create workout plans first.
+              No exercises in library. Upload a CSV or check the default exercises.
             </p>
           )}
         </div>
+
+        {/* Circuit mode toggle */}
+        <div className="quota-form-section circuit-mode-section">
+          <label className="circuit-mode-toggle">
+            <input
+              type="checkbox"
+              checked={isCircuit}
+              onChange={(e) => setIsCircuit(e.target.checked)}
+            />
+            <span>Circuit Mode</span>
+          </label>
+          <p className="quota-form-hint">
+            When enabled, exercises alternate between muscle groups so consecutive exercises target different muscles.
+          </p>
+        </div>
+
+        {/* Round count input (only shown when circuit mode is enabled) */}
+        {isCircuit && (
+          <div className="quota-form-section round-count-section">
+            <label className="round-count-label">
+              <span>Number of Rounds</span>
+              <input
+                type="number"
+                min={1}
+                max={10}
+                value={roundCount ?? ''}
+                placeholder="Auto"
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  const val = e.target.value
+                  setRoundCount(val ? parseInt(val, 10) || undefined : undefined)
+                }}
+                className="round-count-input"
+              />
+            </label>
+            <p className="quota-form-hint">
+              Leave empty to auto-calculate from muscle groups, or specify how many rounds to distribute exercises across.
+            </p>
+          </div>
+        )}
 
         {/* FIXED H5: Display both errors and warnings */}
         {validationErrors.length > 0 && (

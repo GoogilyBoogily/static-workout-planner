@@ -131,22 +131,48 @@
 }
 
 /* Responsive breakpoints */
-@media (max-width: 600px) {
+
+/* Mobile (under 600px): Button in document flow at bottom of card */
+@media (max-width: 599px) {
   .exercise-list {
-    /* On mobile, single column with wider items */
     grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 16px 0;
   }
 
   .exercise-item {
-    padding: 14px;
+    padding: 12px;
+    gap: 8px;
+    min-height: 90px;
   }
 
   .exercise-name {
     font-size: 15px;
+    padding-right: 0; /* No need for padding - button is below */
   }
 
-  /* Always show add button on mobile (no hover) */
+  .exercise-tag {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+
+  .equipment-badge {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+
+  /* Move button to document flow at bottom of card */
   .exercise-add-button {
+    position: static;
     opacity: 1;
+    align-self: flex-end;
+    margin-top: auto;
+  }
+}
+
+/* Desktop (600px+): Hover-reveal behavior with absolute positioning */
+@media (min-width: 600px) {
+  .exercise-name {
+    padding-right: 52px; /* Reserve space for absolute button on hover */
   }
 }

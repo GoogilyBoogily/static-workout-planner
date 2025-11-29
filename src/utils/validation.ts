@@ -8,7 +8,9 @@ import type {
   ExercisePool,
   ValidationErrors,
   QuotaValidationResult,
-  TemplateValidationResult
+  TemplateValidationResult,
+  MuscleQuota,
+  ParsedExercise
 } from '../types'
 
 /**
@@ -140,6 +142,77 @@ export function validateQuotas(
     if (exercisePool[tag].length < count) {
       warnings.push(
         `Only ${exercisePool[tag].length} "${tag}" exercise${exercisePool[tag].length !== 1 ? 's' : ''} available (requested ${count}). Will use what's available.`
+      )
+    }
+  })
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    warnings
+  }
+}
+
+/**
+ * Validate muscle quotas against CSV exercise library.
+ *
+ * @param quotas - Array of muscle quota objects
+ * @param exercises - Parsed exercises from CSV library
+ * @returns Result with { valid: boolean, errors: Array<string>, warnings: Array<string> }
+ */
+export function validateMuscleQuotas(
+  quotas: MuscleQuota[],
+  exercises: ParsedExercise[]
+): QuotaValidationResult {
+  const errors: string[] = []
+  const warnings: string[] = []
+
+  if (!quotas || quotas.length === 0) {
+    errors.push('At least one muscle group quota is required')
+    return { valid: false, errors, warnings }
+  }
+
+  // Build muscle group counts from exercises
+  const muscleCounts: Record<string, number> = {}
+  exercises.forEach(ex => {
+    ex.tags?.forEach(tag => {
+      const normalized = tag.trim()
+      if (normalized) {
+        muscleCounts[normalized] = (muscleCounts[normalized] ?? 0) + 1
+      }
+    })
+  })
+
+  quotas.forEach(({ muscleGroup, count }) => {
+    // Validate muscleGroup is provided
+    if (!muscleGroup || muscleGroup.trim() === '') {
+      errors.push('Muscle group is required')
+      return
+    }
+
+    // Validate count is positive integer within reasonable bounds
+    const MAX_EXERCISES_PER_MUSCLE = 50
+    if (!Number.isInteger(count) || count < 1) {
+      errors.push(`Count for "${muscleGroup}" must be a positive integer`)
+      return
+    }
+    if (count > MAX_EXERCISES_PER_MUSCLE) {
+      errors.push(`Count for "${muscleGroup}" cannot exceed ${MAX_EXERCISES_PER_MUSCLE}`)
+      return
+    }
+
+    const available = muscleCounts[muscleGroup] ?? 0
+
+    // CRITICAL: Muscle group doesn't exist in library
+    if (available === 0) {
+      errors.push(`No exercises found for muscle group "${muscleGroup}"`)
+      return
+    }
+
+    // WARNING: Not enough exercises (will generate what's available)
+    if (available < count) {
+      warnings.push(
+        `Only ${available} "${muscleGroup}" exercise${available !== 1 ? 's' : ''} available (requested ${count}). Will use what's available.`
       )
     }
   })

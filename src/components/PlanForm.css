@@ -109,9 +109,9 @@
   gap: 12px;
 }
 
-.exercise-item {
+.plan-form .exercise-item {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
@@ -122,51 +122,64 @@
   cursor: grab;
 }
 
-.exercise-item:hover {
+.plan-form .exercise-item:hover {
   box-shadow: var(--shadow-sm);
 }
 
-.exercise-item:active {
+.plan-form .exercise-item:active {
   cursor: grabbing;
 }
 
 /* Drag and drop styles */
-.exercise-item.dragging {
+.plan-form .exercise-item.dragging {
   opacity: 0.5;
   background: var(--color-bg-tertiary);
   border-style: dashed;
 }
 
 /* Drop zone indicators - before (top) and after (bottom) */
-.exercise-item.drag-over-before {
+.plan-form .exercise-item.drag-over-before {
   border-top: 3px solid var(--color-primary);
   margin-top: -1px;
 }
 
-.exercise-item.drag-over-after {
+.plan-form .exercise-item.drag-over-after {
   border-bottom: 3px solid var(--color-primary);
   margin-bottom: -1px;
 }
 
-.exercise-info {
+.plan-form .exercise-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
 }
 
-.exercise-name {
+.plan-form .exercise-name {
   font-weight: 500;
   font-size: 16px;
   color: var(--color-text-primary);
   margin-bottom: 4px;
+  text-align: center;
+  width: 100%;
+  padding: 0;
 }
 
-.exercise-details {
+.plan-form .exercise-details {
   font-size: 14px;
   color: var(--color-text-secondary);
+  text-align: center;
+  width: 100%;
+  padding: 0;
 }
 
-.exercise-actions {
+.plan-form .exercise-actions {
   display: flex;
   gap: 8px;
+  justify-content: center;
+  width: 100%;
 }
 
 .button-icon {
@@ -369,21 +382,6 @@
   background-color: var(--color-bg-primary);
 }
 
-.round-selector {
-  padding: 4px 8px;
-  border: 1px solid var(--color-border-primary);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-input-bg);
-  color: var(--color-text-primary);
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.round-selector:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
-
 .add-to-round-button {
   width: 100%;
   padding: 8px;
@@ -430,44 +428,136 @@
 }
 
 /* Mobile responsive */
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   .plan-form {
-    padding: 16px;
-    margin: 16px;
+    padding: 14px;
+    margin: 12px;
+  }
+
+  .plan-form h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .exercises-section {
+    padding: var(--space-md);
   }
 
   .exercises-header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 12px;
+  }
+
+  .exercises-header h3 {
+    font-size: 16px;
+  }
+
+  /* Stack header action buttons vertically */
+  .exercises-header-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .exercises-header-actions button {
+    width: 100%;
   }
 
   .exercises-header .button-primary {
     width: 100%;
   }
 
-  .exercise-item {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .exercise-info {
-    flex: 1 1 calc(100% - 48px);
-    min-width: 0;
-  }
-
-  .exercise-actions {
+  .button-regenerate-compact {
+    padding: 10px 16px;
+    font-size: 14px;
     width: 100%;
-    justify-content: flex-end;
+    justify-content: center;
   }
 
+  /* Exercise items: info stacked above actions */
+  .plan-form .exercise-item {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .plan-form .exercise-info {
+    flex: none;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .plan-form .exercise-name {
+    font-size: 15px;
+    text-align: center;
+    width: 100%;
+    padding: 0;
+  }
+
+  .plan-form .exercise-details {
+    font-size: 13px;
+    text-align: center;
+    width: 100%;
+    padding: 0;
+  }
+
+  /* Action buttons: smaller size, tighter spacing */
+  .plan-form .exercise-actions {
+    width: 100%;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .plan-form .exercise-actions .button-icon {
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 16px;
+    padding: 4px;
+  }
+
+  /* Round group spacing */
+  .round-group {
+    padding: 10px;
+  }
+
+  .round-group-header h4 {
+    font-size: 12px;
+  }
+
+  .round-exercises.empty-round {
+    min-height: 50px;
+  }
+
+  /* Regenerate section */
+  .regenerate-section {
+    padding-top: 12px;
+    margin-top: 12px;
+  }
+
+  .button-regenerate {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 15px;
+    justify-content: center;
+  }
+
+  .regenerate-info {
+    font-size: 12px;
+  }
+
+  /* Form actions */
   .plan-form .form-actions {
     flex-direction: column-reverse;
+    gap: 8px;
   }
 
   .plan-form .form-actions button {
     width: 100%;
+    padding: 12px 16px;
   }
 }

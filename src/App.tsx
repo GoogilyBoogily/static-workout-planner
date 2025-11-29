@@ -20,7 +20,12 @@ import { filterExercisesByMuscles } from './utils/muscleFilter'
 import { convertToLibraryNames } from './assets/muscle-groups'
 import PlansStorage from './utils/localStorage'
 import { QuotaTemplateStorage } from './utils/quotaTemplates'
-import { buildExercisePool, getAvailableTags, generateWorkoutPlan, generatePlanName } from './utils/randomGenerator'
+import {
+  generatePlanName,
+  buildMuscleExercisePool,
+  generateFromMuscleQuotas,
+  alternateByMuscleGroup
+} from './utils/randomGenerator'
 import { createWorkoutPlan, reorderPlans } from './utils/planHelpers'
 
 import type {
@@ -29,9 +34,9 @@ import type {
   CSVExerciseRow,
   WorkoutPlan,
   PlanFormData,
-  ExercisePool,
-  TagQuota,
-  QuotaTemplate,
+  MuscleQuota,
+  MuscleQuotaTemplate,
+  GenerationConfig,
   Theme,
   AppView,
   DragPosition
@@ -64,8 +69,7 @@ function App() {
 
   // Random workout generation state (Feature 005)
   const [quotaFormOpen, setQuotaFormOpen] = useState(false)
-  const [exercisePool, setExercisePool] = useState<ExercisePool>({})
-  const [quotaTemplates, setQuotaTemplates] = useState<QuotaTemplate[]>([])
+  const [quotaTemplates, setQuotaTemplates] = useState<MuscleQuotaTemplate[]>([])
 
   // Circuit Timer state (Feature 006)
   const [timerActive, setTimerActive] = useState(false)
@@ -98,13 +102,10 @@ function App() {
     }
   }, [])
 
-  // T019: Load exercise pool and quota templates on mount (Feature 005)
+  // T019: Load quota templates on mount (Feature 005)
   // FIXED H3: Added error handling to prevent app crashes
   useEffect(() => {
     try {
-      const pool = buildExercisePool(plans)
-      setExercisePool(pool)
-
       const templates = QuotaTemplateStorage.loadTemplates()
       setQuotaTemplates(templates)
 
@@ -113,12 +114,11 @@ function App() {
         setStorageError(null)
       }
     } catch (err) {
-      console.error('Failed to build exercise pool:', err)
+      console.error('Failed to load quota templates:', err)
       setStorageError('Failed to load exercise data. Some features may not work.')
-      setExercisePool({})
       setQuotaTemplates([])
     }
-  }, [plans]) // Rebuild when plans change
+  }, []) // Only load once on mount
 
   // Auto-load standardized workouts on mount
   useEffect(() => {
@@ -425,25 +425,40 @@ function App() {
     setQuotaFormOpen(true)
   }
 
-  // T021: Handle quota generation (Feature 005)
-  const handleQuotaGenerate = (quotas: TagQuota[]) => {
-    const { exercises: generatedExercises, errors } = generateWorkoutPlan(quotas, exercisePool)
+  // T021: Handle quota generation (Feature 005) - Now uses muscle-based generation
+  const handleQuotaGenerate = (config: GenerationConfig) => {
+    // Build muscle pool from CSV library
+    const musclePool = buildMuscleExercisePool(exercises)
 
-    if (errors.length > 0) {
+    // Generate exercises from muscle quotas
+    let result = generateFromMuscleQuotas(config.quotas, musclePool)
+
+    if (result.errors.length > 0) {
       // Show errors to user
-      alert('Generation errors:\n' + errors.join('\n'))
+      alert('Generation errors:\n' + result.errors.join('\n'))
     }
 
-    if (generatedExercises.length === 0) {
+    if (result.warnings.length > 0) {
+      // Log warnings but don't block
+      console.warn('Generation warnings:', result.warnings)
+    }
+
+    if (result.exercises.length === 0) {
       alert('No exercises could be generated. Please adjust your quotas.')
       return
+    }
+
+    // Apply circuit alternation if enabled
+    let generatedExercises = result.exercises
+    if (config.isCircuit && generatedExercises.length > 1) {
+      generatedExercises = alternateByMuscleGroup(generatedExercises, config.roundCount)
     }
 
     // Create new plan with generated exercises using utility
     const { newPlan, updatedPlans } = createWorkoutPlan(plans, {
       name: generatePlanName(),
       exercises: generatedExercises,
-      isCircuit: false,
+      isCircuit: config.isCircuit,
       isGenerated: true,
       pinStatus: {}
     })
@@ -496,8 +511,8 @@ function App() {
   }
 
   // T068: Handle save quota template with error handling (Feature 005)
-  const handleSaveQuotaTemplate = (name: string, quotas: TagQuota[]) => {
-    const result = QuotaTemplateStorage.addTemplate(name, quotas)
+  const handleSaveQuotaTemplate = (name: string, quotas: MuscleQuota[], isCircuit: boolean, roundCount?: number) => {
+    const result = QuotaTemplateStorage.addTemplate(name, quotas, isCircuit, roundCount)
 
     if (result.success) {
       // Reload templates
@@ -663,7 +678,7 @@ function App() {
             onDelete={handleDeletePlan}
             onView={handleViewPlan}
             onGenerateRandom={handleGenerateRandom}
-            exercisePoolEmpty={Object.keys(exercisePool).length === 0}
+            exercisePoolEmpty={exercises.length === 0}
             onStartTimer={handleStartTimer}
             onReorder={handleReorderPlans}
           />
@@ -674,7 +689,6 @@ function App() {
             plan={null}
             onSave={handleSavePlan}
             onCancel={handleCancelPlan}
-            exercisePool={exercisePool}
             exerciseLibrary={exercises}
             isGenerated={false}
           />
@@ -685,7 +699,6 @@ function App() {
             plan={selectedPlan}
             onSave={handleSavePlan}
             onCancel={handleCancelPlan}
-            exercisePool={exercisePool}
             exerciseLibrary={exercises}
             isGenerated={selectedPlan.isGenerated || false}
           />
@@ -803,11 +816,10 @@ function App() {
         onCreateNewPlanWithExercise={handleCreateNewPlanWithExercise}
       />
 
-      {/* T022: Quota Form Modal (Feature 005) */}
+      {/* T022: Quota Form Modal (Feature 005) - Now uses muscle-based generation */}
       {quotaFormOpen && (
         <QuotaForm
-          availableTags={getAvailableTags(exercisePool)}
-          exercisePool={exercisePool}
+          exercises={exercises}
           quotaTemplates={quotaTemplates}
           onGenerate={handleQuotaGenerate}
           onCancel={handleQuotaFormCancel}

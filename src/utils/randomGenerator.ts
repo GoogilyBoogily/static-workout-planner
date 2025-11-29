@@ -12,7 +12,11 @@ import type {
   WorkoutPlan,
   ExercisePool,
   TagQuota,
-  GenerationResult
+  GenerationResult,
+  ParsedExercise,
+  MuscleExercisePool,
+  MuscleQuota,
+  MuscleGenerationResult
 } from '../types'
 
 /**
@@ -254,6 +258,331 @@ export function regenerateWorkout(
 
   // Combine pinned + new exercises
   const allExercises = [...pinnedExercises, ...newExercises]
+
+  return {
+    ...plan,
+    exercises: allExercises,
+    updatedAt: Date.now(),
+    generationTimestamp: Date.now()
+  }
+}
+
+// ============================================
+// Muscle-Based Generation Functions
+// ============================================
+
+/**
+ * Build exercise pool from CSV library, grouped by muscle group.
+ *
+ * @param exercises - Parsed exercises from CSV library
+ * @returns Pool indexed by muscle group name
+ *
+ * @example
+ * const pool = buildMuscleExercisePool(csvExercises);
+ * // Returns: { "Chest": [...], "Shoulders": [...], ... }
+ */
+export function buildMuscleExercisePool(exercises: ParsedExercise[]): MuscleExercisePool {
+  const pool: MuscleExercisePool = {}
+
+  exercises.forEach(exercise => {
+    if (!exercise.name || !exercise.tags || exercise.tags.length === 0) {
+      return
+    }
+
+    // Add exercise to pool under each of its muscle tags
+    exercise.tags.forEach(tag => {
+      const normalizedTag = tag.trim()
+      if (!normalizedTag) return
+
+      if (!pool[normalizedTag]) {
+        pool[normalizedTag] = []
+      }
+      pool[normalizedTag].push(exercise)
+    })
+  })
+
+  return pool
+}
+
+/**
+ * Get available muscle groups from CSV exercise library.
+ * Returns sorted array of unique muscle group names.
+ *
+ * @param exercises - Parsed exercises from CSV library
+ * @returns Sorted array of muscle group names
+ *
+ * @example
+ * const muscleGroups = getAvailableMuscleGroups(exercises);
+ * // Returns: ["Abdominals", "Back", "Biceps", "Chest", ...]
+ */
+export function getAvailableMuscleGroups(exercises: ParsedExercise[]): string[] {
+  const groups = new Set<string>()
+
+  exercises.forEach(exercise => {
+    exercise.tags?.forEach(tag => {
+      const normalized = tag.trim()
+      if (normalized) groups.add(normalized)
+    })
+  })
+
+  return Array.from(groups).sort()
+}
+
+/**
+ * Get muscle group statistics - count of exercises per muscle group.
+ *
+ * @param exercises - Parsed exercises from CSV library
+ * @returns Map of muscle group name to exercise count
+ *
+ * @example
+ * const stats = getMuscleGroupStats(exercises);
+ * // Returns: { "Chest": 15, "Back": 20, ... }
+ */
+export function getMuscleGroupStats(exercises: ParsedExercise[]): Record<string, number> {
+  const stats: Record<string, number> = {}
+
+  exercises.forEach(exercise => {
+    exercise.tags?.forEach(tag => {
+      const normalized = tag.trim()
+      if (normalized) {
+        stats[normalized] = (stats[normalized] ?? 0) + 1
+      }
+    })
+  })
+
+  return stats
+}
+
+/**
+ * Convert a ParsedExercise from CSV to a PlanExercise with default workout params.
+ *
+ * @param exercise - Parsed exercise from CSV
+ * @param muscleGroup - Primary muscle group for this selection
+ * @returns PlanExercise with default sets/reps/rest
+ */
+export function toPlanExercise(exercise: ParsedExercise, muscleGroup: string): PlanExercise {
+  return {
+    id: crypto.randomUUID(),
+    name: exercise.name,
+    tag: muscleGroup,
+    tags: exercise.tags,
+    description: exercise.description,
+    equipment: exercise.equipment,
+    optionalEquipment: exercise.optionalEquipment,
+    youtubeUrl: exercise.youtubeUrl,
+    sets: 3,
+    reps: '8-12',
+    weight: '',
+    rest: '60s',
+    roundGroup: 0
+  }
+}
+
+/**
+ * Generate workout from muscle group quotas using CSV library.
+ *
+ * @param quotas - Array of { muscleGroup, count } objects
+ * @param pool - Exercise pool from buildMuscleExercisePool
+ * @returns Result with exercises, errors, and warnings
+ *
+ * @example
+ * const quotas = [{ muscleGroup: 'Chest', count: 3 }, { muscleGroup: 'Back', count: 2 }];
+ * const result = generateFromMuscleQuotas(quotas, pool);
+ */
+export function generateFromMuscleQuotas(
+  quotas: MuscleQuota[],
+  pool: MuscleExercisePool
+): MuscleGenerationResult {
+  const exercises: PlanExercise[] = []
+  const errors: string[] = []
+  const warnings: string[] = []
+  const usedExerciseNames = new Set<string>()
+
+  quotas.forEach(({ muscleGroup, count }) => {
+    const musclePool = pool[muscleGroup] ?? []
+
+    if (musclePool.length === 0) {
+      errors.push(`No exercises found for muscle group "${muscleGroup}"`)
+      return
+    }
+
+    // Filter out already-used exercises to prevent duplicates across quotas
+    const availablePool = musclePool.filter(ex => !usedExerciseNames.has(ex.name))
+
+    if (availablePool.length === 0) {
+      warnings.push(`All "${muscleGroup}" exercises already used`)
+      return
+    }
+
+    if (availablePool.length < count) {
+      warnings.push(
+        `Only ${availablePool.length} "${muscleGroup}" exercises available (requested ${count})`
+      )
+    }
+
+    // Shuffle and select
+    const shuffled = [...availablePool]
+    shuffleArray(shuffled)
+    const selected = shuffled.slice(0, Math.min(count, availablePool.length))
+
+    // Convert to PlanExercise and track used names
+    selected.forEach(parsed => {
+      usedExerciseNames.add(parsed.name)
+      exercises.push(toPlanExercise(parsed, muscleGroup))
+    })
+  })
+
+  return { exercises, errors, warnings }
+}
+
+/**
+ * Alternate exercises by muscle group for circuit training.
+ * Uses round-robin interleaving so consecutive exercises target different muscles.
+ * Also assigns roundGroup property based on which "pass" of the round-robin.
+ *
+ * @param exercises - Array of exercises to reorder
+ * @param roundCount - Optional number of rounds to distribute exercises across.
+ *                     If provided, exercises are distributed evenly across specified rounds.
+ *                     If not provided, rounds are auto-calculated from muscle groups.
+ * @returns Reordered array with muscle groups alternated and roundGroup assigned
+ *
+ * @example
+ * // Auto-calculated rounds (roundCount not provided):
+ * // Input: [Chest1, Chest2, Back1, Back2, Shoulders1]
+ * // Output with roundGroup:
+ * //   Round 0: Chest1, Back1, Shoulders1
+ * //   Round 1: Chest2, Back2
+ *
+ * @example
+ * // User-specified rounds (roundCount = 3):
+ * // Input: [Chest1, Chest2, Back1, Back2, Shoulders1], roundCount = 3
+ * // Output: ~2 per round
+ * //   Round 0: Chest1, Chest2
+ * //   Round 1: Back1, Back2
+ * //   Round 2: Shoulders1
+ */
+export function alternateByMuscleGroup(
+  exercises: PlanExercise[],
+  roundCount?: number
+): PlanExercise[] {
+  if (exercises.length <= 1) {
+    return exercises.map(ex => ({ ...ex, roundGroup: 0 }))
+  }
+
+  // If user specified a round count, distribute exercises evenly across rounds
+  if (roundCount && roundCount > 0) {
+    const exercisesPerRound = Math.ceil(exercises.length / roundCount)
+    return exercises.map((ex, idx) => ({
+      ...ex,
+      roundGroup: Math.floor(idx / exercisesPerRound)
+    }))
+  }
+
+  // Auto-calculate rounds: Group exercises by their primary muscle tag
+  const byMuscle: Record<string, PlanExercise[]> = {}
+
+  exercises.forEach(ex => {
+    const muscle = ex.tag || ex.tags?.[0] || 'Other'
+    if (!byMuscle[muscle]) byMuscle[muscle] = []
+    byMuscle[muscle].push(ex)
+  })
+
+  const muscleKeys = Object.keys(byMuscle)
+
+  if (muscleKeys.length <= 1) {
+    // Single muscle group - each exercise becomes its own round
+    console.warn('Circuit mode: Only one muscle group selected, each exercise becomes its own round')
+    return exercises.map((ex, idx) => ({ ...ex, roundGroup: idx }))
+  }
+
+  // Round-robin: take one from each group in turn, tracking round number
+  const result: PlanExercise[] = []
+  let roundNumber = 0
+
+  while (result.length < exercises.length) {
+    let addedThisRound = false
+
+    for (const muscle of muscleKeys) {
+      const group = byMuscle[muscle]
+      if (group && group.length > 0) {
+        const ex = group.shift()!
+        result.push({ ...ex, roundGroup: roundNumber })
+        addedThisRound = true
+      }
+      if (result.length >= exercises.length) break
+    }
+
+    if (addedThisRound) {
+      roundNumber++
+    }
+  }
+
+  return result
+}
+
+/**
+ * Regenerate workout while preserving pinned exercises (muscle-based version).
+ * Replaces only unpinned exercises based on original muscle quotas.
+ *
+ * @param plan - Current WorkoutPlan with exercises and pinStatus
+ * @param quotas - Original muscle quotas used to generate plan
+ * @param pool - Muscle exercise pool from buildMuscleExercisePool
+ * @param isCircuit - Whether to apply circuit alternation
+ * @param roundCount - Optional number of rounds for circuit mode
+ * @returns Updated plan with regenerated exercises
+ */
+export function regenerateWorkoutFromMuscles(
+  plan: WorkoutPlan,
+  quotas: MuscleQuota[],
+  pool: MuscleExercisePool,
+  isCircuit: boolean,
+  roundCount?: number
+): WorkoutPlan {
+  const pinStatus = plan.pinStatus ?? {}
+  const pinnedExercises = plan.exercises.filter(ex => pinStatus[ex.id])
+  const pinnedNames = new Set(pinnedExercises.map(ex => ex.name))
+
+  // Calculate remaining quotas after accounting for pinned exercises
+  const remainingQuotas = quotas.map(({ muscleGroup, count }) => {
+    const pinnedOfMuscle = pinnedExercises.filter(ex => ex.tag === muscleGroup).length
+    const remaining = Math.max(0, count - pinnedOfMuscle)
+    return { muscleGroup, count: remaining }
+  }).filter(q => q.count > 0)
+
+  // Generate new exercises for remaining quotas, excluding pinned exercise names
+  const filteredPool: MuscleExercisePool = {}
+  for (const [key, exercises] of Object.entries(pool)) {
+    filteredPool[key] = exercises.filter(ex => !pinnedNames.has(ex.name))
+  }
+
+  const { exercises: newExercises } = generateFromMuscleQuotas(remainingQuotas, filteredPool)
+
+  // Build result array preserving pinned positions
+  const result: (PlanExercise | undefined)[] = new Array(plan.exercises.length)
+  let newExerciseIndex = 0
+
+  // First pass: place pinned exercises at their original indices
+  plan.exercises.forEach((ex, idx) => {
+    if (pinStatus[ex.id]) {
+      result[idx] = ex
+    }
+  })
+
+  // Second pass: fill unpinned slots with new exercises
+  plan.exercises.forEach((ex, idx) => {
+    if (!pinStatus[ex.id] && newExercises[newExerciseIndex]) {
+      result[idx] = newExercises[newExerciseIndex]
+      newExerciseIndex++
+    }
+  })
+
+  // Filter out any undefined slots (if fewer new exercises than unpinned)
+  let allExercises = result.filter((ex): ex is PlanExercise => ex !== undefined)
+
+  // Apply circuit alternation if enabled
+  if (isCircuit && allExercises.length > 1) {
+    allExercises = alternateByMuscleGroup(allExercises, roundCount)
+  }
 
   return {
     ...plan,

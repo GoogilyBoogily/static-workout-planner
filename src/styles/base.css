@@ -166,3 +166,30 @@ input::placeholder, textarea::placeholder {
     scroll-behavior: auto !important;
   }
 }
+
+/* Mobile touch-friendly improvements */
+@media (max-width: 599px) {
+  /* Prevent iOS auto-zoom on input focus by ensuring 16px minimum font size */
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+/* Touch-friendly improvements */
+button, [role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Improve touch scrolling */
+.modal-content,
+.autocomplete-suggestions {
+  -webkit-overflow-scrolling: touch;
+}

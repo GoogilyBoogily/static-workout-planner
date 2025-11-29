@@ -131,6 +131,82 @@
   cursor: not-allowed;
 }
 
+/* Circuit mode toggle */
+
+.circuit-mode-section {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+.circuit-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.circuit-mode-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.circuit-mode-toggle span {
+  color: var(--color-text-primary);
+}
+
+.circuit-mode-section .quota-form-hint {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+/* Round count section (shown when circuit mode enabled) */
+
+.round-count-section {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-top: -8px;
+  border-top: 1px dashed var(--color-border-secondary);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.round-count-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: default;
+}
+
+.round-count-label span {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.round-count-input {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-input-bg);
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.round-count-input::placeholder {
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.round-count-section .quota-form-hint {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
 /* Validation errors */
 
 .quota-form-errors {

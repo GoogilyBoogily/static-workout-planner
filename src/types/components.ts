@@ -140,9 +140,7 @@ export interface PlanFormProps {
   }) => void
   /** Callback when form is cancelled */
   onCancel: () => void
-  /** Exercise pool for reroll functionality */
-  exercisePool?: ExercisePool
-  /** Array of exercises from loaded CSV data */
+  /** Array of exercises from loaded CSV data for reroll functionality */
   exerciseLibrary?: ParsedExercise[]
   /** Whether this plan was randomly generated */
   isGenerated?: boolean

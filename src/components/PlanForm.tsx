@@ -1,7 +1,13 @@
 import { useState, useMemo, useEffect } from 'react'
 import type { FormEvent, DragEvent, ChangeEvent } from 'react'
 import { validatePlanName } from '../utils/validation'
-import { selectRandomExercises, regenerateWorkout } from '../utils/randomGenerator'
+import {
+  selectRandomExercises,
+  buildMuscleExercisePool,
+  regenerateWorkoutFromMuscles,
+  toPlanExercise,
+  shuffleArray
+} from '../utils/randomGenerator'
 import ExerciseForm from './ExerciseForm'
 import './PlanForm.css'
 
@@ -10,8 +16,9 @@ import type {
   PinStatus,
   RerollHistory,
   DragPosition,
-  TagQuota,
-  WorkoutPlan
+  MuscleQuota,
+  WorkoutPlan,
+  MuscleExercisePool
 } from '../types'
 import type { PlanFormProps } from '../types/components'
 
@@ -29,7 +36,6 @@ function PlanForm({
   plan,
   onSave,
   onCancel,
-  exercisePool = {},
   exerciseLibrary = [],
   isGenerated = false
 }: PlanFormProps) {
@@ -91,6 +97,12 @@ function PlanForm({
       .sort((a, b) => a[0] - b[0])
   }, [exercises, isCircuit])
 
+  // Build muscle-based exercise pool from CSV library for reroll/regenerate
+  const musclePool: MuscleExercisePool = useMemo(
+    () => buildMuscleExercisePool(exerciseLibrary),
+    [exerciseLibrary]
+  )
+
 
   // FIXED L6: Keyboard shortcuts for power users
   useEffect(() => {
@@ -110,7 +122,7 @@ function PlanForm({
           const matchingTags = ex.tags ?? (ex.tag ? [ex.tag] : [])
           const primaryTag = matchingTags[0]
           if (!primaryTag) return false
-          const pool = exercisePool[primaryTag] ?? []
+          const pool = musclePool[primaryTag] ?? []
           const history = rerollHistory[idx] ?? []
           return pool.length > history.length + 1
         })
@@ -141,7 +153,7 @@ function PlanForm({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isGenerated, exercises, exercisePool, rerollHistory, pinStatus])
+  }, [isGenerated, exercises, musclePool, rerollHistory, pinStatus])
 
   const handlePlanNameChange = (value: string) => {
     setPlanName(value)
@@ -207,12 +219,6 @@ function PlanForm({
     setAddingToRound(roundGroup)
     setIsAddingExercise(true)
     setEditingExercise(null)
-  }
-
-  const handleMoveExerciseToRound = (exerciseIndex: number, newRoundGroup: number) => {
-    setExercises(prev => prev.map((ex, idx) =>
-      idx === exerciseIndex ? { ...ex, roundGroup: newRoundGroup } : ex
-    ))
   }
 
   // Override handleSaveExercise to include roundGroup for circuit mode
@@ -354,6 +360,7 @@ function PlanForm({
 
   /**
    * Regenerate workout while preserving pinned exercises (Feature 005)
+   * Now uses muscle-based pool from CSV library
    */
   const handleRegenerate = () => {
     // T046: Confirmation dialog
@@ -365,18 +372,19 @@ function PlanForm({
       return
     }
 
-    // Build quotas from current exercises
+    // Build quotas from current exercises (using muscle groups)
+    // Use exercise.tag (the muscle group it was generated for) to match
+    // how regenerateWorkoutFromMuscles counts pinned exercises
     const quotas: Record<string, number> = {}
     exercises.forEach(exercise => {
-      const matchingTags = exercise.tags ?? (exercise.tag ? [exercise.tag] : [])
-      const primaryTag = matchingTags[0]
+      const primaryTag = exercise.tag || exercise.tags?.[0]
       if (primaryTag) {
         quotas[primaryTag] = (quotas[primaryTag] ?? 0) + 1
       }
     })
 
-    // Convert to array format expected by regenerateWorkout
-    const quotaArray: TagQuota[] = Object.entries(quotas).map(([tag, count]) => ({ tag, count }))
+    // Convert to MuscleQuota format
+    const quotaArray: MuscleQuota[] = Object.entries(quotas).map(([muscleGroup, count]) => ({ muscleGroup, count }))
 
     // Create temporary plan object with current state
     const tempPlan: WorkoutPlan = {
@@ -390,8 +398,8 @@ function PlanForm({
       pinStatus
     }
 
-    // Regenerate with pinned exercises preserved
-    const regeneratedPlan = regenerateWorkout(tempPlan, quotaArray, exercisePool)
+    // Regenerate with pinned exercises preserved using muscle pool
+    const regeneratedPlan = regenerateWorkoutFromMuscles(tempPlan, quotaArray, musclePool, isCircuit)
 
     // Update exercises and clear reroll history (new exercises)
     setExercises(regeneratedPlan.exercises)
@@ -410,6 +418,7 @@ function PlanForm({
 
   /**
    * Reroll a single exercise with a new random selection (Feature 005)
+   * Now uses muscle-based pool from CSV library
    */
   const handleReroll = (index: number) => {
     const currentExercise = exercises[index]
@@ -418,23 +427,23 @@ function PlanForm({
       return
     }
 
-    // Find exercises with the same tag from the pool
+    // Find exercises with the same muscle group from the pool
     const matchingTags = currentExercise.tags ?? (currentExercise.tag ? [currentExercise.tag] : [])
     if (matchingTags.length === 0) {
-      alert('Cannot reroll: exercise has no tags')
+      alert('Cannot reroll: exercise has no muscle groups')
       return
     }
 
     // Use first tag for pool lookup (exercises can have multiple tags)
     const primaryTag = matchingTags[0]
     if (!primaryTag) {
-      alert('Cannot reroll: exercise has no primary tag')
+      alert('Cannot reroll: exercise has no primary muscle group')
       return
     }
-    const pool = exercisePool[primaryTag] ?? []
+    const pool = musclePool[primaryTag] ?? []
 
     if (pool.length === 0) {
-      alert(`No exercises available for tag "${primaryTag}"`)
+      alert(`No exercises available for muscle group "${primaryTag}"`)
       return
     }
 
@@ -450,20 +459,22 @@ function PlanForm({
       return
     }
 
-    // Select a random replacement
-    const [replacement] = selectRandomExercises(availablePool, 1)
+    // Select a random replacement from the CSV library pool
+    const shuffled = shuffleArray([...availablePool])
+    const selected = shuffled[0]
 
-    if (!replacement) {
+    if (!selected) {
       return
     }
 
-    // Inherit sets, reps, weight, rest from current exercise
+    // Convert to PlanExercise and inherit sets, reps, weight, rest from current exercise
     const newExercise: PlanExercise = {
-      ...replacement,
+      ...toPlanExercise(selected, primaryTag),
       sets: currentExercise.sets,
       reps: currentExercise.reps,
       weight: currentExercise.weight,
-      rest: currentExercise.rest
+      rest: currentExercise.rest,
+      roundGroup: currentExercise.roundGroup
     }
 
     // Update exercises array
@@ -630,7 +641,7 @@ function PlanForm({
                     // T032: Check if reroll is available for this exercise
                     const matchingTags = exercise.tags ?? (exercise.tag ? [exercise.tag] : [])
                     const primaryTag = matchingTags[0]
-                    const pool = primaryTag ? (exercisePool[primaryTag] ?? []) : []
+                    const pool = primaryTag ? (musclePool[primaryTag] ?? []) : []
                     const history = rerollHistory[index] ?? []
                     const excludeNames = [exercise.name, ...history]
                     const availableCount = pool.filter(ex => !excludeNames.includes(ex.name)).length
@@ -715,17 +726,47 @@ function PlanForm({
                           </div>
                         </div>
                         <div className="exercise-actions">
-                          {/* Round selector dropdown */}
-                          <select
-                            value={exercise.roundGroup}
-                            onChange={(e: ChangeEvent<HTMLSelectElement>) => handleMoveExerciseToRound(exercise.originalIndex, parseInt(e.target.value, 10))}
-                            className="round-selector"
-                            title="Move to different round"
-                          >
-                            {Array.from({ length: roundCount }, (_, i) => (
-                              <option key={i} value={i}>Round {i + 1}</option>
-                            ))}
-                          </select>
+                          {/* Pin toggle button - circuit mode */}
+                          {isGenerated && (
+                            <button
+                              type="button"
+                              onClick={() => handlePinToggle(exercise.id)}
+                              className={`button-icon button-pin ${pinStatus[exercise.id] ? 'pinned' : ''}`}
+                              role="switch"
+                              aria-checked={pinStatus[exercise.id] ? 'true' : 'false'}
+                              aria-label={
+                                pinStatus[exercise.id]
+                                  ? `Unpin ${exercise.name} (currently locked, will stay during regeneration)`
+                                  : `Pin ${exercise.name} (will lock and stay during regeneration)`
+                              }
+                              title={pinStatus[exercise.id] ? 'Unpin exercise (allow regeneration)' : 'Pin exercise (lock during regeneration)'}
+                            >
+                              {pinStatus[exercise.id] ? '📌' : '📍'}
+                            </button>
+                          )}
+                          {/* Reroll button - circuit mode */}
+                          {isGenerated && (() => {
+                            const matchingTags = exercise.tags ?? (exercise.tag ? [exercise.tag] : [])
+                            const primaryTag = matchingTags[0]
+                            const pool = primaryTag ? (musclePool[primaryTag] ?? []) : []
+                            const history = rerollHistory[exercise.originalIndex] ?? []
+                            const excludeNames = [exercise.name, ...history]
+                            const availableCount = pool.filter(ex => !excludeNames.includes(ex.name)).length
+                            const canReroll = availableCount > 0
+
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => handleReroll(exercise.originalIndex)}
+                                className="button-icon button-reroll"
+                                disabled={!canReroll}
+                                title={canReroll ? 'Reroll to a different exercise' : 'No other exercises available for this muscle group'}
+                                aria-label={`Reroll ${exercise.name}`}
+                              >
+                                🔄
+                              </button>
+                            )
+                          })()}
                           <button
                             type="button"
                             onClick={() => handleEditExercise(exercise.originalIndex)}

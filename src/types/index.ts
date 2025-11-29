@@ -131,6 +131,57 @@ export interface GenerationResult {
 }
 
 // ============================================
+// Muscle-Based Generation Types
+// ============================================
+
+/**
+ * Muscle group quota for random workout generation
+ * Uses muscle groups directly from CSV library
+ */
+export interface MuscleQuota {
+  muscleGroup: string
+  count: number
+}
+
+/**
+ * Exercise pool grouped by muscle group
+ * Built from CSV library (ParsedExercise)
+ */
+export type MuscleExercisePool = Record<string, ParsedExercise[]>
+
+/**
+ * Configuration for workout generation
+ */
+export interface GenerationConfig {
+  quotas: MuscleQuota[]
+  isCircuit: boolean
+  /** Optional round count for circuits - if not provided, auto-calculate from quotas */
+  roundCount?: number
+}
+
+/**
+ * Result from muscle-based generation
+ */
+export interface MuscleGenerationResult {
+  exercises: PlanExercise[]
+  errors: string[]
+  warnings: string[]
+}
+
+/**
+ * Quota template with muscle groups and circuit setting
+ */
+export interface MuscleQuotaTemplate {
+  id: string
+  name: string
+  quotas: MuscleQuota[]
+  isCircuit: boolean
+  /** Optional round count for circuits */
+  roundCount?: number
+  createdAt: number
+}
+
+// ============================================
 // Validation Types
 // ============================================
 

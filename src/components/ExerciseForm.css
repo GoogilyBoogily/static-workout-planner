@@ -153,17 +153,47 @@
 }
 
 /* Mobile responsive */
-@media (max-width: 600px) {
+@media (max-width: 599px) {
+  .exercise-form {
+    padding: var(--space-md);
+  }
+
+  .exercise-form h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
   .form-row {
     grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Prevent iOS zoom on input focus */
+  .form-field input,
+  .form-field select {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+
+  /* Cap autocomplete height on mobile */
+  .autocomplete-suggestions {
+    max-height: 150px;
   }
 
   .form-actions {
     flex-direction: column-reverse;
+    gap: 8px;
+    margin-top: 16px;
   }
 
   .button-primary,
   .button-secondary {
     width: 100%;
+    padding: 12px 16px;
+  }
+
+  .exercise-form .button-primary,
+  .exercise-form .button-secondary {
+    min-width: unset;
   }
 }

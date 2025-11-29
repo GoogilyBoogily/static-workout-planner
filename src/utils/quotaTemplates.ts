@@ -2,27 +2,82 @@
  * Quota Template Storage Utilities
  *
  * Manages localStorage persistence for workout quota templates.
- * Templates allow users to save and reuse tag quota configurations.
+ * Templates allow users to save and reuse muscle group quota configurations.
  *
  * @module quotaTemplates
  */
 
-import type { QuotaTemplate, TagQuota, StorageResult, AddTemplateResult } from '../types'
+import type {
+  QuotaTemplate,
+  TagQuota,
+  StorageResult,
+  AddTemplateResult,
+  MuscleQuotaTemplate,
+  MuscleQuota
+} from '../types'
 
 const STORAGE_KEY = 'workout-quota-templates'
+
+/**
+ * Result type for muscle template operations
+ */
+interface AddMuscleTemplateResult extends StorageResult {
+  template?: MuscleQuotaTemplate
+}
+
+/**
+ * Migrate old TagQuota templates to MuscleQuota format.
+ * Converts `tag` to `muscleGroup` and adds `isCircuit: false`.
+ *
+ * @param templates - Array of potentially old-format templates
+ * @returns Array of migrated MuscleQuotaTemplate objects
+ */
+function migrateTemplates(templates: unknown[]): MuscleQuotaTemplate[] {
+  return templates.map(template => {
+    const t = template as Record<string, unknown>
+
+    // Handle quotas - convert tag to muscleGroup if needed
+    const rawQuotas = t.quotas as Array<{
+      tag?: string
+      muscleGroup?: string
+      count: number
+    }> ?? []
+
+    const migratedQuotas: MuscleQuota[] = rawQuotas.map(q => ({
+      muscleGroup: q.muscleGroup ?? q.tag ?? '',
+      count: q.count
+    }))
+
+    const result: MuscleQuotaTemplate = {
+      id: (t.id as string) ?? crypto.randomUUID(),
+      name: (t.name as string) ?? 'Unnamed Template',
+      quotas: migratedQuotas,
+      isCircuit: (t.isCircuit as boolean) ?? false,
+      createdAt: (t.createdAt as number) ?? Date.now()
+    }
+
+    // Preserve roundCount if it exists
+    if (typeof t.roundCount === 'number') {
+      result.roundCount = t.roundCount
+    }
+
+    return result
+  })
+}
 
 export const QuotaTemplateStorage = {
   /**
    * Load all quota templates from localStorage.
+   * Automatically migrates old tag-based templates to muscle group format.
    * Returns empty array if no templates exist or on parse error.
    *
-   * @returns Array of quota template objects
+   * @returns Array of muscle quota template objects
    *
    * @example
    * const templates = QuotaTemplateStorage.loadTemplates();
-   * // Returns: [{ id: '...', name: 'Full Body', quotas: [...], createdAt: 1234567890 }]
+   * // Returns: [{ id: '...', name: 'Full Body', quotas: [...], isCircuit: false, createdAt: 1234567890 }]
    */
-  loadTemplates(): QuotaTemplate[] {
+  loadTemplates(): MuscleQuotaTemplate[] {
     try {
       const data = localStorage.getItem(STORAGE_KEY)
       if (!data) {
@@ -37,7 +92,8 @@ export const QuotaTemplateStorage = {
         return []
       }
 
-      return templates as QuotaTemplate[]
+      // Migrate old format to new format
+      return migrateTemplates(templates)
     } catch (error) {
       console.error('Failed to load quota templates:', error)
       return []
@@ -57,7 +113,7 @@ export const QuotaTemplateStorage = {
    *   alert(result.message);
    * }
    */
-  saveTemplates(templates: QuotaTemplate[]): StorageResult {
+  saveTemplates(templates: MuscleQuotaTemplate[]): StorageResult {
     try {
       const data = JSON.stringify(templates)
       localStorage.setItem(STORAGE_KEY, data)
@@ -103,26 +159,30 @@ export const QuotaTemplateStorage = {
   },
 
   /**
-   * Add a new quota template.
+   * Add a new muscle quota template.
    * Generates UUID and timestamp automatically.
    *
    * @param name - Template name (1-50 chars)
-   * @param quotas - Tag quota array
-   * @returns Result with { success: boolean, template?: QuotaTemplate, error?: string, message?: string }
+   * @param quotas - Muscle quota array
+   * @param isCircuit - Whether this is a circuit workout template
+   * @param roundCount - Optional number of rounds for circuit mode
+   * @returns Result with { success: boolean, template?: MuscleQuotaTemplate, error?: string, message?: string }
    *
    * @example
    * const result = QuotaTemplateStorage.addTemplate('Upper Body', [
-   *   { tag: 'Chest', count: 4 },
-   *   { tag: 'Shoulders', count: 3 }
-   * ]);
+   *   { muscleGroup: 'Chest', count: 4 },
+   *   { muscleGroup: 'Shoulders', count: 3 }
+   * ], false);
    */
-  addTemplate(name: string, quotas: TagQuota[]): AddTemplateResult {
+  addTemplate(name: string, quotas: MuscleQuota[], isCircuit: boolean = false, roundCount?: number): AddMuscleTemplateResult {
     const templates = this.loadTemplates()
 
-    const newTemplate: QuotaTemplate = {
+    const newTemplate: MuscleQuotaTemplate = {
       id: crypto.randomUUID(),
       name,
       quotas,
+      isCircuit,
+      roundCount,
       createdAt: Date.now()
     }
 
