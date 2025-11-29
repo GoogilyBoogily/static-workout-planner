@@ -303,3 +303,13 @@ export interface ThemeToggleProps {
   /** Callback when theme changes */
   onToggle: () => void
 }
+
+/**
+ * Props for ExerciseCountBadge component
+ */
+export interface ExerciseCountBadgeProps {
+  /** Number of exercises after filtering */
+  filteredCount: number
+  /** Total number of exercises */
+  totalCount: number
+}

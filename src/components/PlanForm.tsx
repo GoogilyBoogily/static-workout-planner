@@ -18,16 +18,13 @@ import type {
   DragPosition,
   MuscleQuota,
   WorkoutPlan,
-  MuscleExercisePool
+  MuscleExercisePool,
+  IndexedExercise
 } from '../types'
 import type { PlanFormProps } from '../types/components'
 
 // FIXED L1: Extract magic numbers as constants
 const REROLL_HISTORY_SIZE = 3 // Remember last 3 rerolled exercises per position
-
-interface IndexedExercise extends PlanExercise {
-  originalIndex: number
-}
 
 /**
  * Form for creating or editing a workout plan

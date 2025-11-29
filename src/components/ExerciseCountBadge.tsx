@@ -1,9 +1,5 @@
+import type { ExerciseCountBadgeProps } from '../types/components'
 import './ExerciseCountBadge.css'
-
-interface ExerciseCountBadgeProps {
-  filteredCount: number
-  totalCount: number
-}
 
 /**
  * ExerciseCountBadge Component
