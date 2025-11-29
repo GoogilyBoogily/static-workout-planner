@@ -28,22 +28,26 @@
 
 /* Header */
 .plan-detail-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 20px 24px;
   border-bottom: 1px solid var(--color-border-secondary);
 }
 
 .plan-detail-header h2 {
+  grid-column: 2;
   margin: 0;
   font-size: 24px;
   color: var(--color-text-primary);
   word-break: break-word;
+  text-align: center;
 }
 
 /* T066: Close button */
 .plan-detail-close {
+  grid-column: 3;
+  justify-self: end;
   background: none;
   border: none;
   font-size: 32px;

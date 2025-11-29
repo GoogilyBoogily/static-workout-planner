@@ -604,16 +604,21 @@ function App() {
         <ThemeToggle theme={theme} onToggle={handleThemeToggle} />
       </div>
 
-      <div className="csv-loader">
-        <CSVUploader
-          onUploadComplete={handleCSVUploadComplete}
-          onError={handleCSVUploadError}
-        />
+      <details className="csv-loader">
+        <summary className="csv-loader-summary">
+          Upload Custom Exercises
+        </summary>
+        <div className="csv-loader-content">
+          <CSVUploader
+            onUploadComplete={handleCSVUploadComplete}
+            onError={handleCSVUploadError}
+          />
 
-        <button onClick={loadSampleData} className="reload-button">
-          Reload Default Workouts
-        </button>
-      </div>
+          <button onClick={loadSampleData} className="reload-button">
+            Reload Default Workouts
+          </button>
+        </div>
+      </details>
 
       {error && <div className="error">{error}</div>}
 

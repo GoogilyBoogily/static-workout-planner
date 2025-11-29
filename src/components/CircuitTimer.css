@@ -15,8 +15,8 @@
 }
 
 .circuit-timer-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   margin-bottom: var(--space-lg);
   padding-bottom: var(--space-md);
@@ -29,9 +29,16 @@
 }
 
 .timer-title {
+  grid-column: 2;
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
+  text-align: center;
+}
+
+.circuit-timer-header .close-button {
+  grid-column: 3;
+  justify-self: end;
 }
 
 .plan-name-subtitle {
