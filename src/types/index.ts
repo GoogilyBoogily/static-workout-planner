@@ -419,3 +419,49 @@ export interface ExerciseGroup {
   groupIndex: number
   exercises: PlanExercise[]
 }
+
+// ============================================
+// CSV Upload Types
+// ============================================
+
+/**
+ * Upload state machine phases
+ */
+export type UploadPhase =
+  | 'idle'
+  | 'uploading'
+  | 'parsing'
+  | 'mapping'
+  | 'preview'
+  | 'success'
+  | 'error'
+
+/**
+ * Validation issue for a specific row
+ */
+export interface ValidationIssue {
+  rowIndex: number
+  field: string
+  message: string
+  severity: 'error' | 'warning'
+}
+
+/**
+ * Column mapping from CSV header to expected field
+ */
+export interface ColumnMapping {
+  csvHeader: string
+  mappedTo: string | null
+}
+
+/**
+ * Expected columns for CSV upload
+ */
+export const EXPECTED_CSV_COLUMNS = {
+  required: ['Exercise', 'Muscle Group'] as const,
+  optional: ['Equipment', 'Optional Equipment', 'Description', 'YouTube URL'] as const
+}
+
+export type RequiredColumn = typeof EXPECTED_CSV_COLUMNS.required[number]
+export type OptionalColumn = typeof EXPECTED_CSV_COLUMNS.optional[number]
+export type ExpectedColumn = RequiredColumn | OptionalColumn

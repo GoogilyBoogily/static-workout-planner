@@ -17,7 +17,7 @@ interface AddToPlanDropdownProps {
 }
 
 /** Duration for success feedback animation (ms) */
-const SUCCESS_FEEDBACK_DURATION = 1000
+const SUCCESS_FEEDBACK_DURATION = 2500
 
 /**
  * AddToPlanDropdown Component
@@ -38,6 +38,7 @@ function AddToPlanDropdown({
   const [selectedPlanId, setSelectedPlanId] = useState<string>('')
   const [isCustomizing, setIsCustomizing] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [addedToPlanName, setAddedToPlanName] = useState('')
   const [isCreatingNew, setIsCreatingNew] = useState(false)
   const [newPlanName, setNewPlanName] = useState('')
   const [formData, setFormData] = useState({
@@ -101,6 +102,7 @@ function AddToPlanDropdown({
     setIsCustomizing(false)
     setIsCreatingNew(false)
     setNewPlanName('')
+    setAddedToPlanName('')
     setFormData({ sets: '3', reps: '8-12', weight: '', rest: '' })
   }
 
@@ -141,9 +143,12 @@ function AddToPlanDropdown({
 
     if (isCreatingNew) {
       if (!newPlanName.trim() || !onCreateNewPlanWithExercise) return
+      setAddedToPlanName(newPlanName.trim())
       onCreateNewPlanWithExercise(newPlanName.trim(), planExercise)
     } else {
       if (!selectedPlanId) return
+      const plan = sortedPlans.find(p => p.id === selectedPlanId)
+      setAddedToPlanName(plan?.name || 'plan')
       onAddToPlan(selectedPlanId, planExercise)
     }
 
@@ -162,9 +167,12 @@ function AddToPlanDropdown({
 
     if (isCreatingNew) {
       if (!newPlanName.trim() || !onCreateNewPlanWithExercise) return
+      setAddedToPlanName(newPlanName.trim())
       onCreateNewPlanWithExercise(newPlanName.trim(), planExercise)
     } else {
       if (!selectedPlanId) return
+      const plan = sortedPlans.find(p => p.id === selectedPlanId)
+      setAddedToPlanName(plan?.name || 'plan')
       onAddToPlan(selectedPlanId, planExercise)
     }
 
@@ -243,7 +251,10 @@ function AddToPlanDropdown({
           {showSuccess ? (
             <div className="add-success">
               <span className="success-icon">✓</span>
-              <span>Added!</span>
+              <div className="success-text">
+                <span className="success-title">Added!</span>
+                <span className="success-subtitle">to "{addedToPlanName}"</span>
+              </div>
             </div>
           ) : (
             <>

@@ -48,17 +48,27 @@ function ExerciseDetailModal({
 }: ExerciseDetailModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
 
-  // ESC key handler (T011), Focus trapping (T013), and Body scroll prevention (T030)
+  // Determine if we're at boundaries (needed for keyboard nav)
+  const canGoNext = exerciseIndex !== null && exerciseIndex < totalExercises - 1
+  const canGoPrevious = exerciseIndex !== null && exerciseIndex > 0
+
+  // ESC key handler (T011), Focus trapping (T013), Body scroll prevention (T030), Arrow nav
   useEffect(() => {
     if (!exercise) return
 
     // Prevent body scroll when modal is open (T030)
     document.body.style.overflow = 'hidden'
 
-    // Handle ESC key to close modal
+    // Handle keyboard navigation
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose()
+      } else if (e.key === 'ArrowRight' && canGoNext) {
+        e.preventDefault()
+        onNext()
+      } else if (e.key === 'ArrowLeft' && canGoPrevious) {
+        e.preventDefault()
+        onPrevious()
       }
     }
 
@@ -100,16 +110,12 @@ function ExerciseDetailModal({
       // Restore body scroll
       document.body.style.overflow = ''
     }
-  }, [exercise, onClose])
+  }, [exercise, onClose, onNext, onPrevious, canGoNext, canGoPrevious])
 
   // Return null if no exercise selected (modal closed)
   if (!exercise) {
     return null
   }
-
-  // Determine if we're at boundaries
-  const isFirstExercise = exerciseIndex === 0
-  const isLastExercise = exerciseIndex === totalExercises - 1
 
   // Extract video ID from YouTube URL (T017, T019, T020)
   const videoId = exercise.youtubeUrl ? extractVideoId(exercise.youtubeUrl) : null
@@ -139,6 +145,15 @@ function ExerciseDetailModal({
         >
           ✕
         </button>
+
+        {/* Position Counter */}
+        {exerciseIndex !== null && totalExercises > 0 && (
+          <div className="modal-position-counter" aria-live="polite">
+            <span className="position-current">{exerciseIndex + 1}</span>
+            <span className="position-separator">of</span>
+            <span className="position-total">{totalExercises}</span>
+          </div>
+        )}
 
         <h2 id="modal-title">{exercise.name}</h2>
 
@@ -277,16 +292,18 @@ function ExerciseDetailModal({
           <button
             className="nav-button nav-previous"
             onClick={onPrevious}
-            disabled={isFirstExercise}
-            aria-label="Previous exercise"
+            disabled={!canGoPrevious}
+            aria-label="Previous exercise (Left Arrow)"
+            title="Previous (←)"
           >
             ← Previous
           </button>
           <button
             className="nav-button nav-next"
             onClick={onNext}
-            disabled={isLastExercise}
-            aria-label="Next exercise"
+            disabled={!canGoNext}
+            aria-label="Next exercise (Right Arrow)"
+            title="Next (→)"
           >
             Next →
           </button>

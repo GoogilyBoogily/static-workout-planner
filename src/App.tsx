@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react'
-import type { ChangeEvent } from 'react'
 import Papa from 'papaparse'
 import './App.css'
 import ExerciseDetailModal from './components/ExerciseDetailModal'
@@ -10,6 +9,8 @@ import TagFilter from './components/TagFilter'
 import EquipmentFilter from './components/EquipmentFilter'
 import ErrorMessage from './components/ErrorMessage'
 import StorageWarning from './components/StorageWarning'
+import ExerciseCountBadge from './components/ExerciseCountBadge'
+import CSVUploader from './components/CSVUploader'
 import PlanForm from './components/PlanForm'
 import PlanList from './components/PlanList'
 import PlanDetail from './components/PlanDetail'
@@ -59,6 +60,7 @@ function App() {
   // Search and filter state (002-exercise-list-filters)
   const [searchText, setSearchText] = useState('')
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([])
+  const [filtersExpanded, setFiltersExpanded] = useState(true)
 
   // Workout Plans state (T006)
   const [plans, setPlans] = useState<WorkoutPlan[]>([])
@@ -146,47 +148,20 @@ function App() {
     }
   }, [])
 
-  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-
-    if (!file) {
-      return
-    }
-
-    if (!file.name.endsWith('.csv')) {
-      setError('Please upload a CSV file')
-      return
-    }
-
+  // Handle CSV upload completion from CSVUploader component
+  const handleCSVUploadComplete = (
+    parsedExercises: ParsedExercise[],
+    headers: string[],
+    rawData: Record<string, string>[]
+  ) => {
+    setExercises(parsedExercises)
+    setHeaders(headers)
+    setData(rawData)
     setError(null)
+  }
 
-    Papa.parse<CSVExerciseRow>(file, {
-      header: true,
-      complete: (results) => {
-        if (results.data && results.data.length > 0) {
-          // Parse exercises with Muscle Group filter
-          const parsedExercises: ParsedExercise[] = results.data
-            .filter(row => row['Muscle Group'] && row['Muscle Group'].trim())
-            .map(row => ({
-              name: row.Exercise ?? '',
-              tags: row['Muscle Group']?.split(',').map(tag => tag.trim()).filter(tag => tag) ?? [],
-              description: row.Description ?? '',
-              equipment: row.Equipment ? row.Equipment.split(',').map(e => e.trim()).filter(e => e) : [],
-              optionalEquipment: row['Optional Equipment'] ? row['Optional Equipment'].split(',').map(e => e.trim()).filter(e => e) : [],
-              youtubeUrl: row['YouTube URL'] ?? null
-            }))
-
-          setExercises(parsedExercises)
-          // Keep raw data for table view
-          setHeaders(results.meta.fields ?? [])
-          setData(results.data.filter(row => row.Exercise) as Record<string, string>[])
-          setError(null)
-        }
-      },
-      error: (parseError) => {
-        setError(`Error parsing CSV: ${parseError.message}`)
-      }
-    })
+  const handleCSVUploadError = (message: string) => {
+    setError(message)
   }
 
   const loadSampleData = () => {
@@ -630,15 +605,10 @@ function App() {
       </div>
 
       <div className="csv-loader">
-        <div className="file-input">
-          <input
-            type="file"
-            accept=".csv"
-            onChange={handleFileUpload}
-            id="csv-upload"
-          />
-          <label htmlFor="csv-upload">Upload Custom Workouts</label>
-        </div>
+        <CSVUploader
+          onUploadComplete={handleCSVUploadComplete}
+          onError={handleCSVUploadError}
+        />
 
         <button onClick={loadSampleData} className="reload-button">
           Reload Default Workouts
@@ -731,53 +701,78 @@ function App() {
           {/* Search and Filter Section (002-exercise-list-filters) */}
           {exercises.length > 0 && (
             <div className="filter-section">
-              {/* Search Input */}
-              <SearchInput
-                value={searchText}
-                onChange={setSearchText}
-                placeholder="Search exercises by name..."
-              />
-
-              {/* Tag Filter Pills (synced with MuscleDiagram) */}
-              <TagFilter
-                availableTags={availableTags}
-                selectedTags={selectedMuscles}
-                onTagToggle={handleMuscleToggle}
-              />
-
-              {/* Equipment Filter Pills */}
-              <EquipmentFilter
-                availableEquipment={availableEquipment}
-                selectedEquipment={selectedEquipment}
-                onEquipmentToggle={handleEquipmentToggle}
-              />
-
-              {/* Filter indicator with Clear All button */}
-              {(searchText.trim() || selectedMuscles.length > 0 || selectedEquipment.length > 0) && (
-                <div className="filter-indicator">
-                  {searchText.trim() && (
-                    <span className="filter-info">
-                      <strong>Search:</strong> "{searchText}"
-                    </span>
-                  )}
-                  {selectedMuscles.length > 0 && (
-                    <span className="filter-info">
-                      <strong>Muscles:</strong> {selectedMuscles.join(', ')}
-                    </span>
-                  )}
-                  {selectedEquipment.length > 0 && (
-                    <span className="filter-info">
-                      <strong>Equipment:</strong> {selectedEquipment.join(', ')}
-                    </span>
-                  )}
+              {/* Filter Section Header with Count */}
+              <div className="filter-section-header">
+                <h3 className="filter-section-title">Filter Exercises</h3>
+                <div className="filter-header-right">
+                  <ExerciseCountBadge
+                    filteredCount={filteredExercises.length}
+                    totalCount={exercises.length}
+                  />
                   <button
-                    onClick={handleClearAllFilters}
-                    className="clear-all-filters"
+                    className="filter-toggle-mobile"
+                    onClick={() => setFiltersExpanded(!filtersExpanded)}
+                    aria-expanded={filtersExpanded}
+                    aria-controls="filter-content"
                   >
-                    Clear All Filters
+                    {filtersExpanded ? 'Hide' : 'Show'}
                   </button>
                 </div>
-              )}
+              </div>
+
+              {/* Collapsible Filter Content */}
+              <div
+                id="filter-content"
+                className={`filter-section-content ${filtersExpanded ? '' : 'collapsed'}`}
+              >
+                {/* Search Input */}
+                <SearchInput
+                  value={searchText}
+                  onChange={setSearchText}
+                  placeholder="Search exercises by name..."
+                />
+
+                {/* Tag Filter Pills (synced with MuscleDiagram) */}
+                <TagFilter
+                  availableTags={availableTags}
+                  selectedTags={selectedMuscles}
+                  onTagToggle={handleMuscleToggle}
+                />
+
+                {/* Equipment Filter Pills */}
+                <EquipmentFilter
+                  availableEquipment={availableEquipment}
+                  selectedEquipment={selectedEquipment}
+                  onEquipmentToggle={handleEquipmentToggle}
+                />
+
+                {/* Filter indicator with Clear All button */}
+                {(searchText.trim() || selectedMuscles.length > 0 || selectedEquipment.length > 0) && (
+                  <div className="filter-indicator">
+                    {searchText.trim() && (
+                      <span className="filter-info">
+                        <strong>Search:</strong> "{searchText}"
+                      </span>
+                    )}
+                    {selectedMuscles.length > 0 && (
+                      <span className="filter-info">
+                        <strong>Muscles:</strong> {selectedMuscles.join(', ')}
+                      </span>
+                    )}
+                    {selectedEquipment.length > 0 && (
+                      <span className="filter-info">
+                        <strong>Equipment:</strong> {selectedEquipment.join(', ')}
+                      </span>
+                    )}
+                    <button
+                      onClick={handleClearAllFilters}
+                      className="clear-all-filters"
+                    >
+                      Clear All Filters
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

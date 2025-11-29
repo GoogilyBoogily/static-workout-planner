@@ -305,17 +305,60 @@
 /* Success State */
 .add-success {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 16px;
-  color: var(--color-success);
-  font-weight: 600;
-  font-size: 16px;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  animation: successPop 0.3s ease-out;
+}
+
+@keyframes successPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .success-icon {
-  font-size: 24px;
+  font-size: 1.75rem;
+  color: var(--color-success);
+  background: rgba(74, 222, 128, 0.15);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-text {
+  text-align: center;
+}
+
+.success-title {
+  display: block;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-success);
+}
+
+.success-subtitle {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-top: var(--space-xs);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Mobile Responsive */

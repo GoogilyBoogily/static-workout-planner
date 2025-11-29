@@ -1,0 +1,45 @@
+/**
+ * ExerciseCountBadge Styles
+ *
+ * Pill-shaped badge showing exercise count with filter state awareness.
+ */
+
+.exercise-count-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-secondary);
+}
+
+.count-filtered {
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.count-separator {
+  color: var(--color-text-tertiary);
+  font-weight: 400;
+}
+
+.count-total {
+  font-weight: 600;
+}
+
+.count-label {
+  color: var(--color-text-tertiary);
+}
+
+/* Mobile responsive */
+@media (max-width: 599px) {
+  .exercise-count-badge {
+    font-size: 0.875rem;
+    padding: var(--space-xs) var(--space-sm);
+  }
+}
