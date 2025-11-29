@@ -61,6 +61,33 @@ function PlanForm({
   // Track which exercises are pinned (locked during regeneration)
   const [pinStatus, setPinStatus] = useState<PinStatus>(plan?.pinStatus ?? {})
 
+  // H3 FIX: Track initial values to detect unsaved changes
+  const initialValues = useMemo(() => ({
+    name: plan?.name ?? '',
+    exercises: plan?.exercises ?? [],
+    isCircuit: plan?.isCircuit ?? false
+  }), []) // Empty deps - only compute once on mount
+
+  // H3 FIX: Check if form has unsaved changes
+  const hasUnsavedChanges = useMemo(() => {
+    if (planName !== initialValues.name) return true
+    if (isCircuit !== initialValues.isCircuit) return true
+    if (exercises.length !== initialValues.exercises.length) return true
+    // Deep compare exercises by stringifying (simple but effective)
+    return JSON.stringify(exercises) !== JSON.stringify(initialValues.exercises)
+  }, [planName, exercises, isCircuit, initialValues])
+
+  // H3 FIX: Cancel handler with unsaved changes confirmation
+  const handleCancelWithConfirm = () => {
+    if (hasUnsavedChanges) {
+      const confirmed = window.confirm(
+        'You have unsaved changes. Are you sure you want to discard them?'
+      )
+      if (!confirmed) return
+    }
+    onCancel()
+  }
+
   // Drag and drop state
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
@@ -850,13 +877,20 @@ function PlanForm({
                   {pinnedCount} of {exercises.length} exercise{pinnedCount !== 1 ? 's' : ''} pinned
                 </span>
               )}
+              {/* H4 FIX: Make keyboard shortcuts discoverable */}
+              <div className="keyboard-shortcuts-hint">
+                <span className="shortcuts-label">Keyboard:</span>
+                <kbd>R</kbd> Reroll
+                <kbd>P</kbd> Pin
+                <kbd>G</kbd> Regenerate
+              </div>
             </div>
           )
         })()}
       </div>
 
       <div className="form-actions">
-        <button type="button" onClick={onCancel} className="button-secondary">
+        <button type="button" onClick={handleCancelWithConfirm} className="button-secondary">
           Cancel
         </button>
         <button type="submit" className="button-primary">

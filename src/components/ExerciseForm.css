@@ -119,6 +119,13 @@
   border-radius: 0 0 var(--radius-sm) var(--radius-sm);
 }
 
+/* C1 FIX: Highlight empty library state */
+.autocomplete-empty-library {
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+  border-color: var(--color-warning);
+}
+
 /* Selected tag display (read-only) */
 .selected-tag {
   display: inline-block;

@@ -118,10 +118,11 @@
 }
 
 /* T071: Generated plan badge */
+/* H10 FIX: Use theme-aware gradient colors */
 .plan-generated-badge {
   display: inline-block;
   padding: 4px 10px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-end) 100%);
   color: white;
   border-radius: 12px;
   font-size: 12px;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import Papa from 'papaparse'
 import './App.css'
 import ExerciseDetailModal from './components/ExerciseDetailModal'
@@ -52,6 +52,8 @@ function App() {
   // Modal state for exercise details (T006)
   const [selectedExercise, setSelectedExercise] = useState<ParsedExercise | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  // H5 FIX: Track trigger element for focus restoration on modal close
+  const modalTriggerRef = useRef<HTMLElement | null>(null)
 
   // T023: Muscle selection state
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([])
@@ -91,6 +93,23 @@ function App() {
 
   const handleThemeToggle = () => {
     setTheme(prevTheme => prevTheme === 'dark' ? 'light' : 'dark')
+  }
+
+  // H2 FIX: Build detailed storage error message with usage info
+  const buildStorageErrorMessage = () => {
+    const usage = PlansStorage.getStorageUsage()
+    const largestPlans = PlansStorage.getLargestPlans(plans, 3)
+
+    let message = `Storage limit reached (${usage.usedKB}KB used, ~${usage.percentUsed}% full).`
+
+    if (largestPlans.length > 0) {
+      message += '\n\nLargest plans that could be deleted:'
+      largestPlans.forEach(p => {
+        message += `\n• "${p.name}" (${p.exerciseCount} exercises, ${p.sizeKB}KB)`
+      })
+    }
+
+    return message
   }
 
   // T007: Load plans from localStorage on mount
@@ -136,8 +155,8 @@ function App() {
         setPlans(updatedPlans)
         setShowSyncWarning(true)
 
-        // Auto-hide warning after 5 seconds
-        setTimeout(() => setShowSyncWarning(false), 5000)
+        // H1 FIX: Increased from 5s to 10s to give users more time to notice
+        setTimeout(() => setShowSyncWarning(false), 10000)
       }
     }
 
@@ -203,6 +222,8 @@ function App() {
 
   // Modal handlers (T007, T022)
   const handleExerciseClick = (exercise: ParsedExercise, index: number) => {
+    // H5 FIX: Store trigger element for focus restoration
+    modalTriggerRef.current = document.activeElement as HTMLElement
     setSelectedExercise(exercise)
     setSelectedIndex(index)
   }
@@ -210,6 +231,14 @@ function App() {
   const handleCloseModal = () => {
     setSelectedExercise(null)
     setSelectedIndex(null)
+    // H5 FIX: Restore focus to trigger element after modal closes
+    if (modalTriggerRef.current && typeof modalTriggerRef.current.focus === 'function') {
+      // Use requestAnimationFrame to ensure DOM updates before focusing
+      requestAnimationFrame(() => {
+        modalTriggerRef.current?.focus()
+        modalTriggerRef.current = null
+      })
+    }
   }
 
   // Navigation handlers (T022)
@@ -239,8 +268,9 @@ function App() {
   const handleAddExerciseToPlan = (planId: string, exercise: PlanExercise) => {
     try {
       const targetPlan = plans.find(p => p.id === planId)
+      // C4 FIX: Show user-facing error if plan was deleted (e.g., from another tab)
       if (!targetPlan) {
-        console.error('Plan not found:', planId)
+        setError('This plan no longer exists. It may have been deleted in another tab.')
         return
       }
 
@@ -258,7 +288,8 @@ function App() {
       setPlans(updatedPlans)
     } catch (err) {
       if (err instanceof Error && err.name === 'QuotaExceededError') {
-        setStorageError('Storage limit reached. Delete old plans to free space.')
+        // H2 FIX: Use detailed storage error message
+        setStorageError(buildStorageErrorMessage())
       } else {
         setStorageError(err instanceof Error ? err.message : String(err))
       }
@@ -278,7 +309,8 @@ function App() {
       setPlans(updatedPlans)
     } catch (err) {
       if (err instanceof Error && err.name === 'QuotaExceededError') {
-        setStorageError('Storage limit reached. Delete old plans to free space.')
+        // H2 FIX: Use detailed storage error message
+        setStorageError(buildStorageErrorMessage())
       } else {
         setStorageError(err instanceof Error ? err.message : String(err))
       }
@@ -353,7 +385,8 @@ function App() {
     } catch (err) {
       // T068: Enhanced error handling for localStorage quota exceeded
       if (err instanceof Error && err.name === 'QuotaExceededError') {
-        setStorageError('Storage limit reached. Delete old plans or templates to free space.')
+        // H2 FIX: Use detailed storage error message
+        setStorageError(buildStorageErrorMessage())
       } else {
         setStorageError(err instanceof Error ? err.message : String(err))
       }
@@ -408,18 +441,43 @@ function App() {
     // Generate exercises from muscle quotas
     let result = generateFromMuscleQuotas(config.quotas, musclePool)
 
-    if (result.errors.length > 0) {
-      // Show errors to user
-      alert('Generation errors:\n' + result.errors.join('\n'))
+    // C2 FIX: Build detailed quota breakdown message
+    const buildQuotaBreakdown = () => {
+      if (result.quotaResults.length === 0) return ''
+
+      return result.quotaResults.map(qr => {
+        const status = qr.fulfilled === qr.requested
+          ? '✓'
+          : qr.fulfilled === 0
+            ? '✗'
+            : '⚠'
+        const availableNote = qr.available === 0
+          ? ' (no exercises in library)'
+          : qr.fulfilled < qr.requested
+            ? ` (only ${qr.available} available)`
+            : ''
+        return `${status} ${qr.muscleGroup}: ${qr.fulfilled}/${qr.requested}${availableNote}`
+      }).join('\n')
     }
 
-    if (result.warnings.length > 0) {
-      // Log warnings but don't block
-      console.warn('Generation warnings:', result.warnings)
+    if (result.errors.length > 0 || result.warnings.length > 0) {
+      // C2 FIX: Show detailed breakdown with errors/warnings
+      const breakdown = buildQuotaBreakdown()
+      const hasPartialSuccess = result.exercises.length > 0
+
+      if (!hasPartialSuccess) {
+        alert(`Generation failed:\n\n${breakdown}\n\nPlease adjust your quotas or add more exercises to the library.`)
+        return
+      }
+
+      // Has some exercises but with warnings - show and continue
+      console.warn('Generation quota results:', result.quotaResults)
     }
 
     if (result.exercises.length === 0) {
-      alert('No exercises could be generated. Please adjust your quotas.')
+      // C2 FIX: Show detailed breakdown when no exercises generated
+      const breakdown = buildQuotaBreakdown()
+      alert(`No exercises could be generated.\n\nQuota breakdown:\n${breakdown}\n\nPlease adjust your quotas or add more exercises.`)
       return
     }
 

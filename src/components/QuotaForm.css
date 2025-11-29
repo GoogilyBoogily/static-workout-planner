@@ -325,6 +325,39 @@
   background-color: var(--color-bg-hover);
 }
 
+/* C1 FIX: Empty state styling */
+
+.quota-form-empty-state {
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.quota-form-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.quota-form-empty-state h3 {
+  margin-bottom: 16px;
+  color: var(--color-text-primary);
+}
+
+.quota-form-empty-state p {
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.quota-form-empty-hint {
+  font-size: 0.9rem;
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.quota-form-empty-state .quota-cancel-button {
+  margin-top: 16px;
+}
+
 /* Mobile responsiveness */
 
 @media (max-width: 600px) {

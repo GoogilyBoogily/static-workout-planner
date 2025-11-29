@@ -16,7 +16,8 @@ import type {
   ParsedExercise,
   MuscleExercisePool,
   MuscleQuota,
-  MuscleGenerationResult
+  MuscleGenerationResult,
+  QuotaResult
 } from '../types'
 
 /**
@@ -396,13 +397,24 @@ export function generateFromMuscleQuotas(
   const exercises: PlanExercise[] = []
   const errors: string[] = []
   const warnings: string[] = []
+  const quotaResults: QuotaResult[] = [] // C2 FIX: Track per-quota results
   const usedExerciseNames = new Set<string>()
 
   quotas.forEach(({ muscleGroup, count }) => {
     const musclePool = pool[muscleGroup] ?? []
 
+    // C2 FIX: Track available count before filtering
+    const totalAvailable = musclePool.length
+
     if (musclePool.length === 0) {
       errors.push(`No exercises found for muscle group "${muscleGroup}"`)
+      // C2 FIX: Record failed quota
+      quotaResults.push({
+        muscleGroup,
+        requested: count,
+        fulfilled: 0,
+        available: 0
+      })
       return
     }
 
@@ -411,6 +423,13 @@ export function generateFromMuscleQuotas(
 
     if (availablePool.length === 0) {
       warnings.push(`All "${muscleGroup}" exercises already used`)
+      // C2 FIX: Record exhausted quota
+      quotaResults.push({
+        muscleGroup,
+        requested: count,
+        fulfilled: 0,
+        available: totalAvailable
+      })
       return
     }
 
@@ -430,9 +449,17 @@ export function generateFromMuscleQuotas(
       usedExerciseNames.add(parsed.name)
       exercises.push(toPlanExercise(parsed, muscleGroup))
     })
+
+    // C2 FIX: Record successful/partial quota
+    quotaResults.push({
+      muscleGroup,
+      requested: count,
+      fulfilled: selected.length,
+      available: totalAvailable
+    })
   })
 
-  return { exercises, errors, warnings }
+  return { exercises, errors, warnings, quotaResults }
 }
 
 /**

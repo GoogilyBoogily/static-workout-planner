@@ -23,7 +23,8 @@
 .search-input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.2);
+  /* H7 FIX: Use theme-aware focus color, standardized to 2px */
+  box-shadow: 0 0 0 2px var(--color-primary-focus);
 }
 
 .search-input:hover:not(:focus) {

@@ -41,6 +41,8 @@ function AddToPlanDropdown({
   const [addedToPlanName, setAddedToPlanName] = useState('')
   const [isCreatingNew, setIsCreatingNew] = useState(false)
   const [newPlanName, setNewPlanName] = useState('')
+  // C4 FIX: Track error state for race condition handling
+  const [errorMessage, setErrorMessage] = useState('')
   const [formData, setFormData] = useState({
     sets: '3',
     reps: '8-12',
@@ -103,6 +105,7 @@ function AddToPlanDropdown({
     setIsCreatingNew(false)
     setNewPlanName('')
     setAddedToPlanName('')
+    setErrorMessage('') // C4 FIX: Clear error on reset
     setFormData({ sets: '3', reps: '8-12', weight: '', rest: '' })
   }
 
@@ -143,13 +146,19 @@ function AddToPlanDropdown({
       if (!newPlanName.trim() || !onCreateNewPlanWithExercise) return
       setAddedToPlanName(newPlanName.trim())
       onCreateNewPlanWithExercise(newPlanName.trim(), planExercise)
+      showSuccessFeedback()
     } else {
       if (!selectedPlanId) return
       const plan = sortedPlans.find(p => p.id === selectedPlanId)
-      setAddedToPlanName(plan?.name || 'plan')
+      // C4 FIX: Check if plan still exists (may have been deleted in another tab)
+      if (!plan) {
+        setErrorMessage('This plan was deleted. Please select a different plan.')
+        return
+      }
+      setAddedToPlanName(plan.name)
       onAddToPlan(selectedPlanId, planExercise)
+      showSuccessFeedback()
     }
-    showSuccessFeedback()
   }
 
   // Handle quick add with defaults
@@ -247,6 +256,24 @@ function AddToPlanDropdown({
                 <span className="success-subtitle">to "{addedToPlanName}"</span>
               </div>
             </div>
+          ) : errorMessage ? (
+            /* C4 FIX: Show error state when plan no longer exists */
+            <div className="add-error">
+              <span className="error-icon">✗</span>
+              <div className="error-text">
+                <span className="error-title">Error</span>
+                <span className="error-subtitle">{errorMessage}</span>
+              </div>
+              <button
+                className="error-dismiss"
+                onClick={() => {
+                  setErrorMessage('')
+                  setSelectedPlanId('')
+                }}
+              >
+                OK
+              </button>
+            </div>
           ) : (
             <>
               {/* Plan selector or new plan name input */}
@@ -290,6 +317,13 @@ function AddToPlanDropdown({
                     className="plan-selector"
                     value={selectedPlanId}
                     onChange={handlePlanSelectChange}
+                    /* H9 FIX: Allow Enter key to submit after plan selection */
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && selectedPlanId) {
+                        e.preventDefault()
+                        handleQuickAdd()
+                      }
+                    }}
                   >
                     <option value="">Choose a plan...</option>
                     {onCreateNewPlanWithExercise && (

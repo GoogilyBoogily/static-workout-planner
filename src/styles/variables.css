@@ -28,6 +28,14 @@
   --color-primary: #646cff;
   --color-primary-hover: #535bf2;
   --color-primary-active: #4249d8;
+  /* H7 FIX: Focus ring color for consistent focus states */
+  --color-primary-focus: rgba(100, 108, 255, 0.2);
+  /* H6 FIX: Drag-over highlight background */
+  --color-primary-bg: rgba(100, 108, 255, 0.15);
+
+  /* H10 FIX: Generated badge gradient colors */
+  --color-gradient-start: #667eea;
+  --color-gradient-end: #764ba2;
 
   /* Semantic colors */
   --color-success: #4ade80;
@@ -73,7 +81,10 @@
   /* Spacing (for consistency) */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
+  /* H8 FIX: Added missing spacing values for 12px and 20px */
+  --space-sm-plus: 0.75rem;  /* 12px - frequently needed */
   --space-md: 1rem;
+  --space-md-plus: 1.25rem;  /* 20px - frequently needed */
   --space-lg: 1.5rem;
   --space-xl: 2rem;
 
@@ -104,6 +115,14 @@
   --color-primary: #4a90e2;
   --color-primary-hover: #357abd;
   --color-primary-active: #2868a8;
+  /* H7 FIX: Focus ring color for light mode */
+  --color-primary-focus: rgba(74, 144, 226, 0.25);
+  /* H6 FIX: Drag-over highlight background for light mode */
+  --color-primary-bg: rgba(74, 144, 226, 0.15);
+
+  /* H10 FIX: Generated badge gradient colors (softer for light mode) */
+  --color-gradient-start: #5a67d8;
+  --color-gradient-end: #6b46c1;
 
   /* Semantic colors */
   --color-success: #22c55e;

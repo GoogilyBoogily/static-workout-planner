@@ -217,6 +217,36 @@ export default function QuotaForm({
     setTemplateName('')
   }
 
+  // C1 FIX: Show prominent empty state when no exercises in library
+  if (exercises.length === 0) {
+    return (
+      <div className="quota-form-modal-overlay" onClick={onCancel}>
+        <div className="quota-form-modal" onClick={(e) => e.stopPropagation()}>
+          <h2>Generate Random Workout</h2>
+          <div className="quota-form-empty-state">
+            <div className="quota-form-empty-icon">📋</div>
+            <h3>No Exercises Loaded</h3>
+            <p>
+              Upload a CSV file with your exercise library to generate workouts.
+              The CSV should include exercise names and muscle groups.
+            </p>
+            <p className="quota-form-empty-hint">
+              You can also use the default exercise library by refreshing the page
+              if no custom CSV has been uploaded.
+            </p>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="quota-cancel-button"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="quota-form-modal-overlay" onClick={onCancel}>
       <div className="quota-form-modal" onClick={(e) => e.stopPropagation()}>

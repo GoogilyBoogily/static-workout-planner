@@ -160,12 +160,24 @@ export interface GenerationConfig {
 }
 
 /**
+ * C2 FIX: Per-quota generation result for detailed feedback
+ */
+export interface QuotaResult {
+  muscleGroup: string
+  requested: number
+  fulfilled: number
+  available: number
+}
+
+/**
  * Result from muscle-based generation
  */
 export interface MuscleGenerationResult {
   exercises: PlanExercise[]
   errors: string[]
   warnings: string[]
+  /** C2 FIX: Detailed results per quota for user feedback */
+  quotaResults: QuotaResult[]
 }
 
 /**

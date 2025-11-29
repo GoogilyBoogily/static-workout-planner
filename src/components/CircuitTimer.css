@@ -104,7 +104,7 @@
 .config-field input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+  box-shadow: 0 0 0 2px var(--color-primary-focus); /* H7 FIX */
 }
 
 .start-button {
@@ -256,7 +256,7 @@
 .sound-select:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+  box-shadow: 0 0 0 2px var(--color-primary-focus); /* H7 FIX */
 }
 
 .test-sound-button {
@@ -623,10 +623,12 @@
   cursor: grabbing;
 }
 
+/* H6 FIX: Use theme-aware CSS variable for drag-over background */
 .config-exercise-item.drag-over {
   border-color: var(--color-primary);
-  background-color: rgba(100, 108, 255, 0.15);
+  background-color: var(--color-primary-bg);
   border-width: 2px;
+  box-shadow: var(--shadow-md);
 }
 
 .config-exercise-item:active {

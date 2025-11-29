@@ -240,7 +240,13 @@ function ExerciseForm({ exercise, exerciseLibrary = [], onSave, onCancel }: Exer
               ))}
             </ul>
           )}
-          {showSuggestions && filteredExercises.length === 0 && formData.name.trim() && (
+          {/* C1 FIX: Distinguish between empty library vs no search results */}
+          {showSuggestions && exerciseLibrary.length === 0 && (
+            <div className="autocomplete-no-results autocomplete-empty-library">
+              No exercises loaded. Upload a CSV file to add exercises.
+            </div>
+          )}
+          {showSuggestions && exerciseLibrary.length > 0 && filteredExercises.length === 0 && formData.name.trim() && (
             <div className="autocomplete-no-results">
               No exercises found matching "{formData.name}"
             </div>
